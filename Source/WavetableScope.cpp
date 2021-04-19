@@ -10,7 +10,7 @@
 
 #include "WavetableScope.h"
 
-WaveScope::WaveScope(std::vector<std::vector<float>> data, juce::Slider* s, float pos) :
+WaveScope::WaveScope(std::vector<std::vector<float>>& data, juce::Slider* s, float pos) :
 graphData(data),
 numTraces((int)data.size()),
 position(pos),
@@ -121,4 +121,20 @@ void WaveScope::paint(juce::Graphics &g)
         g.setColour(UXPalette::highlight);
         g.strokePath(highlightedTrace2d, strokeType);
     }
+}
+
+WaveScopeHolder::WaveScopeHolder(std::vector<std::vector<float>> data, juce::Slider* s) :
+scope(std::make_unique<WaveScope>(data, s)),
+slider(s)
+{
+    addAndMakeVisible(*scope);
+}
+
+void WaveScopeHolder::replace(std::vector<std::vector<float> > newData)
+{
+    scope->setEnabled(false);
+    scope->setVisible(false);
+    scope->removeListener();
+    scope.reset(new WaveScope(newData, slider));
+    addAndMakeVisible(*scope);
 }

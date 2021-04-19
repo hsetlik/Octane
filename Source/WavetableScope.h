@@ -17,7 +17,7 @@
 class WaveScope : public juce::Component, juce::Slider::Listener
 {
 public:
-    WaveScope(std::vector<std::vector<float>> data, juce::Slider* s, float pos = 0.0f);
+    WaveScope(std::vector<std::vector<float>>& data, juce::Slider* s, float pos = 0.0f);
     ~WaveScope() {};
     void paint(juce::Graphics& g) override;
     void setPosition(float pos); //recalculate colors in here;
@@ -53,4 +53,15 @@ private:
     juce::Path highlightedTrace2d;
     juce::Path highlightedTrace3d;
     std::array<float, SCOPE_RESOLUTION> currentValues;
+};
+
+
+class WaveScopeHolder : public juce::Component
+{
+public:
+    WaveScopeHolder(std::vector<std::vector<float>> data, juce::Slider* s);
+    void replace(std::vector<std::vector<float>> newData);
+private:
+    std::unique_ptr<WaveScope> scope;
+    juce::Slider* slider;
 };

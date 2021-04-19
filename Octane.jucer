@@ -38,6 +38,10 @@
         <FILE id="lTxpN7" name="RGBColor.h" compile="0" resource="0" file="Source/RGBColor.h"/>
         <FILE id="tGF5wg" name="SliderTypes.cpp" compile="1" resource="0" file="Source/SliderTypes.cpp"/>
         <FILE id="FGTak9" name="SliderTypes.h" compile="0" resource="0" file="Source/SliderTypes.h"/>
+        <FILE id="zZ0clt" name="WavetableScope.cpp" compile="1" resource="0"
+              file="Source/WavetableScope.cpp"/>
+        <FILE id="pxx49n" name="WavetableScope.h" compile="0" resource="0"
+              file="Source/WavetableScope.h"/>
       </GROUP>
       <FILE id="agw8v1" name="AudioFileLoader.cpp" compile="1" resource="0"
             file="Source/AudioFileLoader.cpp"/>

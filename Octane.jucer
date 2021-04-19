@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="b6HRUz" name="Octane" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyName="Setlik" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+  <MAINGROUP id="BlyAuj" name="Octane">
+    <GROUP id="{928B63EB-1631-FD93-F26F-D2D356867D80}" name="Source">
+      <GROUP id="{A5002D87-14FF-CCD7-89ED-C59042918EFF}" name="Synthesis">
+        <FILE id="gVyeza" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
+        <FILE id="fzYwPu" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
+        <FILE id="MvVfIi" name="SynthParameter.cpp" compile="1" resource="0"
+              file="Source/SynthParameter.cpp"/>
+        <FILE id="hVtsIT" name="SynthParameter.h" compile="0" resource="0"
+              file="Source/SynthParameter.h"/>
+        <FILE id="iwZaOi" name="WavetableProcessor.cpp" compile="1" resource="0"
+              file="Source/WavetableProcessor.cpp"/>
+        <FILE id="w4PdEE" name="WavetableProcessor.h" compile="0" resource="0"
+              file="Source/WavetableProcessor.h"/>
+      </GROUP>
+      <GROUP id="{98CBC9A4-2FEB-F205-6C27-4B65547A2B46}" name="Components">
+        <FILE id="Zsx2jf" name="CustomLnFs.cpp" compile="1" resource="0" file="Source/CustomLnFs.cpp"/>
+        <FILE id="qDnCSW" name="CustomLnFs.h" compile="0" resource="0" file="Source/CustomLnFs.h"/>
+        <FILE id="eSvSvr" name="DAHDSRGraph.cpp" compile="1" resource="0" file="Source/DAHDSRGraph.cpp"/>
+        <FILE id="Kv5y4t" name="DAHDSRGraph.h" compile="0" resource="0" file="Source/DAHDSRGraph.h"/>
+        <FILE id="m6Bsj4" name="EnvelopeComponent.cpp" compile="1" resource="0"
+              file="Source/EnvelopeComponent.cpp"/>
+        <FILE id="ZQDRVX" name="EnvelopeComponent.h" compile="0" resource="0"
+              file="Source/EnvelopeComponent.h"/>
+        <FILE id="P0vptp" name="GlobalColor.h" compile="0" resource="0" file="Source/GlobalColor.h"/>
+        <FILE id="yp71Tv" name="ModSourceComponent.cpp" compile="1" resource="0"
+              file="Source/ModSourceComponent.cpp"/>
+        <FILE id="D9aRJZ" name="ModSourceComponent.h" compile="0" resource="0"
+              file="Source/ModSourceComponent.h"/>
+        <FILE id="bu0bhR" name="ModTargetComponent.cpp" compile="1" resource="0"
+              file="Source/ModTargetComponent.cpp"/>
+        <FILE id="R9dvCe" name="ModTargetComponent.h" compile="0" resource="0"
+              file="Source/ModTargetComponent.h"/>
+        <FILE id="lTxpN7" name="RGBColor.h" compile="0" resource="0" file="Source/RGBColor.h"/>
+        <FILE id="tGF5wg" name="SliderTypes.cpp" compile="1" resource="0" file="Source/SliderTypes.cpp"/>
+        <FILE id="FGTak9" name="SliderTypes.h" compile="0" resource="0" file="Source/SliderTypes.h"/>
+      </GROUP>
+      <FILE id="agw8v1" name="AudioFileLoader.cpp" compile="1" resource="0"
+            file="Source/AudioFileLoader.cpp"/>
+      <FILE id="ls6UbO" name="AudioFileLoader.h" compile="0" resource="0"
+            file="Source/AudioFileLoader.h"/>
+      <FILE id="ZjzaAX" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="zaSDx0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="eMM9Oa" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="uXdPdC" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Octane"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Octane"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>

@@ -16,7 +16,7 @@ tree(t),
 pSlider(this, 0),
 scope(pSynth->getDataToGraph(), &pSlider.mTarget),
 envelope(this),
-selector(pSynth, &scope)
+selector(pSynth, &scope, this)
 {
     pSlider.setDesc("oscPositionParam");
     pSlider.attach(tree);
@@ -28,6 +28,14 @@ selector(pSynth, &scope)
     addAndMakeVisible(selector);
 }
 
+void SynthComponent::comboBoxChanged(juce::ComboBox *box)
+{
+    pSynth->replaceOscillators(box->getSelectedItemIndex());
+    scope.replace(pSynth->getDataToGraph());
+    addAndMakeVisible(&scope);
+    resized();
+}
+
 void SynthComponent::resized()
 {
     //aspect is 9:8
@@ -36,7 +44,6 @@ void SynthComponent::resized()
     scope.setBounds(dX, 3 * dX, 9 * dX, 7 * dX);
     envelope.setBounds(11 * dX, dX, 6 * dX, 9 * dX);
     pSlider.setBounds(2 * dX, 11 * dX, 4 * dX, 4 * dX);
-    
     
 }
 

@@ -153,17 +153,8 @@ private:
 class WavetableOsc
 {
 public:
-    WavetableOsc(std::vector<float> firstFrameData)
-    {
-        phase = 0.0f;
-        sampleRate = 44100.0f;
-        currentPosition = 0.0f;
-        targetPosition = 0.0f;
-        numFrames = 0;
-    }
     WavetableOsc(juce::File wavData);
     ~WavetableOsc() {}
-    void replaceTables(juce::String nTables);
     void setSampleRate(double newRate)
     {
         sampleRate = newRate;
@@ -209,7 +200,6 @@ public:
         return output;
     }
     std::vector<std::vector<float>> getDataToGraph(int resolution);
-    juce::StringArray waveNames;
     float currentPosition;
 private:
     float phase;
@@ -250,7 +240,6 @@ public:
     }
     std::vector<std::vector<float>> getDataToGraph(int resolution) {return osc->getDataToGraph(resolution);}
     juce::StringArray* waveNames;
-    juce::Array<juce::File> waveFiles;
     float getPosition() {return osc->currentPosition;}
 private:
     std::unique_ptr<WavetableOsc> osc;

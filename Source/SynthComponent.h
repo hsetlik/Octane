@@ -14,10 +14,11 @@
 #include "Synthesizer.h"
 #include "SliderTypes.h"
 
-class SynthComponent : public juce::Component, public juce::DragAndDropContainer
+class SynthComponent : public juce::Component, public juce::DragAndDropContainer, public juce::ComboBox::Listener
 {
 public:
     SynthComponent(WavetableSynth* s, juce::AudioProcessorValueTreeState* t);
+    void comboBoxChanged(juce::ComboBox* box) override;
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:

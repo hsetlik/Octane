@@ -296,9 +296,13 @@ std::vector<float> WavetableFrame::getBasicVector(int resolution)
 
 WavetableOsc::WavetableOsc(juce::File wavData)
 {
+    phase = 0.0f;
+    phaseDelta = 0.0f;
     sampleRate = 44100.0f;
     currentPosition = 0.0f;
+    targetPosition = 0.0f;
     numFrames = 0;
+    
     auto manager = new juce::AudioFormatManager();
     manager->registerBasicFormats();
     auto reader = manager->createReaderFor(wavData);

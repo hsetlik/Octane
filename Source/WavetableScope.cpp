@@ -138,18 +138,19 @@ void WaveScopeHolder::replace(std::vector<std::vector<float> > newData)
     scope->removeListener();
     scope.reset(new WaveScope(newData, slider));
     addAndMakeVisible(*scope);
+    resized();
 }
 
-TableSelector::TableSelector(WavetableSynth* s, WaveScopeHolder* w) :
+TableSelector::TableSelector(WavetableSynth* s, WaveScopeHolder* w, juce::ComboBox::Listener* list) :
 nextButton(true),
 lastButton(false),
 pSynth(s),
 pScope(w)
 {
+    waveSelect.addListener(list);
     fileNames = pSynth->getTableNames();
     nextButton.addListener(this);
     lastButton.addListener(this);
-    waveSelect.addListener(this);
     waveSelect.addItemList(fileNames, 1);
     wAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(*pSynth->getTree(), "wavetableParam", waveSelect));
     addAndMakeVisible(&nextButton);
@@ -167,12 +168,6 @@ void TableSelector::buttonClicked(juce::Button *b)
     {
         waveSelect.setSelectedItemIndex(startingIndex - 1);
     }
-}
-
-void TableSelector::comboBoxChanged(juce::ComboBox *box)
-{
-    pSynth->replaceOscillators(box->getSelectedItemIndex());
-    pScope->replace(pSynth->getDataToGraph());
 }
 
 void TableSelector::resized()

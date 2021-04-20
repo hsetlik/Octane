@@ -40,6 +40,10 @@ public:
         repaint();
     }
     void updateCurrentTrace();
+    void resized() override
+    {
+        setBounds(0, 0, getWidth(), getHeight());
+    }
 private:
     float minIncrement;
     std::vector<std::vector<float>> graphData;
@@ -64,7 +68,8 @@ public:
     void replace(std::vector<std::vector<float>> newData);
     void resized() override
     {
-        scope->setBounds(getBounds());
+        scope->setBounds(getLocalBounds());
+        scope->resized();
     }
 private:
     std::unique_ptr<WaveScope> scope;
@@ -111,13 +116,13 @@ private:
 };
 
 
-class TableSelector : public juce::Component, juce::Button::Listener, juce::ComboBox::Listener
+class TableSelector : public juce::Component, juce::Button::Listener
 {
 public:
-    TableSelector(WavetableSynth* s, WaveScopeHolder* w);
+    TableSelector(WavetableSynth* s, WaveScopeHolder* w, juce::ComboBox::Listener* list);
     void buttonClicked(juce::Button* b) override;
-    void comboBoxChanged(juce::ComboBox* box) override;
     void resized() override;
+    
 private:
     TableSelectorButton nextButton;
     TableSelectorButton lastButton;

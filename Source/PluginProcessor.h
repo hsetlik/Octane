@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "Synthesizer.h"
+#include "AudioFileLoader.h"
 //==============================================================================
 /**
 */

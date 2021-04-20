@@ -29,6 +29,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
     auto releaseRange = juce::NormalisableRange<float>(RELEASE_MIN, RELEASE_MAX, 0.1f);
     releaseRange.setSkewForCentre(RELEASE_CENTER);
     
+    auto waveRange = juce::NormalisableRange<float>(0.0f, (float)AudioWavetableHandler::getNumWavetables(), 1.0f);
+    auto waveId = "wavetableParam";
+    auto waveName = "Current Wavetable";
+    
+    auto posRange = juce::NormalisableRange<float>(0.0f, 1.0f, 0.0001f);
+    auto posId = "oscPositionParam";
+    auto posName = "Wavetable Position";
+    
     auto delayId = "delayParam";
     auto delayName = "Delay";
     auto attackId = "attackParam";
@@ -48,9 +56,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
     addParameter(layout, decayRange, DECAY_DEFAULT, decayId, decayName);
     addParameter(layout, sustainRange, SUSTAIN_DEFAULT, sustainId, sustainName);
     addParameter(layout, releaseRange, RELEASE_DEFAULT, releaseId, releaseName);
-    
-    
-    
+    addParameter(layout, waveRange, 0.0f, waveId, waveName);
+    addParameter(layout, posRange, 0.0f, posId, posName);
+
     return layout;
 }
 
@@ -147,6 +155,7 @@ void OctaneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    synth.setSampleRate(sampleRate);
 }
 
 void OctaneAudioProcessor::releaseResources()
@@ -183,30 +192,9 @@ bool OctaneAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void OctaneAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        
-    }
+    buffer.clear();
+    synth.updateFromTree();
+    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================

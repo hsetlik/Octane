@@ -103,8 +103,8 @@ WavetableSynth::WavetableSynth(juce::AudioProcessorValueTreeState* t) : tree(t)
         printf("wave folder created\n");
     }
     printf("Folder is at: %s\n", waveFolder.getFullPathName().toRawUTF8());
-    auto files = waveFolder.findChildFiles(juce::File::findFiles, true);
-    auto defaultFile = files[0];
+    wavFiles = waveFolder.findChildFiles(juce::File::findFiles, true);
+    auto defaultFile = wavFiles[0];
     lastOscFile = defaultFile;
     for(int i = 0; i < NUM_VOICES; ++i)
     {
@@ -125,6 +125,11 @@ void WavetableSynth::replaceOscillators(juce::File newFile)
         
 }
 
+void WavetableSynth::replaceOscillators(int index)
+{
+    replaceOscillators(wavFiles[index]);
+}
+
 void WavetableSynth::setSampleRate(double newRate)
 {
     setCurrentPlaybackSampleRate(newRate);
@@ -143,4 +148,14 @@ void WavetableSynth::updateFromTree()
 std::vector<std::vector<float>> WavetableSynth::getDataToGraph()
 {
     return WTvoices[0]->osc.getDataToGraph(128);
+}
+
+juce::StringArray WavetableSynth::getTableNames()
+{
+    juce::StringArray arr;
+    for(auto file : wavFiles)
+    {
+        arr.add(file.getFileName());
+    }
+    return arr;
 }

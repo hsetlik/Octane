@@ -71,6 +71,7 @@ class WavetableSynth : public juce::Synthesiser
 public:
     WavetableSynth(juce::AudioProcessorValueTreeState* t);
     void replaceOscillators(juce::File newFile);
+    void replaceOscillators(int index);
     void setSampleRate(double newRate);
     juce::File& getWaveFolder()
     {
@@ -79,8 +80,11 @@ public:
     void updateFromTree();
     std::vector<std::vector<float>> getDataToGraph();
     std::vector<WavetableVoice*> WTvoices;
+    juce::AudioProcessorValueTreeState* getTree() { return tree; }
+    juce::StringArray getTableNames();
 private:
     juce::File waveFolder;
+    juce::Array<juce::File> wavFiles;
     juce::File lastOscFile;
     int lastFileIdx;
     juce::AudioProcessorValueTreeState* tree;

@@ -26,4 +26,5 @@ private:
     TablePositionSlider pSlider;
     WaveScopeHolder scope;
     DAHDSRPanel envelope;
+    TableSelector selector;
 };

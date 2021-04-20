@@ -158,6 +158,7 @@ public:
         phase = 0.0f;
         sampleRate = 44100.0f;
         currentPosition = 0.0f;
+        targetPosition = 0.0f;
         numFrames = 0;
     }
     WavetableOsc(juce::File wavData);

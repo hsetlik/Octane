@@ -8,6 +8,8 @@
       <GROUP id="{A5002D87-14FF-CCD7-89ED-C59042918EFF}" name="Synthesis">
         <FILE id="gVyeza" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
         <FILE id="fzYwPu" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
+        <FILE id="Z7WrN4" name="Synthesizer.cpp" compile="1" resource="0" file="Source/Synthesizer.cpp"/>
+        <FILE id="lZXFgH" name="Synthesizer.h" compile="0" resource="0" file="Source/Synthesizer.h"/>
         <FILE id="MvVfIi" name="SynthParameter.cpp" compile="1" resource="0"
               file="Source/SynthParameter.cpp"/>
         <FILE id="hVtsIT" name="SynthParameter.h" compile="0" resource="0"
@@ -38,6 +40,10 @@
         <FILE id="lTxpN7" name="RGBColor.h" compile="0" resource="0" file="Source/RGBColor.h"/>
         <FILE id="tGF5wg" name="SliderTypes.cpp" compile="1" resource="0" file="Source/SliderTypes.cpp"/>
         <FILE id="FGTak9" name="SliderTypes.h" compile="0" resource="0" file="Source/SliderTypes.h"/>
+        <FILE id="vT15Pb" name="SynthComponent.cpp" compile="1" resource="0"
+              file="Source/SynthComponent.cpp"/>
+        <FILE id="Q0R6CZ" name="SynthComponent.h" compile="0" resource="0"
+              file="Source/SynthComponent.h"/>
         <FILE id="zZ0clt" name="WavetableScope.cpp" compile="1" resource="0"
               file="Source/WavetableScope.cpp"/>
         <FILE id="pxx49n" name="WavetableScope.h" compile="0" resource="0"

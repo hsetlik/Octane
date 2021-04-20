@@ -24,6 +24,7 @@ slider(s)
     }
     minIncrement = 1.0f / (numTraces * 1.5f); //! this determines how frequently the scope should be redrawn as the slider moves
     initPaths();
+    setPosition(pos);
 }
 void WaveScope::removeListener()
 {

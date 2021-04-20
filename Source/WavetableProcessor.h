@@ -10,6 +10,8 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "SynthParameter.h"
+#include "DAHDSR.h"
 #define TABLESIZE 2048
 #define NUMTABLES 32
 

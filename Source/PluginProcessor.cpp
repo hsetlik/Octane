@@ -9,6 +9,55 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+void addParameter(juce::AudioProcessorValueTreeState::ParameterLayout& layout, juce::NormalisableRange<float> range, float defaultValue, juce::String paramId, juce::String paramName)
+{
+    layout.add(std::make_unique<juce::AudioParameterFloat>(paramId, paramName, range, defaultValue));
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    auto delayRange = juce::NormalisableRange<float>(DELAY_MIN, DELAY_MAX, 0.1f);
+    delayRange.setSkewForCentre(DELAY_CENTER);
+    auto attackRange = juce::NormalisableRange<float>(ATTACK_MIN, ATTACK_MAX, 0.1f);
+    attackRange.setSkewForCentre(ATTACK_CENTER);
+    auto holdRange = juce::NormalisableRange<float>(HOLD_MIN, HOLD_MAX, 0.1f);
+    holdRange.setSkewForCentre(HOLD_CENTER);
+    auto decayRange = juce::NormalisableRange<float>(DECAY_MIN, DECAY_MAX, 0.1f);
+    decayRange.setSkewForCentre(DECAY_CENTER);
+    auto sustainRange = juce::NormalisableRange<float>(SUSTAIN_MIN, SUSTAIN_MAX, 0.001f);
+    auto releaseRange = juce::NormalisableRange<float>(RELEASE_MIN, RELEASE_MAX, 0.1f);
+    releaseRange.setSkewForCentre(RELEASE_CENTER);
+    
+    auto delayId = "delayParam";
+    auto delayName = "Delay";
+    auto attackId = "attackParam";
+    auto attackName = "Attack";
+    auto holdId = "holdParam";
+    auto holdName = "Hold";
+    auto decayId = "decayParam";
+    auto decayName = "Decay";
+    auto sustainId = "sustainParam";
+    auto sustainName = "Sustain";
+    auto releaseId = "releaseParam";
+    auto releaseName = "Release";
+    
+    addParameter(layout, delayRange, DELAY_DEFAULT, delayId, delayName);
+    addParameter(layout, attackRange, ATTACK_DEFAULT, attackId, attackName);
+    addParameter(layout, holdRange, HOLD_DEFAULT, holdId, holdName);
+    addParameter(layout, decayRange, DECAY_DEFAULT, decayId, decayName);
+    addParameter(layout, sustainRange, SUSTAIN_DEFAULT, sustainId, sustainName);
+    addParameter(layout, releaseRange, RELEASE_DEFAULT, releaseId, releaseName);
+    
+    
+    
+    return layout;
+}
+
+
+
+
+
 //==============================================================================
 OctaneAudioProcessor::OctaneAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -19,9 +68,12 @@ OctaneAudioProcessor::OctaneAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+tree(*this, nullptr, "AllParameters", createLayout()),
+synth(&tree)
 #endif
 {
+    
 }
 
 OctaneAudioProcessor::~OctaneAudioProcessor()

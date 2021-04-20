@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "SynthComponent.h"
 
 //==============================================================================
 /**
@@ -25,6 +26,7 @@ public:
     void resized() override;
 
 private:
+    SynthComponent synthPanel;
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     OctaneAudioProcessor& audioProcessor;

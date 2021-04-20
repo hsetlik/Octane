@@ -11,10 +11,11 @@
 
 //==============================================================================
 OctaneAudioProcessorEditor::OctaneAudioProcessorEditor (OctaneAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), synthPanel(&p.synth, &p.tree), audioProcessor(p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+    addAndMakeVisible(&synthPanel);
     setSize (400, 300);
 }
 

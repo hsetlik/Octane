@@ -78,6 +78,8 @@ void DAHDSRPanel::paint(juce::Graphics &g)
 void DAHDSRPanel::attach(juce::AudioProcessorValueTreeState *tree, int suffix)
 {
     auto iStr = juce::String(suffix);
+    if(suffix == 0)
+        iStr = "";
     aDelay.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(*tree, "delayParam" + iStr, sDelay.mTarget));
     aAttack.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(*tree, "attackParam" + iStr, sAttack.mTarget));
     aHold.reset(new juce::AudioProcessorValueTreeState::SliderAttachment(*tree, "holdParam" + iStr, sHold.mTarget));

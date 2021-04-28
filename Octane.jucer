@@ -8,51 +8,13 @@
       <GROUP id="{A5002D87-14FF-CCD7-89ED-C59042918EFF}" name="Synthesis">
         <FILE id="gVyeza" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
         <FILE id="fzYwPu" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
-        <FILE id="Z7WrN4" name="Synthesizer.cpp" compile="1" resource="0" file="Source/Synthesizer.cpp"/>
-        <FILE id="lZXFgH" name="Synthesizer.h" compile="0" resource="0" file="Source/Synthesizer.h"/>
-        <FILE id="MvVfIi" name="SynthParameter.cpp" compile="1" resource="0"
-              file="Source/SynthParameter.cpp"/>
-        <FILE id="hVtsIT" name="SynthParameter.h" compile="0" resource="0"
-              file="Source/SynthParameter.h"/>
-        <FILE id="iwZaOi" name="WavetableProcessor.cpp" compile="1" resource="0"
-              file="Source/WavetableProcessor.cpp"/>
-        <FILE id="w4PdEE" name="WavetableProcessor.h" compile="0" resource="0"
-              file="Source/WavetableProcessor.h"/>
       </GROUP>
       <GROUP id="{98CBC9A4-2FEB-F205-6C27-4B65547A2B46}" name="Components">
         <FILE id="Zsx2jf" name="CustomLnFs.cpp" compile="1" resource="0" file="Source/CustomLnFs.cpp"/>
         <FILE id="qDnCSW" name="CustomLnFs.h" compile="0" resource="0" file="Source/CustomLnFs.h"/>
         <FILE id="eSvSvr" name="DAHDSRGraph.cpp" compile="1" resource="0" file="Source/DAHDSRGraph.cpp"/>
         <FILE id="Kv5y4t" name="DAHDSRGraph.h" compile="0" resource="0" file="Source/DAHDSRGraph.h"/>
-        <FILE id="m6Bsj4" name="EnvelopeComponent.cpp" compile="1" resource="0"
-              file="Source/EnvelopeComponent.cpp"/>
-        <FILE id="ZQDRVX" name="EnvelopeComponent.h" compile="0" resource="0"
-              file="Source/EnvelopeComponent.h"/>
-        <FILE id="P0vptp" name="GlobalColor.h" compile="0" resource="0" file="Source/GlobalColor.h"/>
-        <FILE id="yp71Tv" name="ModSourceComponent.cpp" compile="1" resource="0"
-              file="Source/ModSourceComponent.cpp"/>
-        <FILE id="D9aRJZ" name="ModSourceComponent.h" compile="0" resource="0"
-              file="Source/ModSourceComponent.h"/>
-        <FILE id="bu0bhR" name="ModTargetComponent.cpp" compile="1" resource="0"
-              file="Source/ModTargetComponent.cpp"/>
-        <FILE id="R9dvCe" name="ModTargetComponent.h" compile="0" resource="0"
-              file="Source/ModTargetComponent.h"/>
-        <FILE id="lTxpN7" name="RGBColor.h" compile="0" resource="0" file="Source/RGBColor.h"/>
-        <FILE id="tGF5wg" name="SliderTypes.cpp" compile="1" resource="0" file="Source/SliderTypes.cpp"/>
-        <FILE id="FGTak9" name="SliderTypes.h" compile="0" resource="0" file="Source/SliderTypes.h"/>
-        <FILE id="vT15Pb" name="SynthComponent.cpp" compile="1" resource="0"
-              file="Source/SynthComponent.cpp"/>
-        <FILE id="Q0R6CZ" name="SynthComponent.h" compile="0" resource="0"
-              file="Source/SynthComponent.h"/>
-        <FILE id="zZ0clt" name="WavetableScope.cpp" compile="1" resource="0"
-              file="Source/WavetableScope.cpp"/>
-        <FILE id="pxx49n" name="WavetableScope.h" compile="0" resource="0"
-              file="Source/WavetableScope.h"/>
       </GROUP>
-      <FILE id="agw8v1" name="AudioFileLoader.cpp" compile="1" resource="0"
-            file="Source/AudioFileLoader.cpp"/>
-      <FILE id="ls6UbO" name="AudioFileLoader.h" compile="0" resource="0"
-            file="Source/AudioFileLoader.h"/>
       <FILE id="ZjzaAX" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="zaSDx0" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>

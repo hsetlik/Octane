@@ -29,7 +29,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createLayout()
     auto releaseRange = juce::NormalisableRange<float>(RELEASE_MIN, RELEASE_MAX, 0.1f);
     releaseRange.setSkewForCentre(RELEASE_CENTER);
     
-    auto waveRange = juce::NormalisableRange<float>(0.0f, (float)AudioWavetableHandler::getNumWavetables(), 1.0f);
+    auto waveRange = juce::NormalisableRange<float>(0.0f, 255.0f, 1.0f);
     auto waveId = "wavetableParam";
     auto waveName = "Current Wavetable";
     
@@ -77,8 +77,7 @@ OctaneAudioProcessor::OctaneAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-tree(*this, nullptr, "AllParameters", createLayout()),
-synth(&tree)
+tree(*this, nullptr, "AllParameters", createLayout())
 #endif
 {
     
@@ -155,7 +154,6 @@ void OctaneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    synth.setSampleRate(sampleRate);
 }
 
 void OctaneAudioProcessor::releaseResources()
@@ -193,8 +191,7 @@ bool OctaneAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void OctaneAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     buffer.clear();
-    synth.updateFromTree();
-    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    //synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -205,7 +202,7 @@ bool OctaneAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* OctaneAudioProcessor::createEditor()
 {
-    return new OctaneAudioProcessorEditor (*this);
+    return new OctaneAudioProcessorEditor(*this);
 }
 
 //==============================================================================

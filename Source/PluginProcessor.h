@@ -9,8 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Synthesizer.h"
-#include "AudioFileLoader.h"
+#include "DAHDSR.h"
 //==============================================================================
 /**
 */
@@ -55,7 +54,6 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     //==============================================================================
     juce::AudioProcessorValueTreeState tree;
-    WavetableSynth synth;
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OctaneAudioProcessor)

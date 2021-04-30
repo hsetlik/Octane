@@ -25,6 +25,8 @@ struct Wavetable
     float maxFreq;
 };
 
+using doubleVec = std::vector<std::vector<float>>;
+
 class WavetableFrame
 {
 public:
@@ -49,15 +51,30 @@ private:
     float skew;
 };
 
-class WavetableOsc
+class WavetableOscCore
 {
 public:
-    WavetableOsc(juce::File src);
+    WavetableOscCore(juce::File src);
     float getSample(double hz, float position);
+    doubleVec getGraphData(int resolution);
+    void setSampleRate(double newRate);
     int numFrames;
 private:
     juce::OwnedArray<WavetableFrame> frames;
     float position;
     float phase;
     float phaseDelta;
+};
+
+class OctaneOsc
+{
+public:
+    OctaneOsc(juce::File src);
+    void replace(juce::File src);
+    void setSampleRate(double rate) {pOsc->setSampleRate(rate); }
+    float getSample(double hz, float position) {return pOsc->getSample(hz, position); }
+    doubleVec getGraphData(int resolution) {return pOsc->getGraphData(resolution); }
+    int getNumFrames() {return pOsc->numFrames; }
+private:
+    std::unique_ptr<WavetableOscCore> pOsc;
 };

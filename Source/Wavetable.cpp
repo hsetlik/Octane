@@ -139,7 +139,61 @@ float WavetableFrame::getSample(float phase, double hz)
     return bSample + ((tSample - bSample) * skew);
 }
 
-WavetableOsc::WavetableOsc(juce::File src) : numFrames(0)
+//=================================================================================================
+
+WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0)
+{
+    auto manager = new juce::AudioFormatManager();
+    manager->registerBasicFormats();
+    auto reader = manager->createReaderFor(src);
+    auto numSamples = reader->lengthInSamples;
+    numFrames = (int)(numSamples / TABLESIZE);
+    std::array<float, TABLESIZE> fArray; //container to move data from audio buffers to wavetables
+    long currentSample = 0;
+    auto buffer = juce::AudioBuffer<float>(1, TABLESIZE);
+    reader->read(&buffer, 0, TABLESIZE, currentSample, true, true); //fill the buffer for the first frame
+    for(int i = 0; i < numFrames; ++i)
+    {
+        for(int sample = 0; sample < TABLESIZE; ++sample)
+        {
+            fArray[sample] = buffer.getSample(0, sample); //transfer each sample into fArray
+        }
+        frames.add(new WavetableFrame(fArray));
+        buffer.clear();
+        currentSample += TABLESIZE;
+        if(i != (numFrames - 1))
+            reader->read(&buffer, 0, TABLESIZE, currentSample, true, true);
+    }
+    delete reader;
+    delete manager;
+}
+
+void WavetableOscCore::setSampleRate(double newRate)
+{
+    for(auto frame : frames)
+    {
+        frame->setSampleRate(newRate);
+    }
+}
+
+doubleVec WavetableOscCore::getGraphData(int resolution)
+{
+    doubleVec data;
+    for(auto frame : frames)
+    {
+        data.push_back(frame->getGraphData(resolution));
+    }
+    return data;
+}
+
+//===============================================================
+
+OctaneOsc::OctaneOsc(juce::File src) : pOsc(std::make_unique<WavetableOscCore>(src))
 {
     
+}
+
+void OctaneOsc::replace(juce::File src)
+{
+    pOsc.reset(new WavetableOscCore(src));
 }

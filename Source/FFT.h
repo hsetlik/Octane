@@ -62,7 +62,7 @@ namespace FFT {
             Ur = 1.0f;
             Ui = 0.0f;
             Wr = cos(M_PI/(float)LE1);
-            Wi = sin(M_PI/(float)LE1); // Cooley, Lewis, and Welch have "+" here
+            Wi = -sin(M_PI/(float)LE1); // Cooley, Lewis, and Welch have "+" here
             for (j = 1; j <= LE1; j++)
             {
                 for (i = j; i <= N; i += LE)

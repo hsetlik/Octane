@@ -8,6 +8,9 @@
       <GROUP id="{A5002D87-14FF-CCD7-89ED-C59042918EFF}" name="Synthesis">
         <FILE id="gVyeza" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
         <FILE id="fzYwPu" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
+        <FILE id="EbwKRO" name="FFT.h" compile="0" resource="0" file="Source/FFT.h"/>
+        <FILE id="r1aSyk" name="Wavetable.cpp" compile="1" resource="0" file="Source/Wavetable.cpp"/>
+        <FILE id="ik0e7C" name="Wavetable.h" compile="0" resource="0" file="Source/Wavetable.h"/>
       </GROUP>
       <GROUP id="{98CBC9A4-2FEB-F205-6C27-4B65547A2B46}" name="Components">
         <FILE id="Zsx2jf" name="CustomLnFs.cpp" compile="1" resource="0" file="Source/CustomLnFs.cpp"/>

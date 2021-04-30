@@ -186,7 +186,7 @@ doubleVec WavetableOscCore::getGraphData(int resolution)
     return data;
 }
 
-//===============================================================
+//============================================================================================
 
 OctaneOsc::OctaneOsc(juce::File src) : pOsc(std::make_unique<WavetableOscCore>(src))
 {

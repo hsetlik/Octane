@@ -31,7 +31,7 @@ class OctaneSound : public juce::SynthesiserSound
 class OctaneVoice : public juce::SynthesiserVoice
 {
 public:
-    OctaneVoice(juce::File defaultTable, SynthParameterGroup* grp, int idx);
+    OctaneVoice(juce::Array<juce::File>& waveFolder, SynthParameterGroup* grp, int idx);
     ~OctaneVoice();
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {
@@ -46,7 +46,8 @@ public:
     void controllerMoved(int controllerNumber, int controllerValue) override {}
     void setAllSampleRate(double rate)
     {
-        osc1.setSampleRate(rate);
+        for(auto o : oscillators)
+            o->setSampleRate(rate);
         setCurrentPlaybackSampleRate(rate);
     }
     //===============================================
@@ -61,9 +62,10 @@ public:
 private:
     SynthParameterGroup* params;
     int voiceIndex;
+    int oscIndex;
     double fundamental;
     float position;
-    OctaneOsc osc1;
+    juce::OwnedArray<OctaneOsc> oscillators;
     float lastOutput;
     int sample;
 };

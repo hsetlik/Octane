@@ -9,13 +9,15 @@
 */
 
 #include "Synthesizer.h"
-OctaneVoice::OctaneVoice(juce::File defaultTable, SynthParameterGroup* grp, int idx) :
+OctaneVoice::OctaneVoice(juce::Array<juce::File>& waveFolder, SynthParameterGroup* grp, int idx) :
 params(grp),
 voiceIndex(idx),
-fundamental(440.0f),
-osc1(defaultTable)
+fundamental(440.0f)
 {
-    
+    for(int i = 0; i < NUM_OSCILLATORS; ++i)
+    {
+        oscillators.add(new OctaneOsc(waveFolder[i]));
+    }
 }
 
 OctaneVoice::~OctaneVoice()
@@ -25,24 +27,24 @@ OctaneVoice::~OctaneVoice()
 
 void OctaneVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
-    osc1.triggerOn();
+    for(auto o : oscillators)
+        o->triggerOn();
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 }
 
 void OctaneVoice::stopNote(float velocity, bool allowTailOff)
 {
-    osc1.triggerOff();
-    if(!allowTailOff || !osc1.ampEnv.isActive())
+    for(auto o : oscillators)
+        o->triggerOff();
+    if(!allowTailOff)
         clearCurrentNote();
 }
 
 void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
-    if(!osc1.ampEnv.isActive())
-        clearCurrentNote();
     for(sample = startSample; sample < (startSample + numSamples); ++sample)
     {
-        lastOutput = osc1.getSample(fundamental);
+        tickSample();
         for(auto chan = 0; chan < outputBuffer.getNumChannels(); ++chan)
         {
             outputBuffer.addSample(chan, sample, lastOutput * 0.4f);
@@ -57,7 +59,12 @@ void OctaneVoice::tickBlock()
 
 void OctaneVoice::tickSample()
 {
-    
+    lastOutput = 0.0f;
+    for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
+    {
+        oscillators[oscIndex]->position = params->oscPositions[oscIndex]->getActual();
+        lastOutput += (oscillators[oscIndex]->getSample(fundamental) / (float) NUM_OSCILLATORS);
+    }
 }
 //==============================================================================================================
 
@@ -82,7 +89,7 @@ OctaneSynth::OctaneSynth()
     auto defaultWave = waveFiles[0];
     for(int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice(new OctaneVoice(defaultWave, &paramGroup, i));
+        addVoice(new OctaneVoice(waveFiles, &paramGroup, i));
         auto vOct = dynamic_cast<OctaneVoice*>(voices.getLast());
         oVoices.push_back(vOct);
     }

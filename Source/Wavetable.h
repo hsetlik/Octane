@@ -11,6 +11,8 @@
 #pragma once
 #include <JuceHeader.h>
 #include "FFT.h"
+#include "DAHDSR.h"
+
 #define TABLESIZE 2048
 #define FFT_ORDER 11
 #define TABLES_PER_FRAME 10
@@ -75,13 +77,29 @@ class OctaneOsc
 {
 public:
     OctaneOsc(juce::File src);
+    void triggerOn()
+    {
+        ampEnv.triggerOn();
+        modEnv.triggerOn();
+    }
+    void triggerOff()
+    {
+        ampEnv.triggerOff();
+        modEnv.triggerOff();
+    }
     void replace(juce::File src);
-    void setSampleRate(double rate) {pOsc->setSampleRate(rate); }
+    void setSampleRate(double rate);
     float getSample(double hz, float position) {return pOsc->getSample(hz, position); }
-    float getSample(double hz) {return pOsc->getSample(hz, position); }
+    float getSample(double hz)
+    {
+        modEnv.clockOutput();
+        return ampEnv.process(pOsc->getSample(hz, position));
+    }
     doubleVec getGraphData(int resolution) {return pOsc->getGraphData(resolution); }
     int getNumFrames() {return pOsc->numFrames; }
     float position;
+    DAHDSR ampEnv;
+    DAHDSR modEnv;
 private:
     std::unique_ptr<WavetableOscCore> pOsc;
 };

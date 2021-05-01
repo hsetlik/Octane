@@ -47,7 +47,6 @@ public:
     void setAllSampleRate(double rate)
     {
         osc1.setSampleRate(rate);
-        ampEnv.setSampleRate(rate);
         setCurrentPlaybackSampleRate(rate);
     }
     //===============================================
@@ -65,8 +64,6 @@ private:
     double fundamental;
     float position;
     OctaneOsc osc1;
-    DAHDSR ampEnv;
-    DAHDSR modEnv;
     float lastOutput;
     int sample;
 };

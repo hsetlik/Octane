@@ -213,3 +213,10 @@ void OctaneOsc::replace(juce::File src)
 {
     pOsc.reset(new WavetableOscCore(src));
 }
+
+void OctaneOsc::setSampleRate(double rate)
+{
+    pOsc->setSampleRate(rate);
+    ampEnv.setSampleRate(rate);
+    modEnv.setSampleRate(rate);
+}

@@ -25,24 +25,24 @@ OctaneVoice::~OctaneVoice()
 
 void OctaneVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
-    ampEnv.triggerOn();
+    osc1.triggerOn();
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 }
 
 void OctaneVoice::stopNote(float velocity, bool allowTailOff)
 {
-    ampEnv.triggerOff();
-    if(!allowTailOff || !ampEnv.isActive())
+    osc1.triggerOff();
+    if(!allowTailOff || !osc1.ampEnv.isActive())
         clearCurrentNote();
 }
 
 void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
-    if(!ampEnv.isActive())
+    if(!osc1.ampEnv.isActive())
         clearCurrentNote();
     for(sample = startSample; sample < (startSample + numSamples); ++sample)
     {
-        lastOutput = ampEnv.process(osc1.getSample(fundamental));
+        lastOutput = osc1.getSample(fundamental);
         for(auto chan = 0; chan < outputBuffer.getNumChannels(); ++chan)
         {
             outputBuffer.addSample(chan, sample, lastOutput * 0.4f);

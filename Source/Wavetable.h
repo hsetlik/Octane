@@ -93,11 +93,12 @@ public:
     float getSample(double hz)
     {
         modEnv.clockOutput();
-        return ampEnv.process(pOsc->getSample(hz, position));
+        return ampEnv.process(pOsc->getSample(hz, position)) * level;
     }
     doubleVec getGraphData(int resolution) {return pOsc->getGraphData(resolution); }
     int getNumFrames() {return pOsc->numFrames; }
     float position;
+    float level;
     DAHDSR ampEnv;
     DAHDSR modEnv;
 private:

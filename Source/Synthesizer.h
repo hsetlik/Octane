@@ -81,8 +81,8 @@ public:
             v->setAllSampleRate(rate);
     }
     int getNumWaves() {return waveFiles.size(); }
-private:
     SynthParameterGroup paramGroup;
+private:
     juce::File waveFolder;
     juce::Array<juce::File> waveFiles;
     std::vector<OctaneVoice*> oVoices;

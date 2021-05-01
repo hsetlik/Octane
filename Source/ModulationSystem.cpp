@@ -87,3 +87,68 @@ SynthParameterGroup::SynthParameterGroup() //this constructor does the heavy lif
     allVecs.push_back(&aReleases);
 }
 
+void SynthParameterGroup::updateForBlock(apvts &tree)
+{
+    for(auto vec : allVecs)
+    {
+        for(auto param : *vec)
+        {
+            param->setBase(tree);
+        }
+    }
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout SynthParameterGroup::createLayout()
+{
+    apvts::ParameterLayout layout;
+    auto delayRange = fRange(DELAY_MIN, DELAY_MAX, 0.1f);
+    delayRange.setSkewForCentre(DELAY_CENTER);
+    auto attackRange = fRange(ATTACK_MIN, ATTACK_MAX, 0.1f);
+    attackRange.setSkewForCentre(ATTACK_CENTER);
+    auto holdRange = fRange(HOLD_MIN, HOLD_MAX, 0.1f);
+    holdRange.setSkewForCentre(HOLD_CENTER);
+    auto decayRange = fRange(DECAY_MIN, DECAY_MAX, 0.1f);
+    decayRange.setSkewForCentre(DECAY_CENTER);
+    auto sustainRange = fRange(SUSTAIN_MIN, SUSTAIN_MAX, 0.0001f);
+    auto releaseRange = fRange(RELEASE_MIN, RELEASE_MAX, 0.1f);
+    releaseRange.setSkewForCentre(RELEASE_CENTER);
+    auto posRange = fRange(0.0f, 1.0f, 0.0001f);
+    auto levelRange = fRange(0.0f, 1.0f, 0.0001f);
+    for(int i = 0; i < NUM_OSCILLATORS; ++i)
+    {
+        auto iStr = juce::String(i);
+        auto mDelay = "ModEnvDelay" + iStr;
+        auto aDelay = "AmpEnvDelay" + iStr;
+        auto mAttack = "ModEnvAttack" + iStr;
+        auto aAttack = "AmpEnvAttack" + iStr;
+        auto mHold = "ModEnvHold" + iStr;
+        auto aHold = "AmpEnvHold" + iStr;
+        auto mDecay = "ModEnvDecay" + iStr;
+        auto aDecay = "AmpEnvDecay" + iStr;
+        auto mSustain = "ModEnvSustain" + iStr;
+        auto aSustain = "AmpEnvSustain" + iStr;
+        auto mRelease = "ModEnvRelease" + iStr;
+        auto aRelease = "AmpEnvRelease" + iStr;
+        
+        auto posId = "OscillatorPos" + iStr;
+        auto levelId = "OscillatorLevel" + iStr;
+        
+        layout.add(std::make_unique<floatParam>(mDelay, mDelay, delayRange, DELAY_DEFAULT));
+        layout.add(std::make_unique<floatParam>(aDelay, aDelay, delayRange, DELAY_DEFAULT));
+        layout.add(std::make_unique<floatParam>(mAttack, mAttack, attackRange, ATTACK_DEFAULT));
+        layout.add(std::make_unique<floatParam>(aAttack, aAttack, attackRange, ATTACK_DEFAULT));
+        layout.add(std::make_unique<floatParam>(mHold, mHold, holdRange, HOLD_DEFAULT));
+        layout.add(std::make_unique<floatParam>(aHold, aHold, holdRange, HOLD_DEFAULT));
+        layout.add(std::make_unique<floatParam>(mDecay, mDecay, decayRange, DECAY_DEFAULT));
+        layout.add(std::make_unique<floatParam>(aDecay, aDecay, decayRange, DECAY_DEFAULT));
+        layout.add(std::make_unique<floatParam>(mSustain, mSustain, sustainRange, SUSTAIN_DEFAULT));
+        layout.add(std::make_unique<floatParam>(aSustain, aSustain, sustainRange, SUSTAIN_DEFAULT));
+        layout.add(std::make_unique<floatParam>(mRelease, mRelease, releaseRange, RELEASE_DEFAULT));
+        layout.add(std::make_unique<floatParam>(aRelease, aRelease, releaseRange, RELEASE_DEFAULT));
+        
+        layout.add(std::make_unique<floatParam>(posId, posId, posRange, 0.0f));
+        layout.add(std::make_unique<floatParam>(levelId, levelId, levelRange, 1.0f));
+    }
+    return layout;
+}
+

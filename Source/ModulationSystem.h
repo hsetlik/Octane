@@ -38,6 +38,7 @@ public:
     juce::String name; //every parameter needs a distinct name
     std::vector<ModSource*> modSources;
     float min, max;
+    float baseValue;
     float getActual();
     float getAdjusted(); //the value normalized to the range 0 - 1
     ModSource* makeSource(float d);
@@ -53,7 +54,6 @@ public:
     void addSource(SynthParam* src, float depth = 1.0f) {modSources.push_back(src->makeSource(depth)); }
 protected:
     float actualOffset(ModSource* mod);
-    float baseValue;
     float actualOut;
     float adjOut;
 };
@@ -64,6 +64,11 @@ public:
     SynthParameterGroup();
     using paramVec = juce::OwnedArray<SynthParam>;
     using paramVecPtr = juce::OwnedArray<SynthParam>*;
+    using apvts = juce::AudioProcessorValueTreeState;
+    using floatParam = juce::AudioParameterFloat;
+    using fRange = juce::NormalisableRange<float>;
+    void updateForBlock(apvts& tree);
+    apvts::ParameterLayout createLayout();
     paramVec mDelays;
     paramVec aDelays;
     paramVec mAttacks;

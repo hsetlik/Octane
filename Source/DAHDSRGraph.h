@@ -10,7 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "RGBColor.h"
+
 
 class DAHDSRGraph : public juce::Component, public juce::Slider::Listener
 {

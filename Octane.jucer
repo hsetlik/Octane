@@ -5,6 +5,10 @@
               companyName="Setlik" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="BlyAuj" name="Octane">
     <GROUP id="{928B63EB-1631-FD93-F26F-D2D356867D80}" name="Source">
+      <FILE id="obAGki" name="ModulationSystem.cpp" compile="1" resource="0"
+            file="Source/ModulationSystem.cpp"/>
+      <FILE id="KNvQIA" name="ModulationSystem.h" compile="0" resource="0"
+            file="Source/ModulationSystem.h"/>
       <GROUP id="{A5002D87-14FF-CCD7-89ED-C59042918EFF}" name="Synthesis">
         <FILE id="gVyeza" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
         <FILE id="fzYwPu" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
@@ -19,6 +23,7 @@
         <FILE id="qDnCSW" name="CustomLnFs.h" compile="0" resource="0" file="Source/CustomLnFs.h"/>
         <FILE id="eSvSvr" name="DAHDSRGraph.cpp" compile="1" resource="0" file="Source/DAHDSRGraph.cpp"/>
         <FILE id="Kv5y4t" name="DAHDSRGraph.h" compile="0" resource="0" file="Source/DAHDSRGraph.h"/>
+        <FILE id="N7L9pF" name="RgbColor.h" compile="0" resource="0" file="Source/RgbColor.h"/>
       </GROUP>
       <FILE id="ZjzaAX" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>

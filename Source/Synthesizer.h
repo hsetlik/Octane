@@ -12,6 +12,9 @@
 #include <JuceHeader.h>
 #include "Wavetable.h"
 #include "DAHDSR.h"
+
+#define NUM_VOICES 6
+
 class OctaneSound : public juce::SynthesiserSound
 {
     bool appliesToNote(int /*midiNoteNumber*/) //just plays this sound for any midi note

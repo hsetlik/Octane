@@ -61,9 +61,14 @@ public:
     int numFrames;
 private:
     juce::OwnedArray<WavetableFrame> frames;
+    double sampleRate;
     float position;
     float phase;
     float phaseDelta;
+    int topIndex, bottomIndex;
+    WavetableFrame* topFrame;
+    WavetableFrame* bottomFrame;
+    float topSample, bottomSample, skew;
 };
 
 class OctaneOsc

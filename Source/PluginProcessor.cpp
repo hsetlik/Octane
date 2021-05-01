@@ -154,6 +154,7 @@ void OctaneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    synth.setAllSampleRates(sampleRate);
 }
 
 void OctaneAudioProcessor::releaseResources()
@@ -191,7 +192,7 @@ bool OctaneAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void OctaneAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     buffer.clear();
-    //synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================

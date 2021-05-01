@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "DAHDSR.h"
+#include "Synthesizer.h"
 //==============================================================================
 /**
 */
@@ -54,6 +55,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     //==============================================================================
     juce::AudioProcessorValueTreeState tree;
+    OctaneSynth synth;
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OctaneAudioProcessor)

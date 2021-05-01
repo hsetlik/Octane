@@ -141,7 +141,7 @@ float WavetableFrame::getSample(float phase, double hz)
 
 //=================================================================================================
 
-WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0)
+WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0), phase(0.0f), phaseDelta(0.0f)
 {
     auto manager = new juce::AudioFormatManager();
     manager->registerBasicFormats();
@@ -170,6 +170,7 @@ WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0)
 
 void WavetableOscCore::setSampleRate(double newRate)
 {
+    sampleRate = newRate;
     for(auto frame : frames)
     {
         frame->setSampleRate(newRate);
@@ -184,6 +185,19 @@ doubleVec WavetableOscCore::getGraphData(int resolution)
         data.push_back(frame->getGraphData(resolution));
     }
     return data;
+}
+float WavetableOscCore::getSample(double hz, float position)
+{
+    bottomIndex = floor(position * frames.size());
+    topIndex = (bottomIndex == frames.size() - 1) ? 0 : bottomIndex + 1;
+    skew = (position * frames.size()) - bottomIndex;
+    phaseDelta = hz / sampleRate;
+    phase += phaseDelta;
+    if(phase > 1.0f)
+        phase -= 1.0f;
+    topSample = frames[topIndex]->getSample(phase, hz);
+    bottomSample = frames[bottomIndex]->getSample(phase, hz);
+    return bottomSample + ((topSample - bottomSample) * skew);
 }
 
 //============================================================================================

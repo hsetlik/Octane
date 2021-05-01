@@ -103,6 +103,10 @@ public:
     {
         return process(1.0f);
     }
+    bool isActive()
+    {
+        return !(output == 0.0f);
+    }
     envPhase getPhase() {return currentPhase;}
     double output;
     void setDelay(float val) {delayTime = val;}

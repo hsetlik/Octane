@@ -9,8 +9,9 @@
 */
 
 #pragma once
-namespace FFT {
-    void runFloat(int N, float *ar, float *ai)
+#include <JuceHeader.h>
+struct FFT {
+    static void runFloat(int N, float *ar, float *ai)
     /*
      in-place complex fft
      

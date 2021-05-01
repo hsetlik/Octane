@@ -41,3 +41,21 @@ SynthParamStructure::SynthParamStructure()
 {
     //TODO: this constructor needs to create all the possible parameters
 }
+
+void SynthParamStructure::loadFromValueTree(juce::ValueTree *tree)
+{
+    
+}
+
+void SynthParamStructure::saveToValueTree(juce::ValueTree *tree)
+{
+    
+}
+
+void SynthParamStructure::updateForBlock(juce::AudioProcessorValueTreeState &tree)
+{
+    for(auto param : allParams)
+    {
+        param->setBase(tree);
+    }
+}

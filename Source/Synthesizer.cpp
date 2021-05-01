@@ -9,24 +9,41 @@
 */
 
 #include "Synthesizer.h"
-OctaneVoice::OctaneVoice(juce::File defaultTable) : osc(defaultTable)
+OctaneVoice::OctaneVoice(juce::File defaultTable, int idx) : voiceIndex(idx), fundamental(440.0f), osc(defaultTable)
 {
     
+}
+
+OctaneVoice::~OctaneVoice()
+{
+   
 }
 
 void OctaneVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
     env.triggerOn();
+    fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 }
 
 void OctaneVoice::stopNote(float velocity, bool allowTailOff)
 {
     env.triggerOff();
+    if(!allowTailOff || !env.isActive())
+        clearCurrentNote();
 }
 
 void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
-    
+    if(!env.isActive())
+        clearCurrentNote();
+    for(sample = startSample; sample < (startSample + numSamples); ++sample)
+    {
+        lastOutput = env.process(osc.getSample(fundamental, 0.35f));
+        for(auto chan = 0; chan < outputBuffer.getNumChannels(); ++chan)
+        {
+            outputBuffer.addSample(chan, sample, lastOutput * 0.4f);
+        }
+    }
 }
 
 
@@ -51,7 +68,10 @@ OctaneSynth::OctaneSynth()
     auto defaultWave = files[0];
     for(int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice(new OctaneVoice(defaultWave));
+        addVoice(new OctaneVoice(defaultWave, i));
+        auto vOct = dynamic_cast<OctaneVoice*>(voices.getLast());
+        oVoices.push_back(vOct);
+        addSound(new OctaneSound());
     }
-    addSound(new OctaneSound());
+    
 }

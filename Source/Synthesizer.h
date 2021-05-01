@@ -13,7 +13,7 @@
 #include "Wavetable.h"
 #include "DAHDSR.h"
 
-#define NUM_VOICES 6
+#define NUM_VOICES 4
 
 class OctaneSound : public juce::SynthesiserSound
 {
@@ -30,7 +30,8 @@ class OctaneSound : public juce::SynthesiserSound
 class OctaneVoice : public juce::SynthesiserVoice
 {
 public:
-    OctaneVoice(juce::File defaultTable);
+    OctaneVoice(juce::File defaultTable, int idx);
+    ~OctaneVoice();
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {
         return dynamic_cast<OctaneSound*>(sound) != nullptr;
@@ -42,6 +43,12 @@ public:
                     int currentPitchWheelPosition) override;
     void pitchWheelMoved(int newPitchWheelVal) override {} 
     void controllerMoved(int controllerNumber, int controllerValue) override {}
+    void setAllSampleRate(double rate)
+    {
+        osc.setSampleRate(rate);
+        env.setSampleRate(rate);
+        setCurrentPlaybackSampleRate(rate);
+    }
     //===============================================
     void aftertouchChanged (int newAftertouchValue) override {}
     //==============================================
@@ -49,15 +56,27 @@ public:
     //===============================================
     void renderNextBlock (juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples) override;
 private:
+    int voiceIndex;
+    double fundamental;
+    float position;
     OctaneOsc osc;
     DAHDSR env;
+    float lastOutput;
+    int sample;
 };
 
 class OctaneSynth : public juce::Synthesiser
 {
 public:
     OctaneSynth();
+    void setAllSampleRates(double rate)
+    {
+        setCurrentPlaybackSampleRate(rate);
+        for(auto v : oVoices)
+            v->setAllSampleRate(rate);
+    }
 private:
     juce::File waveFolder;
+    std::vector<OctaneVoice*> oVoices;
     
 };

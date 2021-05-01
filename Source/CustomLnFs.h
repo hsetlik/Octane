@@ -10,8 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "RGBColor.h"
-#include "GlobalColor.h"
+#include "RgbColor.h"
 class ModSystemLookAndFeel : public juce::LookAndFeel_V4
 {
 public:

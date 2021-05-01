@@ -9,7 +9,11 @@
 */
 
 #include "Synthesizer.h"
-OctaneVoice::OctaneVoice(juce::File defaultTable, int idx) : voiceIndex(idx), fundamental(440.0f), osc(defaultTable)
+OctaneVoice::OctaneVoice(juce::File defaultTable, SynthParameterGroup* grp, int idx) :
+params(grp),
+voiceIndex(idx),
+fundamental(440.0f),
+osc1(defaultTable)
 {
     
 }
@@ -21,24 +25,24 @@ OctaneVoice::~OctaneVoice()
 
 void OctaneVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
-    env.triggerOn();
+    ampEnv.triggerOn();
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 }
 
 void OctaneVoice::stopNote(float velocity, bool allowTailOff)
 {
-    env.triggerOff();
-    if(!allowTailOff || !env.isActive())
+    ampEnv.triggerOff();
+    if(!allowTailOff || !ampEnv.isActive())
         clearCurrentNote();
 }
 
 void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
-    if(!env.isActive())
+    if(!ampEnv.isActive())
         clearCurrentNote();
     for(sample = startSample; sample < (startSample + numSamples); ++sample)
     {
-        lastOutput = env.process(osc.getSample(fundamental, 0.35f));
+        lastOutput = ampEnv.process(osc1.getSample(fundamental));
         for(auto chan = 0; chan < outputBuffer.getNumChannels(); ++chan)
         {
             outputBuffer.addSample(chan, sample, lastOutput * 0.4f);
@@ -46,6 +50,16 @@ void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int st
     }
 }
 
+void OctaneVoice::tickBlock()
+{
+    
+}
+
+void OctaneVoice::tickSample()
+{
+    
+}
+//==============================================================================================================
 
 OctaneSynth::OctaneSynth()
 {
@@ -64,14 +78,13 @@ OctaneSynth::OctaneSynth()
         printf("wave folder created\n");
     }
     //printf("Folder is at: %s\n", waveFolder.getFullPathName().toRawUTF8());
-    auto files = waveFolder.findChildFiles(juce::File::findFiles, true);
-    auto defaultWave = files[0];
+    waveFiles = waveFolder.findChildFiles(juce::File::findFiles, true);
+    auto defaultWave = waveFiles[0];
     for(int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice(new OctaneVoice(defaultWave, i));
+        addVoice(new OctaneVoice(defaultWave, &paramGroup, i));
         auto vOct = dynamic_cast<OctaneVoice*>(voices.getLast());
         oVoices.push_back(vOct);
-        addSound(new OctaneSound());
     }
-    
+    addSound(new OctaneSound());
 }

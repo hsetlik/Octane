@@ -10,6 +10,10 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "DAHDSR.h"
+//macros to define what parameters should be created
+#define NUM_OSCILLATORS 4
+#define NUM_LFOS 4
 
 class SynthParam;
 
@@ -54,14 +58,27 @@ protected:
     float adjOut;
 };
 
-class SynthParamStructure //represents the whole state of the synth
+class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it
 {
 public:
-    SynthParamStructure();
-    SynthParam* getParamPtr(juce::String paramName);
-    void saveToValueTree(juce::ValueTree* tree);
-    void loadFromValueTree(juce::ValueTree* tree);
-    void updateForBlock(juce::AudioProcessorValueTreeState& tree);
-private:
-    juce::OwnedArray<SynthParam> allParams;
+    SynthParameterGroup();
+    using paramVec = juce::OwnedArray<SynthParam>;
+    using paramVecPtr = juce::OwnedArray<SynthParam>*;
+    paramVec mDelays;
+    paramVec aDelays;
+    paramVec mAttacks;
+    paramVec aAttacks;
+    paramVec mHolds;
+    paramVec aHolds;
+    paramVec mDecays;
+    paramVec aDecays;
+    paramVec mSustains;
+    paramVec aSustains;
+    paramVec mReleases;
+    paramVec aReleases;
+    paramVec oscPositions;
+    std::vector<paramVecPtr> allVecs;
 };
+
+
+

@@ -202,7 +202,9 @@ float WavetableOscCore::getSample(double hz, float position)
 
 //============================================================================================
 
-OctaneOsc::OctaneOsc(juce::File src) : pOsc(std::make_unique<WavetableOscCore>(src))
+OctaneOsc::OctaneOsc(juce::File src) :
+position(0.0f),
+pOsc(std::make_unique<WavetableOscCore>(src))
 {
     
 }

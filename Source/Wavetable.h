@@ -78,8 +78,10 @@ public:
     void replace(juce::File src);
     void setSampleRate(double rate) {pOsc->setSampleRate(rate); }
     float getSample(double hz, float position) {return pOsc->getSample(hz, position); }
+    float getSample(double hz) {return pOsc->getSample(hz, position); }
     doubleVec getGraphData(int resolution) {return pOsc->getGraphData(resolution); }
     int getNumFrames() {return pOsc->numFrames; }
+    float position;
 private:
     std::unique_ptr<WavetableOscCore> pOsc;
 };

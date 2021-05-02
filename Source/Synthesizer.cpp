@@ -63,6 +63,7 @@ void OctaneVoice::tickSample()
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
         oscillators[oscIndex]->position = params->oscPositions[oscIndex]->getActual();
+        oscillators[oscIndex]->level = params->oscLevels[oscIndex]->getActual();
         lastOutput += (oscillators[oscIndex]->getSample(fundamental) / (float) NUM_OSCILLATORS);
     }
 }

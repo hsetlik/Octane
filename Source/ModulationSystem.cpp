@@ -44,6 +44,8 @@ SynthParameterGroup::SynthParameterGroup() //this constructor does the heavy lif
         auto iStr = juce::String(i);
         juce::String posName = "OscillatorPos" + iStr;
         oscPositions.add(new SynthParam(posName, 0.0f, 1.0f, 0.0f));
+        auto levelName = "OscillatorLevel" + iStr;
+        oscLevels.add(new SynthParam(levelName, 0.0f, 1.0f, 1.0f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;
@@ -72,6 +74,7 @@ SynthParameterGroup::SynthParameterGroup() //this constructor does the heavy lif
         aReleases.add(new SynthParam(aRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
     }
     allVecs.push_back(&oscPositions);
+    allVecs.push_back(&oscLevels);
     
     allVecs.push_back(&mDelays);
     allVecs.push_back(&aDelays);

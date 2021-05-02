@@ -139,6 +139,7 @@ bool OctaneAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void OctaneAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     buffer.clear();
+    synth.paramGroup.updateForBlock(tree);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 

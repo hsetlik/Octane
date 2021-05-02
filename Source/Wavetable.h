@@ -55,6 +55,8 @@ private:
 
 class WavetableOscCore
 {
+    /**TODO: figure out a compute-light way to do unison
+   (maybe a vector of phase/phaseDelta variables that resizes to the number of unison voices?)**/
 public:
     WavetableOscCore(juce::File src);
     float getSample(double hz, float position);

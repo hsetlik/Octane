@@ -35,7 +35,7 @@ public:
     {
         
     }
-    juce::String name; //every parameter needs a distinct name
+    juce::String name; //every parameter needs a distinct name. The SynthParam name and the id of the associated APVTS parameter are the same
     std::vector<ModSource*> modSources;
     float min, max;
     float baseValue;
@@ -82,6 +82,7 @@ public:
     paramVec mReleases;
     paramVec aReleases;
     paramVec oscPositions;
+    paramVec oscLevels;
     std::vector<paramVecPtr> allVecs;
 };
 

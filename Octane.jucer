@@ -23,6 +23,13 @@
         <FILE id="qDnCSW" name="CustomLnFs.h" compile="0" resource="0" file="Source/CustomLnFs.h"/>
         <FILE id="eSvSvr" name="DAHDSRGraph.cpp" compile="1" resource="0" file="Source/DAHDSRGraph.cpp"/>
         <FILE id="Kv5y4t" name="DAHDSRGraph.h" compile="0" resource="0" file="Source/DAHDSRGraph.h"/>
+        <FILE id="mr4utZ" name="OctaneEditor.cpp" compile="1" resource="0"
+              file="Source/OctaneEditor.cpp"/>
+        <FILE id="BcWlGH" name="OctaneEditor.h" compile="0" resource="0" file="Source/OctaneEditor.h"/>
+        <FILE id="rQKSb0" name="ParameterComponent.cpp" compile="1" resource="0"
+              file="Source/ParameterComponent.cpp"/>
+        <FILE id="RXqOQ6" name="ParameterComponent.h" compile="0" resource="0"
+              file="Source/ParameterComponent.h"/>
         <FILE id="NcghUy" name="ParamSlider.cpp" compile="1" resource="0" file="Source/ParamSlider.cpp"/>
         <FILE id="pjD9VN" name="ParamSlider.h" compile="0" resource="0" file="Source/ParamSlider.h"/>
         <FILE id="N7L9pF" name="RgbColor.h" compile="0" resource="0" file="Source/RgbColor.h"/>

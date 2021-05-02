@@ -24,7 +24,7 @@ public:
     centerColor(UXPalette::modTargetShades[index]),
     groupIndex(index)
     {
-        
+    
     }
     void paintButton(juce::Graphics& g, bool, bool) override;
     juce::Colour centerColor;
@@ -56,7 +56,7 @@ public:
     {
         addAndMakeVisible(&sButton);
         addAndMakeVisible(&cButton);
-        setInterceptsMouseClicks(false, true);
+        setInterceptsMouseClicks(true, true);
     }
     void attach(juce::Button::Listener* list)
     {

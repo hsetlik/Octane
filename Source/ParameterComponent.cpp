@@ -81,7 +81,7 @@ selectedIndex(0)
     mainSlider.setSliderStyle(juce::Slider::Rotary);
     mainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
     mainSlider.setRange(linkedParam->min, linkedParam->max);
-    mainSlider.setValue(linkedParam->baseValue);
+    mainSlider.setValue(linkedParam->currentBaseValue);
     mainSlider.setLookAndFeel(&LnF);
 }
 
@@ -112,15 +112,19 @@ void ParamCompRotary::SourceButtonsRotary::resized()
 void ParamCompRotary::SourceButtonsRotary::paint(juce::Graphics &g)
 {
     auto fBounds = getLocalBounds().toFloat();
+    auto center = juce::Point<float>(fBounds.getWidth() / 2.0f, fBounds.getHeight() / 2.0f);
+    auto angle = (juce::MathConstants<float>::twoPi / 8) * srcIndex;
     auto dX = fBounds.getWidth() / 9;
-    auto closeBkgnd = cButton.getBounds().toFloat().expanded(dX / 3);
-    auto mainBkgnd = fBounds.withSizeKeepingCentre(5 * dX, 5 * dX);
+    auto closeBkgnd = cButton.getBounds().toFloat().expanded(dX);
+    closeBkgnd = closeBkgnd.transformedBy(juce::AffineTransform::rotation(juce::MathConstants<float>::pi, center.getX(), center.getY()));
+    auto mainBkgnd = fBounds.withSizeKeepingCentre(6 * dX, 6 * dX);
     auto selBkgnd = sButton.getBounds().toFloat().expanded(dX / 3);
+    selBkgnd = selBkgnd.transformedBy(juce::AffineTransform::rotation(angle, center.getX(), center.getY()));
     g.setColour(UXPalette::modTargetShades[srcIndex]);
     g.fillEllipse(closeBkgnd);
-    //g.fillPath(PathUtility::betweenEllipses(mainBkgnd, closeBkgnd));
+    g.fillPath(PathUtility::betweenEllipses(mainBkgnd, closeBkgnd));
     g.fillEllipse(mainBkgnd);
-    //g.fillPath(PathUtility::betweenEllipses(mainBkgnd, selBkgnd));
+    g.fillPath(PathUtility::betweenEllipses(mainBkgnd, selBkgnd));
     g.fillEllipse(selBkgnd);
 }
 
@@ -137,6 +141,8 @@ void ParamCompRotary::addModSource(ParamComponent *src)
     addAndMakeVisible(nButtons);
     nButtons->cButton.addListener(this);
     nButtons->sButton.addListener(this);
+    currentButttons = nButtons;
+    currentDepthSlider = nSlider;
     resized();
 }
 
@@ -176,20 +182,14 @@ void ParamCompRotary::buttonClicked(juce::Button *b)
         currentButttons = buttonGroups[idx];
         currentDepthSlider = depthSliders[idx];
     }
-    if(currentDepthSlider != nullptr)
-    {
-        currentButttons->toFront(true);
-        currentDepthSlider->toFront(true);
-        mainSlider.toFront(true);
-    }
     resized();
 }
 
 void ParamCompRotary::resized()
 {
-    
+    resetIndeces();
     auto fBounds = getLocalBounds().toFloat();
-    printf("Knob at : %f, %f, %f, %f\n", fBounds.getX(), fBounds.getY(), fBounds.getWidth(), fBounds.getHeight());
+    //printf("Knob at : %f, %f, %f, %f\n", fBounds.getX(), fBounds.getY(), fBounds.getWidth(), fBounds.getHeight());
     auto dX = fBounds.getWidth() / 10;
     for(auto group : buttonGroups)
     {
@@ -201,8 +201,25 @@ void ParamCompRotary::resized()
         slider->setBounds(innerBounds.toType<int>());
     }
     innerBounds = fBounds.withSizeKeepingCentre(5 * dX, 5 * dX);
+    if(currentDepthSlider != nullptr)
+    {
+        currentButttons->toFront(true);
+        currentDepthSlider->toFront(true);
+        currentButttons->cButton.setVisible(true);
+        currentButttons->cButton.setEnabled(true);
+        
+        for(auto grp : buttonGroups)
+        {
+            if(grp != currentButttons)
+            {
+                grp->cButton.setVisible(false);
+                grp->cButton.setEnabled(false);
+            }
+        }
+    }
     mainSlider.setBounds(innerBounds.toType<int>());
     mainSlider.toFront(true);
+    repaint();
 }
 
 void ParamCompRotary::paint(juce::Graphics &g)

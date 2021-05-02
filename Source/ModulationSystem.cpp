@@ -12,7 +12,8 @@
 
 float SynthParam::getActual()
 {
-    actualOut = baseValue;
+    tickValue();
+    actualOut = currentBaseValue;
     for(auto src : modSources)
     {
         actualOut += actualOffset(src);
@@ -46,6 +47,26 @@ void SynthParam::removeSource(ModSource *toRemove)
             break;
         }
         ++idx;
+    }
+}
+
+void SynthParam::tickValue()
+{
+    if(currentBaseValue == targetBaseValue)
+    {
+        return;
+    }
+    else if(fabs(currentBaseValue - targetBaseValue) <= maxSampleDelta)
+    {
+        currentBaseValue = targetBaseValue;
+    }
+    else if(targetBaseValue > currentBaseValue)
+    {
+        currentBaseValue += maxSampleDelta;
+    }
+    else if(targetBaseValue < currentBaseValue)
+    {
+        currentBaseValue -= maxSampleDelta;
     }
 }
 

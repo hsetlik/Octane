@@ -31,7 +31,9 @@ public:
     name(n),
     min(lo),
     max(hi),
-    baseValue(normal),
+    currentBaseValue(normal),
+    targetBaseValue(normal),
+    maxSampleDelta((max - min) / 4000.0f),
     paramColor(juce::Colours::lightblue),
     hasChosenColor(false)
     {
@@ -39,18 +41,21 @@ public:
     }
     juce::String name; //every parameter needs a distinct name. The SynthParam name and the id of the associated APVTS parameter are the same
     std::vector<ModSource*> modSources;
+    void tickValue();
     float min, max;
-    float baseValue;
+    float currentBaseValue;
+    float targetBaseValue;
+    float maxSampleDelta;
     float getActual();
     float getAdjusted(); //the value normalized to the range 0 - 1
     ModSource* makeSource(float d);
     void setBase(float val) //for setting the value from a silder or similar
     {
-        baseValue = val;
+        targetBaseValue = val;
     }
     void setBase(juce::AudioProcessorValueTreeState& tree)
     {
-        baseValue = *tree.getRawParameterValue(name);
+        targetBaseValue = *tree.getRawParameterValue(name);
     }
     void addSource(ModSource* newSrc) { modSources.push_back(newSrc); }
     void addSource(SynthParam* src, float depth = 1.0f) {modSources.push_back(src->makeSource(depth)); }

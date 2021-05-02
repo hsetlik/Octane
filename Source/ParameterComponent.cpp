@@ -78,6 +78,36 @@ ParamCompRotary::DepthSliderRotary::DepthSliderRotary(ModSource* s) : src(s)
     dSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
     dSlider.setLookAndFeel(&depthLnF);
 }
+//==========================================================================
+void ParamCompRotary::SourceButtonsRotary::resized()
+{
+    auto angle = (juce::MathConstants<float>::pi / 8) * srcIndex;
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 9;
+    auto xCenter = fBounds.getWidth() / 2;
+    auto yCenter = fBounds.getHeight() / 2;
+    sButton.setBounds(4 * dX, 0, dX, dX);
+    sButton.setTransform(juce::AffineTransform::rotation(angle, xCenter, yCenter));
+    cButton.setBounds(4 * dX, 0, dX, dX);
+    cButton.setTransform(juce::AffineTransform::rotation(juce::MathConstants<float>::pi / 4.0f));
+}
+
+void ParamCompRotary::SourceButtonsRotary::paint(juce::Graphics &g)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 9;
+    auto closeBkgnd = cButton.getLocalBounds().toFloat().expanded(dX);
+    auto mainBkgnd = fBounds.withSizeKeepingCentre(5 * dX, 5 * dX);
+    auto selBkgnd = sButton.getLocalBounds().toFloat().expanded(dX);
+    g.setColour(UXPalette::modTargetShades[srcIndex]);
+    g.fillEllipse(closeBkgnd);
+    g.fillPath(PathUtility::betweenEllipses(mainBkgnd, closeBkgnd));
+    g.fillEllipse(mainBkgnd);
+    g.fillPath(PathUtility::betweenEllipses(mainBkgnd, selBkgnd));
+    g.fillEllipse(selBkgnd);
+}
+
+//=================================================================================
 
 void ParamCompRotary::addModSource(ParamComponent *src)
 {
@@ -87,12 +117,31 @@ void ParamCompRotary::addModSource(ParamComponent *src)
     addAndMakeVisible(nSlider);
 }
 
-void ParamCompRotary::resized()
+void ParamCompRotary::buttonClicked(juce::Button *b)
 {
     
+}
+
+void ParamCompRotary::resized()
+{
+    auto fBounds = getBounds().toFloat();
+    auto dX = fBounds.getWidth() / 10;
+    for(auto group : buttonGroups)
+    {
+        group->setBounds(fBounds.toType<int>());
+    }
+    auto innerBounds = fBounds.withSizeKeepingCentre(6 * dX, 6 * dX);
+    for(auto slider : depthSliders)
+    {
+        slider->setBounds(innerBounds.toType<int>());
+    }
+    innerBounds = fBounds.withSizeKeepingCentre(5 * dX, 5 * dX);
+    mainSlider.setBounds(innerBounds.toType<int>());
+    mainSlider.toFront(true);
 }
 
 void ParamCompRotary::paint(juce::Graphics &g)
 {
     
 }
+

@@ -11,6 +11,7 @@
 #pragma once
 #include "CustomLnFs.h"
 #include "ModulationSystem.h"
+#include "GraphicsUtility.h"
 
 class SelectorButton : public juce::ShapeButton
 {
@@ -51,6 +52,11 @@ public:
     {
         addAndMakeVisible(&sButton);
         addAndMakeVisible(&cButton);
+    }
+    void attach(juce::Button::Listener* list)
+    {
+        sButton.addListener(list);
+        cButton.addListener(list);
     }
     int srcIndex;
     SelectorButton sButton;
@@ -98,8 +104,22 @@ public:
             setVisible(shouldBeInFront);
             setEnabled(shouldBeInFront);
         }
+        void resized() override
+        {
+            setBounds(getBounds());
+        }
         juce::Slider dSlider;
         DepthSliderLookAndFeel depthLnF;
+    };
+    class SourceButtonsRotary : public SourceButtonGroup
+    {
+    public:
+        SourceButtonsRotary(int idx) : SourceButtonGroup(idx)
+        {
+            
+        }
+        void resized() override;
+        void paint(juce::Graphics& g) override;
     };
     ParamCompRotary(SynthParam* p);
     ~ParamCompRotary() {mainSlider.setLookAndFeel(nullptr); }
@@ -109,5 +129,6 @@ public:
     void paint(juce::Graphics& g) override;
 private:
     juce::OwnedArray<DepthSliderRotary> depthSliders;
+    juce::OwnedArray<SourceButtonsRotary> buttonGroups;
     ModSystemLookAndFeel LnF;
 };

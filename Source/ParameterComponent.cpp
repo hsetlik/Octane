@@ -41,14 +41,22 @@ void CloseButton::paintButton(juce::Graphics &g, bool, bool)
 
 ParamComponent::ParamComponent(SynthParam* p) : linkedParam(p)
 {
-    
+    mainSlider.addListener(this);
+    setInterceptsMouseClicks(true, true);
 }
 
 void ParamComponent::itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails)
 {
     ParamComponent* sourceComp;
     if((sourceComp = dynamic_cast<ParamComponent*>(dragSourceDetails.sourceComponent.get())))
-        addModSource(sourceComp);
+    {
+        if(!StlUtil::existsIn(addedSources, sourceComp) &&(sourceComp != this))
+        {
+            addModSource(sourceComp);
+            addedSources.push_back(sourceComp);
+        }
+    }
+        
 }
 
 void ParamComponent::mouseDown(const juce::MouseEvent &e)
@@ -56,9 +64,18 @@ void ParamComponent::mouseDown(const juce::MouseEvent &e)
     juce::DragAndDropContainer::findParentDragContainerFor(this)->startDragging(linkedParam->name, this);
 }
 
+void ParamComponent::sliderValueChanged(juce::Slider *s)
+{
+    linkedParam->setBase((float)s->getValue());
+}
+
 //======================================================================================================
 
-ParamCompRotary::ParamCompRotary(SynthParam* p) : ParamComponent(p)
+ParamCompRotary::ParamCompRotary(SynthParam* p) :
+ParamComponent(p),
+currentButttons(nullptr),
+currentDepthSlider(nullptr), //! these get initialized to \c nullptr because there are no mod sources yet
+selectedIndex(0)
 {
     addAndMakeVisible(&mainSlider);
     mainSlider.setSliderStyle(juce::Slider::Rotary);
@@ -81,29 +98,29 @@ ParamCompRotary::DepthSliderRotary::DepthSliderRotary(ModSource* s) : src(s)
 //==========================================================================
 void ParamCompRotary::SourceButtonsRotary::resized()
 {
-    auto angle = (juce::MathConstants<float>::pi / 8) * srcIndex;
+    auto angle = (juce::MathConstants<float>::twoPi / 8) * srcIndex;
     auto fBounds = getLocalBounds().toFloat();
     auto dX = fBounds.getWidth() / 9;
     auto xCenter = fBounds.getWidth() / 2;
     auto yCenter = fBounds.getHeight() / 2;
-    sButton.setBounds(4 * dX, 0, dX, dX);
+    sButton.setBounds(6 * dX, dX, dX, dX);
     sButton.setTransform(juce::AffineTransform::rotation(angle, xCenter, yCenter));
-    cButton.setBounds(4 * dX, 0, dX, dX);
-    cButton.setTransform(juce::AffineTransform::rotation(juce::MathConstants<float>::pi / 4.0f));
+    cButton.setBounds(6 * dX, dX, dX, dX);
+    cButton.setTransform(juce::AffineTransform::rotation(juce::MathConstants<float>::pi, xCenter, yCenter));
 }
 
 void ParamCompRotary::SourceButtonsRotary::paint(juce::Graphics &g)
 {
     auto fBounds = getLocalBounds().toFloat();
     auto dX = fBounds.getWidth() / 9;
-    auto closeBkgnd = cButton.getLocalBounds().toFloat().expanded(dX);
+    auto closeBkgnd = cButton.getBounds().toFloat().expanded(dX / 3);
     auto mainBkgnd = fBounds.withSizeKeepingCentre(5 * dX, 5 * dX);
-    auto selBkgnd = sButton.getLocalBounds().toFloat().expanded(dX);
+    auto selBkgnd = sButton.getBounds().toFloat().expanded(dX / 3);
     g.setColour(UXPalette::modTargetShades[srcIndex]);
     g.fillEllipse(closeBkgnd);
-    g.fillPath(PathUtility::betweenEllipses(mainBkgnd, closeBkgnd));
+    //g.fillPath(PathUtility::betweenEllipses(mainBkgnd, closeBkgnd));
     g.fillEllipse(mainBkgnd);
-    g.fillPath(PathUtility::betweenEllipses(mainBkgnd, selBkgnd));
+    //g.fillPath(PathUtility::betweenEllipses(mainBkgnd, selBkgnd));
     g.fillEllipse(selBkgnd);
 }
 
@@ -113,22 +130,70 @@ void ParamCompRotary::addModSource(ParamComponent *src)
 {
     printf("%s is adding Source: %s\n", linkedParam->name.toRawUTF8(), src->linkedParam->name.toRawUTF8());
     depthSliders.add(new DepthSliderRotary(src->linkedParam->makeSource(0.5f)));
+    buttonGroups.add(new SourceButtonsRotary(depthSliders.size() - 1));
     auto nSlider = depthSliders.getLast();
+    auto nButtons = buttonGroups.getLast();
     addAndMakeVisible(nSlider);
+    addAndMakeVisible(nButtons);
+    nButtons->cButton.addListener(this);
+    nButtons->sButton.addListener(this);
+    resized();
 }
 
 void ParamCompRotary::buttonClicked(juce::Button *b)
 {
-    
+    CloseButton* cButton;
+    SelectorButton* sButton;
+    if((cButton = dynamic_cast<CloseButton*>(b)))
+    {
+        auto idx = cButton->groupIndex;
+        if(buttonGroups.size() > 1)
+        {
+            if(idx > 0)
+            {
+                currentButttons = buttonGroups[idx - 1];
+                currentDepthSlider = depthSliders[idx - 1];
+            }
+            else if(idx == 0)
+            {
+                currentButttons = buttonGroups[idx + 1];
+                currentDepthSlider = depthSliders[idx + 1];
+            }
+        }
+        else
+        {
+            //! set these back to \c nullptr when all sources are removed
+            currentButttons = nullptr;
+            currentDepthSlider = nullptr;
+        }
+        buttonGroups.remove(idx);
+        depthSliders.remove(idx);
+        resetIndeces();
+    }
+    else if((sButton = dynamic_cast<SelectorButton*>(b)))
+    {
+        auto idx = sButton->groupIndex;
+        currentButttons = buttonGroups[idx];
+        currentDepthSlider = depthSliders[idx];
+    }
+    if(currentDepthSlider != nullptr)
+    {
+        currentButttons->toFront(true);
+        currentDepthSlider->toFront(true);
+        mainSlider.toFront(true);
+    }
+    resized();
 }
 
 void ParamCompRotary::resized()
 {
-    auto fBounds = getBounds().toFloat();
+    
+    auto fBounds = getLocalBounds().toFloat();
+    printf("Knob at : %f, %f, %f, %f\n", fBounds.getX(), fBounds.getY(), fBounds.getWidth(), fBounds.getHeight());
     auto dX = fBounds.getWidth() / 10;
     for(auto group : buttonGroups)
     {
-        group->setBounds(fBounds.toType<int>());
+        group->setBounds(fBounds.toType<int>().reduced(dX));
     }
     auto innerBounds = fBounds.withSizeKeepingCentre(6 * dX, 6 * dX);
     for(auto slider : depthSliders)
@@ -142,6 +207,8 @@ void ParamCompRotary::resized()
 
 void ParamCompRotary::paint(juce::Graphics &g)
 {
-    
+    auto fBounds = getLocalBounds().toFloat();
+    g.setColour(linkedParam->getColor());
+    g.fillEllipse(fBounds);
 }
 

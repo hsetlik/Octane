@@ -27,7 +27,7 @@ public:
         auto radius1 = r1.getWidth() / 2.0f;
         auto center2 = centerPoint(r2);
         auto radius2 = r2.getWidth() / 2.0f;
-        auto angle = std::asin((center1.getY() - center2.getY()) - (center1.getX() - center2.getX()));
+        auto angle = center1.getAngleToPoint(center2);
         auto ninety = juce::MathConstants<float>::halfPi;
         auto lowerCorner1 = center1.getPointOnCircumference(radius1, angle + ninety);
         auto upperCorner1 = center1.getPointOnCircumference(radius1, angle - ninety);

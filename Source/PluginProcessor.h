@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "DAHDSR.h"
 #include "Synthesizer.h"
-
+#include "OctaneEditor.h"
 //==============================================================================
 /**
 */

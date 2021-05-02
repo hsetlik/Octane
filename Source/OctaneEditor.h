@@ -9,3 +9,26 @@
 */
 
 #pragma once
+#include "ParameterComponent.h"
+
+class OscillatorPanel : public juce::Component
+{
+public:
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam);
+    void resized() override;
+private:
+    ParamCompRotary levelComp;
+    ParamCompRotary posComp;
+};
+
+class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
+{
+public:
+    OctaneEditor(SynthParameterGroup* allParams);
+    void resized() override;
+private:
+    std::vector<juce::Rectangle<int>> oscBoundRects;
+    SynthParameterGroup* paramGroup;
+    juce::OwnedArray<OscillatorPanel> oscPanels;
+    
+};

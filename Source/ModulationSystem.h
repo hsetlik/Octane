@@ -31,7 +31,9 @@ public:
     name(n),
     min(lo),
     max(hi),
-    baseValue(normal)
+    baseValue(normal),
+    paramColor(juce::Colours::lightblue),
+    hasChosenColor(false)
     {
         
     }
@@ -52,10 +54,14 @@ public:
     }
     void addSource(ModSource* newSrc) { modSources.push_back(newSrc); }
     void addSource(SynthParam* src, float depth = 1.0f) {modSources.push_back(src->makeSource(depth)); }
+    void removeSource(ModSource* toRemove);
+    juce::Colour getColor() {return paramColor; }
 protected:
     float actualOffset(ModSource* mod);
     float actualOut;
     float adjOut;
+    juce::Colour paramColor;
+    bool hasChosenColor;
 };
 
 class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it

@@ -11,11 +11,10 @@
 
 //==============================================================================
 OctaneAudioProcessorEditor::OctaneAudioProcessorEditor (OctaneAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor(p)
+    : AudioProcessorEditor (&p), audioProcessor(p), editor(&audioProcessor.synth.paramGroup)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (720, 640);
+    addAndMakeVisible(&editor);
+    setSize (1000, 800);
 }
 
 OctaneAudioProcessorEditor::~OctaneAudioProcessorEditor()
@@ -32,4 +31,5 @@ void OctaneAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    editor.setBounds(getBounds());
 }

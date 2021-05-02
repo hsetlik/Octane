@@ -25,10 +25,7 @@ public:
     void resized() override;
 
 private:
-    //SynthComponent synthPanel;
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     OctaneAudioProcessor& audioProcessor;
-
+    OctaneEditor editor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OctaneAudioProcessorEditor)
 };

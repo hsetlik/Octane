@@ -35,6 +35,20 @@ float SynthParam::actualOffset(ModSource *mod)
     return (max - min) * (mod->src->getAdjusted() * mod->depth);
 }
 
+void SynthParam::removeSource(ModSource *toRemove)
+{
+    int idx = 0;
+    for(auto src : modSources)
+    {
+        if(src == toRemove)
+        {
+            modSources.erase(modSources.begin() + idx);
+            break;
+        }
+        ++idx;
+    }
+}
+
 //=======================================================================
 
 SynthParameterGroup::SynthParameterGroup() //this constructor does the heavy lifting of creating parameters

@@ -12,6 +12,7 @@
 #include "CustomLnFs.h"
 #include "ModulationSystem.h"
 #include "GraphicsUtility.h"
+#include "StlUtil.h"
 
 class SelectorButton : public juce::ShapeButton
 {
@@ -20,12 +21,14 @@ public:
                                                   UXPalette::modTargetShades[index],
                                                   UXPalette::modTargetShades[index],
                                                   UXPalette::modTargetShades[index]),
-    centerColor(UXPalette::modTargetShades[index])
+    centerColor(UXPalette::modTargetShades[index]),
+    groupIndex(index)
     {
         
     }
     void paintButton(juce::Graphics& g, bool, bool) override;
     juce::Colour centerColor;
+    int groupIndex;
 };
 
 class CloseButton : public juce::ShapeButton
@@ -34,12 +37,13 @@ public:
     CloseButton(int index) : juce::ShapeButton("ModDeleteButton" + juce::String(index),
                                                UXPalette::modTargetShades[index],
                                                UXPalette::modTargetShades[index],
-                                               UXPalette::modTargetShades[index])
+                                               UXPalette::modTargetShades[index]),
+    groupIndex(index)
     {
         
     }
     void paintButton(juce::Graphics& g, bool, bool) override;
-   
+    int groupIndex;
 };
 
 class SourceButtonGroup : public juce::Component
@@ -52,6 +56,7 @@ public:
     {
         addAndMakeVisible(&sButton);
         addAndMakeVisible(&cButton);
+        setInterceptsMouseClicks(false, true);
     }
     void attach(juce::Button::Listener* list)
     {
@@ -63,7 +68,7 @@ public:
     CloseButton cButton;
 };
 
-class ParamComponent : public juce::Component, public juce::DragAndDropTarget
+class ParamComponent : public juce::Component, public juce::DragAndDropTarget, public juce::Slider::Listener
 {
 public:
     ParamComponent(SynthParam* p);
@@ -82,8 +87,10 @@ public:
         return false;
     }
     void mouseDown(const juce::MouseEvent& e) override;
-    virtual void addModSource(ParamComponent* srcComp); //override this to add the specific shape of mod source
+    virtual void addModSource(ParamComponent* srcComp) {} //override this to add the specific shape of mod source
+    void sliderValueChanged(juce::Slider* s) override;
     juce::Slider mainSlider;
+    std::vector<ParamComponent*> addedSources;
 };
 
 class ParamCompRotary : public ParamComponent, public juce::Button::Listener
@@ -128,7 +135,17 @@ public:
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
+    void resetIndeces()
+    {
+        for(int i = 0; i < buttonGroups.size(); ++i)
+        {
+            buttonGroups[i]->srcIndex = i;
+        }
+    }
     juce::OwnedArray<DepthSliderRotary> depthSliders;
     juce::OwnedArray<SourceButtonsRotary> buttonGroups;
+    SourceButtonsRotary* currentButttons;
+    DepthSliderRotary* currentDepthSlider;
     ModSystemLookAndFeel LnF;
+    int selectedIndex;
 };

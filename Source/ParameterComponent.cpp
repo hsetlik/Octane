@@ -115,7 +115,7 @@ void ParamCompRotary::SourceButtonsRotary::paint(juce::Graphics &g)
     auto center = juce::Point<float>(fBounds.getWidth() / 2.0f, fBounds.getHeight() / 2.0f);
     auto angle = (juce::MathConstants<float>::twoPi / 8) * srcIndex;
     auto dX = fBounds.getWidth() / 9;
-    auto closeBkgnd = cButton.getBounds().toFloat().expanded(dX);
+    auto closeBkgnd = cButton.getBounds().toFloat().expanded(dX / 3);
     closeBkgnd = closeBkgnd.transformedBy(juce::AffineTransform::rotation(juce::MathConstants<float>::pi, center.getX(), center.getY()));
     auto mainBkgnd = fBounds.withSizeKeepingCentre(6 * dX, 6 * dX);
     auto selBkgnd = sButton.getBounds().toFloat().expanded(dX / 3);
@@ -194,7 +194,7 @@ void ParamCompRotary::resized()
     auto dX = fBounds.getWidth() / 10;
     for(auto group : buttonGroups)
     {
-        group->setBounds(fBounds.toType<int>().reduced(dX));
+        group->setBounds(fBounds.toType<int>().reduced(dX * 0.5f));
     }
     
     for(auto slider : depthSliders)

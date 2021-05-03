@@ -37,16 +37,9 @@ public:
     paramColor(juce::Colours::lightblue),
     hasChosenColor(false)
     {
-        levelMin = 0.9f;
     }
     ~SynthParam()
     {
-        if(levelMin != 0.9f)
-        {
-            printf("Parameter: %s has minimum level: %f\n", name.toRawUTF8(), levelMin);
-            printf("last level: %f\n", currentBaseValue);
-            printf("last target: %f\n\n", targetBaseValue);
-        }
     }
      //every parameter needs a distinct name. The SynthParam name and the id of the associated APVTS parameter are the same
     std::vector<ModSource*> modSources;
@@ -58,8 +51,6 @@ public:
     void setBase(float val) //for setting the value from a silder or similar
     {
         targetBaseValue = val;
-        if(name.contains("Level") && val == 1.0f)
-            targetBaseValue = 1.0f;
     }
     float getBaseValue() {return currentBaseValue; }
     float getMin() {return min; }
@@ -79,8 +70,6 @@ protected:
     float adjOut;
     juce::Colour paramColor;
     bool hasChosenColor;
-    float levelMin;
-    bool targetBelow01;
 };
 
 class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it

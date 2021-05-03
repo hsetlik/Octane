@@ -88,6 +88,19 @@ public:
     }
     void mouseDown(const juce::MouseEvent& e) override;
     virtual void addModSource(ParamComponent* srcComp) {} //override this to add the specific shape of mod source
+    void removeModSource(ParamComponent* toRemove)
+    {
+        int idx = 0;
+        for(auto src : addedSources)
+        {
+            if(toRemove == src)
+            {
+                addedSources.erase(addedSources.begin() + idx);
+                return;
+            }
+            ++idx;
+        }
+    }
     void sliderValueChanged(juce::Slider* s) override;
     juce::Slider mainSlider;
     std::vector<ParamComponent*> addedSources;
@@ -99,9 +112,10 @@ public:
     class DepthSliderRotary : public juce::Component, juce::Slider::Listener
     {
     public:
-        DepthSliderRotary(ModSource* s);
+        DepthSliderRotary(ModSource* s, ParamComponent* sComp);
         ~DepthSliderRotary() {dSlider.setLookAndFeel(nullptr);}
         ModSource* const src;
+        ParamComponent* const srcComp;
         void sliderValueChanged(juce::Slider* s) override
         {
             src->depth = s->getValue();
@@ -113,7 +127,7 @@ public:
         }
         void resized() override
         {
-            setBounds(getBounds());
+            dSlider.setBounds(getLocalBounds());
         }
         juce::Slider dSlider;
         DepthSliderLookAndFeel depthLnF;

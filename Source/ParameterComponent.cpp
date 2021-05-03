@@ -85,7 +85,7 @@ selectedIndex(0)
     mainSlider.setLookAndFeel(&LnF);
 }
 
-ParamCompRotary::DepthSliderRotary::DepthSliderRotary(ModSource* s) : src(s)
+ParamCompRotary::DepthSliderRotary::DepthSliderRotary(ModSource* s, ParamComponent* sComp) : src(s), srcComp(sComp)
 {
     dSlider.addListener(this);
     addAndMakeVisible(&dSlider);
@@ -103,9 +103,9 @@ void ParamCompRotary::SourceButtonsRotary::resized()
     auto dX = fBounds.getWidth() / 9;
     auto xCenter = fBounds.getWidth() / 2;
     auto yCenter = fBounds.getHeight() / 2;
-    sButton.setBounds(6 * dX, dX, dX, dX);
+    sButton.setBounds(5 * dX, dX / 2, dX, dX);
     sButton.setTransform(juce::AffineTransform::rotation(angle, xCenter, yCenter));
-    cButton.setBounds(6 * dX, dX, dX, dX);
+    cButton.setBounds(5 * dX, dX / 2, dX, dX);
     cButton.setTransform(juce::AffineTransform::rotation(juce::MathConstants<float>::pi, xCenter, yCenter));
 }
 
@@ -133,7 +133,7 @@ void ParamCompRotary::SourceButtonsRotary::paint(juce::Graphics &g)
 void ParamCompRotary::addModSource(ParamComponent *src)
 {
     printf("%s is adding Source: %s\n", linkedParam->name.toRawUTF8(), src->linkedParam->name.toRawUTF8());
-    depthSliders.add(new DepthSliderRotary(src->linkedParam->makeSource(0.5f)));
+    depthSliders.add(new DepthSliderRotary(src->linkedParam->makeSource(0.5f), src));
     buttonGroups.add(new SourceButtonsRotary(depthSliders.size() - 1));
     auto nSlider = depthSliders.getLast();
     auto nButtons = buttonGroups.getLast();
@@ -172,6 +172,7 @@ void ParamCompRotary::buttonClicked(juce::Button *b)
             currentButttons = nullptr;
             currentDepthSlider = nullptr;
         }
+        removeModSource(depthSliders[idx]->srcComp);
         buttonGroups.remove(idx);
         depthSliders.remove(idx);
         resetIndeces();
@@ -195,12 +196,13 @@ void ParamCompRotary::resized()
     {
         group->setBounds(fBounds.toType<int>().reduced(dX));
     }
-    auto innerBounds = fBounds.withSizeKeepingCentre(6 * dX, 6 * dX);
+    
     for(auto slider : depthSliders)
     {
-        slider->setBounds(innerBounds.toType<int>());
+        slider->setBounds(fBounds.toType<int>().reduced(2 * dX));
+        slider->repaint();
     }
-    innerBounds = fBounds.withSizeKeepingCentre(5 * dX, 5 * dX);
+    auto innerBounds = fBounds.toType<int>().reduced(3 * dX);
     if(currentDepthSlider != nullptr)
     {
         currentButttons->toFront(true);

@@ -22,8 +22,15 @@ void OscillatorPanel::resized()
 {
     auto dX = getWidth() / 2;
     auto dY = getHeight() / 2;
-    levelComp.setBounds(0, 0, dY, dY);
-    posComp.setBounds(dX, 0, dY, dY);
+    auto topY = dY / 2;
+    auto leftX = (dX / 2) - (dY / 2);
+    levelComp.setBounds(leftX, topY, dY, dY);
+    posComp.setBounds(dX + leftX, topY, dY, dY);
+}
+
+void OscillatorPanel::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colours::white);
 }
 
 //==============================================================================

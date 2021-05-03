@@ -16,6 +16,7 @@ class OscillatorPanel : public juce::Component
 public:
     OscillatorPanel(SynthParam* lParam, SynthParam* pParam);
     void resized() override;
+    void paint(juce::Graphics& g) override;
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;

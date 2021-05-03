@@ -60,11 +60,13 @@ public:
     void tickBlock(); //update the things that need to be updated once per buffer
     void tickSample(); //update the things that need continuous modulation
 private:
-    SynthParameterGroup* params;
-    int voiceIndex;
+    SynthParameterGroup* const params;
+    const int voiceIndex;
     int oscIndex;
     double fundamental;
     float position;
+    std::vector<ContinuousVoiceParam*> ampOutputs;
+    std::vector<ContinuousVoiceParam*> modOutputs;
     juce::OwnedArray<OctaneOsc> oscillators;
     float lastOutput;
     int sample;

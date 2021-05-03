@@ -17,6 +17,10 @@ fundamental(440.0f)
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
         oscillators.add(new OctaneOsc(waveFolder[i + 1]));
+        auto pAmp = params->oscAmpEnvs[i];
+        auto pMod = params->oscModEnvs[i];
+        ampOutputs.push_back(pAmp);
+        modOutputs.push_back(pMod);
     }
 }
 
@@ -55,7 +59,21 @@ void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int st
 
 void OctaneVoice::tickBlock()
 {
-    
+    for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
+    {
+        oscillators[oscIndex]->ampEnv.setDelay(params->aDelays[oscIndex]->getActual());
+        oscillators[oscIndex]->modEnv.setDelay(params->mDelays[oscIndex]->getActual());
+        oscillators[oscIndex]->ampEnv.setAttack(params->aAttacks[oscIndex]->getActual());
+        oscillators[oscIndex]->modEnv.setAttack(params->mAttacks[oscIndex]->getActual());
+        oscillators[oscIndex]->ampEnv.setHold(params->aHolds[oscIndex]->getActual());
+        oscillators[oscIndex]->modEnv.setHold(params->mHolds[oscIndex]->getActual());
+        oscillators[oscIndex]->ampEnv.setDecay(params->aDecays[oscIndex]->getActual());
+        oscillators[oscIndex]->modEnv.setDecay(params->mDecays[oscIndex]->getActual());
+        oscillators[oscIndex]->ampEnv.setSustain(params->aSustains[oscIndex]->getActual());
+        oscillators[oscIndex]->modEnv.setSustain(params->mSustains[oscIndex]->getActual());
+        oscillators[oscIndex]->ampEnv.setRelease(params->aReleases[oscIndex]->getActual());
+        oscillators[oscIndex]->modEnv.setRelease(params->mReleases[oscIndex]->getActual());
+    }
 }
 
 void OctaneVoice::tickSample()
@@ -63,6 +81,8 @@ void OctaneVoice::tickSample()
     lastOutput = 0.0f;
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
+        ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
+        modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
         oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual());
         oscillators[oscIndex]->setLevel(params->oscLevels[oscIndex]->getActual());
         lastOutput += (oscillators[oscIndex]->getSample(fundamental) / (float) NUM_OSCILLATORS);

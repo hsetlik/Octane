@@ -10,16 +10,7 @@
 
 #include "ModulationSystem.h"
 
-float SynthParam::getActual()
-{
-    tickValue();
-    actualOut = currentBaseValue;
-    for(auto src : modSources)
-    {
-        actualOut += actualOffset(src);
-    }
-    return actualOut;
-}
+
 
 float SynthParam::getAdjusted()
 {
@@ -79,9 +70,9 @@ linkedTree(tree)
     {
         auto iStr = juce::String(i);
         juce::String posName = "OscillatorPos" + iStr;
-        oscPositions.add(new SynthParam(posName, 0.0f, 1.0f, 0.0f));
+        oscPositions.add(new GlobalTargetParam(posName, 0.0f, 1.0f, 0.0f));
         auto levelName = "OscillatorLevel" + iStr;
-        oscLevels.add(new SynthParam(levelName, 0.0f, 1.0f, 1.0f));
+        oscLevels.add(new GlobalTargetParam(levelName, 0.0f, 1.0f, 1.0f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;
@@ -96,45 +87,32 @@ linkedTree(tree)
         auto mRelease = "ModEnvRelease" + iStr;
         auto aRelease = "AmpEnvRelease" + iStr;
         
-        mDelays.add(new SynthParam(mDelay, DELAY_MIN, DELAY_MAX, DELAY_DEFAULT));
-        aDelays.add(new SynthParam(aDelay, DELAY_MIN, DELAY_MAX, DELAY_DEFAULT));
-        mAttacks.add(new SynthParam(mAttack, ATTACK_MIN, ATTACK_MAX, ATTACK_DEFAULT));
-        aAttacks.add(new SynthParam(aAttack, ATTACK_MIN, ATTACK_MAX, ATTACK_DEFAULT));
-        mHolds.add(new SynthParam(mHold, HOLD_MIN, HOLD_MAX, HOLD_DEFAULT));
-        aHolds.add(new SynthParam(aHold, HOLD_MIN, HOLD_MAX, HOLD_DEFAULT));
-        mDecays.add(new SynthParam(mDecay, DECAY_MIN, DECAY_MAX, DECAY_DEFAULT));
-        aDecays.add(new SynthParam(aDecay, DECAY_MIN, DECAY_MAX, DECAY_DEFAULT));
-        mSustains.add(new SynthParam(mSustain, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
-        aSustains.add(new SynthParam(aDelay, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
-        mReleases.add(new SynthParam(mRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
-        aReleases.add(new SynthParam(aRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
+        mDelays.add(new GlobalTargetParam(mDelay, DELAY_MIN, DELAY_MAX, DELAY_DEFAULT));
+        aDelays.add(new GlobalTargetParam(aDelay, DELAY_MIN, DELAY_MAX, DELAY_DEFAULT));
+        mAttacks.add(new GlobalTargetParam(mAttack, ATTACK_MIN, ATTACK_MAX, ATTACK_DEFAULT));
+        aAttacks.add(new GlobalTargetParam(aAttack, ATTACK_MIN, ATTACK_MAX, ATTACK_DEFAULT));
+        mHolds.add(new GlobalTargetParam(mHold, HOLD_MIN, HOLD_MAX, HOLD_DEFAULT));
+        aHolds.add(new GlobalTargetParam(aHold, HOLD_MIN, HOLD_MAX, HOLD_DEFAULT));
+        mDecays.add(new GlobalTargetParam(mDecay, DECAY_MIN, DECAY_MAX, DECAY_DEFAULT));
+        aDecays.add(new GlobalTargetParam(aDecay, DECAY_MIN, DECAY_MAX, DECAY_DEFAULT));
+        mSustains.add(new GlobalTargetParam(mSustain, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
+        aSustains.add(new GlobalTargetParam(aDelay, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
+        mReleases.add(new GlobalTargetParam(mRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
+        aReleases.add(new GlobalTargetParam(aRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
+        
+        auto mOutput = "ModEnvOutput" + iStr;
+        auto aOutput = "AmpEnvOutput" + iStr;
+        
+        oscModEnvs.add(new ContinuousVoiceParam(mOutput, 0.0f, 1.0f, 0.0f));
+        oscAmpEnvs.add(new ContinuousVoiceParam(aOutput, 0.0f, 1.0f, 0.0f));
     }
-    allVecs.push_back(&oscPositions);
-    allVecs.push_back(&oscLevels);
     
-    allVecs.push_back(&mDelays);
-    allVecs.push_back(&aDelays);
-    allVecs.push_back(&mAttacks);
-    allVecs.push_back(&aAttacks);
-    allVecs.push_back(&mHolds);
-    allVecs.push_back(&aHolds);
-    allVecs.push_back(&mDecays);
-    allVecs.push_back(&aDecays);
-    allVecs.push_back(&mSustains);
-    allVecs.push_back(&aSustains);
-    allVecs.push_back(&mReleases);
-    allVecs.push_back(&aReleases);
+    
 }
 
 void SynthParameterGroup::updateForBlock(apvts &tree)
 {
-    for(auto vec : allVecs)
-    {
-        for(auto param : *vec)
-        {
-            param->setBase(*tree.getRawParameterValue(param->name));
-        }
-    }
+    
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout SynthParameterGroup::createLayout()

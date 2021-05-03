@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "FFT.h"
 #include "DAHDSR.h"
+#include "ModulationSystem.h"
 
 #define TABLESIZE 2048
 #define FFT_ORDER 11
@@ -100,6 +101,8 @@ public:
     int getNumFrames() {return pOsc->numFrames; }
     void setPosition(float newPos) {position = newPos;}
     void setLevel(float newLevel) {level = newLevel;}
+    float lastAmpEnv() {return ampEnv.output; }
+    float lastModEnv() {return modEnv.output; }
     DAHDSR ampEnv;
     DAHDSR modEnv;
 private:

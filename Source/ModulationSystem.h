@@ -14,6 +14,7 @@
 //macros to define what parameters should be created
 #define NUM_OSCILLATORS 4
 #define NUM_LFOS 4
+#define NUM_VOICES 6
 
 class SynthParam;
 
@@ -38,14 +39,13 @@ public:
     hasChosenColor(false)
     {
     }
-    ~SynthParam()
+    virtual ~SynthParam()
     {
     }
-     //every parameter needs a distinct name. The SynthParam name and the id of the associated APVTS parameter are the same
     std::vector<ModSource*> modSources;
     const juce::String name;
     void tickValue();
-    float getActual();
+    virtual float getActual(int voiceIndex=0) {return 0.0f; }
     float getAdjusted(); //the value normalized to the range 0 - 1
     ModSource* makeSource(float d);
     void setBase(float val) //for setting the value from a silder or similar
@@ -64,45 +64,89 @@ public:
     void addSource(SynthParam* src, float depth = 1.0f) {modSources.push_back(src->makeSource(depth)); }
     void removeSource(ModSource* toRemove);
     juce::Colour getColor() {return paramColor; }
-private:
+protected:
     float min, max;
     float currentBaseValue;
     float targetBaseValue;
     float maxSampleDelta;
-protected:
     float actualOffset(ModSource* mod);
     float actualOut;
     float adjOut;
     juce::Colour paramColor;
     bool hasChosenColor;
+    bool isVoiceDependent;
+};
+//=============================================================================================================
+class GlobalTargetParam : public SynthParam
+{
+public:
+    GlobalTargetParam(juce::String n, float lo=0.0f, float hi=1.0f, float normal=0.5f) :
+    SynthParam(n, lo, hi, normal)
+    {
+        
+    }
+    float getActual(int voice=0) override
+    {
+        tickValue();
+        actualOut = currentBaseValue;
+        for(auto src : modSources)
+        {
+            actualOut += actualOffset(src);
+        }
+        return actualOut;
+    }
+};
+
+//=============================================================================================================
+class ContinuousVoiceParam : public SynthParam
+{
+public:
+    ContinuousVoiceParam(juce::String n, float lo=0.0f, float hi=1.0f, float normal=0.5f) :
+    SynthParam(n, lo, hi, normal)
+    {
+        for(auto val : voiceOutputs)
+            val = normal;
+    }
+    void setOutput(int voiceIndex, float newValue)
+    {
+        voiceOutputs[voiceIndex] = newValue;
+    }
+    float getActual(int voiceIndex=0) override
+    {
+        return voiceOutputs[voiceIndex];
+    }
+private:
+    std::array<float, NUM_VOICES> voiceOutputs;
 };
 
 class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it
 {
 public:
     SynthParameterGroup(juce::AudioProcessorValueTreeState* t);
-    using paramVec = juce::OwnedArray<SynthParam>;
-    using paramVecPtr = juce::OwnedArray<SynthParam>*;
+    using paramVecGTarget = juce::OwnedArray<GlobalTargetParam>;
+    using paramVecCont = juce::OwnedArray<ContinuousVoiceParam>;
+    using paramVecPtr = juce::OwnedArray<GlobalTargetParam>*;
     using apvts = juce::AudioProcessorValueTreeState;
     using floatParam = juce::AudioParameterFloat;
     using fRange = juce::NormalisableRange<float>;
     void updateForBlock(apvts& tree);
     apvts::ParameterLayout createLayout();
-    paramVec mDelays;
-    paramVec aDelays;
-    paramVec mAttacks;
-    paramVec aAttacks;
-    paramVec mHolds;
-    paramVec aHolds;
-    paramVec mDecays;
-    paramVec aDecays;
-    paramVec mSustains;
-    paramVec aSustains;
-    paramVec mReleases;
-    paramVec aReleases;
-    paramVec oscPositions;
-    paramVec oscLevels;
-    std::vector<paramVecPtr> allVecs;
+    paramVecGTarget mDelays;
+    paramVecGTarget aDelays;
+    paramVecGTarget mAttacks;
+    paramVecGTarget aAttacks;
+    paramVecGTarget mHolds;
+    paramVecGTarget aHolds;
+    paramVecGTarget mDecays;
+    paramVecGTarget aDecays;
+    paramVecGTarget mSustains;
+    paramVecGTarget aSustains;
+    paramVecGTarget mReleases;
+    paramVecGTarget aReleases;
+    paramVecGTarget oscPositions;
+    paramVecGTarget oscLevels;
+    paramVecCont oscAmpEnvs;
+    paramVecCont oscModEnvs;
     apvts* const linkedTree;
 };
 

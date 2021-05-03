@@ -52,6 +52,7 @@ public:
     ParamCompVertical decayComp;
     ParamCompVertical sustainComp;
     ParamCompVertical releaseComp;
+    EnvelopeGraph graph;
 };
 
 
@@ -67,6 +68,16 @@ private:
     ParamCompRotary posComp;
 };
 
+class SoundSourcePanel : public juce::Component
+{
+public:
+    SoundSourcePanel(SynthParameterGroup* paramGrp, int index);
+    void resized() override;
+private:
+    OscillatorPanel oscPanel;
+    EnvelopePanel envPanel;
+};
+
 class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
 {
 public:
@@ -76,6 +87,8 @@ private:
     juce::OpenGLContext glContext;
     std::vector<juce::Rectangle<int>> oscBoundRects;
     SynthParameterGroup* paramGroup;
-    juce::OwnedArray<OscillatorPanel> oscPanels;
+    juce::OwnedArray<SoundSourcePanel> oscPanels;
     
 };
+
+

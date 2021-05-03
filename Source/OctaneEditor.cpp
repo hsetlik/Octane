@@ -62,9 +62,7 @@ void EnvelopePanel::EnvelopeGraph::paint(juce::Graphics &g)
     path.lineTo(fullWidth * sustainEnd, fBounds.getHeight() - (fBounds.getHeight() * fSustain));
     //to bottom right corner
     path.lineTo(fullWidth, fBounds.getHeight());
-    
     auto stroke = juce::PathStrokeType(1.0f);
-    
     g.strokePath(path, stroke);
 }
 
@@ -80,7 +78,8 @@ attackComp(attack),
 holdComp(hold),
 decayComp(decay),
 sustainComp(sustain),
-releaseComp(release)
+releaseComp(release),
+graph(this)
 {
     addAndMakeVisible(&delayComp);
     addAndMakeVisible(&attackComp);
@@ -88,11 +87,22 @@ releaseComp(release)
     addAndMakeVisible(&decayComp);
     addAndMakeVisible(&sustainComp);
     addAndMakeVisible(&releaseComp);
+    addAndMakeVisible(&graph);
 }
 
 void EnvelopePanel::resized()
 {
+    auto fBounds = getBounds().toFloat();
+    auto dX = fBounds.getWidth() / 6.0f;
+    auto halfHeight = fBounds.getHeight() / 2.0f;
+    graph.setBounds(0, 0, 6 * dX, halfHeight);
     
+    delayComp.setBounds(0, halfHeight, dX, halfHeight);
+    attackComp.setBounds(dX, halfHeight, dX, halfHeight);
+    holdComp.setBounds(2 * dX, halfHeight, dX, halfHeight);
+    decayComp.setBounds(3 * dX, halfHeight, dX, halfHeight);
+    sustainComp.setBounds(4 * dX, halfHeight, dX, halfHeight);
+    releaseComp.setBounds(5 * dX, halfHeight, dX, halfHeight);
 }
 
 void EnvelopePanel::paint(juce::Graphics &g)
@@ -123,7 +133,27 @@ void OscillatorPanel::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::white);
 }
+//===============================================================================
+SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index) :
+oscPanel(allParams->oscLevels[index],
+         allParams->oscPositions[index]),
+envPanel(allParams->aDelays[index],
+         allParams->aAttacks[index],
+         allParams->aHolds[index],
+         allParams->aDecays[index],
+         allParams->aSustains[index],
+         allParams->aReleases[index])
+{
+    addAndMakeVisible(&oscPanel);
+    addAndMakeVisible(&envPanel);
+}
 
+void SoundSourcePanel::resized()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    oscPanel.setBounds(0, 0, fBounds.getWidth(), fBounds.getHeight() / 2);
+    envPanel.setBounds(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
+}
 //==============================================================================
 
 OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup) : paramGroup(pGroup)
@@ -131,9 +161,7 @@ OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup) : paramGroup(pGroup)
     glContext.attachTo(*this);
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
-        auto lPtr = paramGroup->oscLevels[i];
-        auto pPtr = paramGroup->oscPositions[i];
-        oscPanels.add(new OscillatorPanel(lPtr, pPtr));
+        oscPanels.add(new SoundSourcePanel(paramGroup, i));
         auto panel = oscPanels.getLast();
         addAndMakeVisible(panel);
     }

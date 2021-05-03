@@ -52,6 +52,11 @@ public:
     {
         targetBaseValue = val;
     }
+    void setDierct(float val) //set the value directly and bypass parameter smoothing
+    {
+        setBase(val);
+        currentBaseValue = targetBaseValue;
+    }
     float getBaseValue() {return currentBaseValue; }
     float getMin() {return min; }
     float getMax() {return max; }

@@ -10,6 +10,51 @@
 
 #pragma once
 #include "ParameterComponent.h"
+#include "DAHDSR.h"
+#define REPAINT_FPS 24
+
+class EnvelopePanel : public juce::Component
+{
+public:
+    class EnvelopeGraph : public juce::AnimatedAppComponent
+    {
+    public:
+        EnvelopeGraph(EnvelopePanel* panel);
+        EnvelopePanel* const linkedPanel;
+        void update() override
+        {
+            updateNumbers();
+            repaint();
+        }
+        void updateNumbers();
+        void paint(juce::Graphics& g) override;
+    private:
+        double lengthMs;
+        float delayEnd;
+        float attackEnd;
+        float holdEnd;
+        float decayEnd;
+        float sustainEnd;
+        float releaseEnd;
+        float fSustain;
+    };
+    EnvelopePanel(SynthParam* delay,
+                  SynthParam* attack,
+                  SynthParam* hold,
+                  SynthParam* decay,
+                  SynthParam* sustain,
+                  SynthParam* release);
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+    ParamCompVertical delayComp;
+    ParamCompVertical attackComp;
+    ParamCompVertical holdComp;
+    ParamCompVertical decayComp;
+    ParamCompVertical sustainComp;
+    ParamCompVertical releaseComp;
+};
+
+
 
 class OscillatorPanel : public juce::Component
 {

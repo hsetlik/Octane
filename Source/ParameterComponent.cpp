@@ -231,3 +231,60 @@ void ParamCompRotary::paint(juce::Graphics &g)
     g.fillEllipse(fBounds);
 }
 
+//=========================================================================
+
+ParamCompVertical::DepthSliderVertical::DepthSliderVertical(ModSource* s, ParamComponent* sComp) :
+src(s),
+srcComp(sComp)
+{
+    dSlider.addListener(this);
+    addAndMakeVisible(&dSlider);
+    dSlider.setRange(0.0f, 1.0f);
+    dSlider.setValue(0.5f);
+    dSlider.setSliderStyle(juce::Slider::LinearVertical);
+    dSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
+    dSlider.setLookAndFeel(&depthLnF);
+}
+
+//==========================================================================
+
+void ParamCompVertical::SourceButtonsVertical::resized()
+{
+    
+}
+
+void ParamCompVertical::SourceButtonsVertical::paint(juce::Graphics &g)
+{
+    
+}
+
+//==========================================================================
+
+ParamCompVertical::ParamCompVertical(SynthParam* p) :
+ParamComponent(p),
+currentButttons(nullptr),
+currentDepthSlider(nullptr), //! these get initialized to \c nullptr because there are no mod sources yet
+selectedIndex(0)
+{
+    
+}
+
+void ParamCompVertical::buttonClicked(juce::Button *b)
+{
+    
+}
+
+void ParamCompVertical::addModSource(ParamComponent *src)
+{
+    
+}
+
+void ParamCompVertical::resized()
+{
+    
+}
+
+void ParamCompVertical::paint(juce::Graphics &g)
+{
+    
+}

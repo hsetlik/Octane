@@ -163,3 +163,62 @@ private:
     ModSystemLookAndFeel LnF;
     int selectedIndex;
 };
+
+//=========================================================================
+
+class ParamCompVertical : public ParamComponent, public juce::Button::Listener
+{
+public:
+    class DepthSliderVertical : public juce::Component, public juce::Slider::Listener
+    {
+    public:
+        DepthSliderVertical(ModSource* s, ParamComponent* sComp);
+        ModSource* const src;
+        ParamComponent* const srcComp;
+        void sliderValueChanged(juce::Slider* s) override
+        {
+            src->depth = s->getValue();
+        }
+        void setFront(bool shouldBeInFront)
+        {
+            setVisible(shouldBeInFront);
+            setEnabled(shouldBeInFront);
+        }
+        void resized() override
+        {
+            dSlider.setBounds(getLocalBounds());
+        }
+        juce::Slider dSlider;
+        DepthSliderLookAndFeel depthLnF;
+    };
+    class SourceButtonsVertical : public SourceButtonGroup
+    {
+    public:
+        SourceButtonsVertical(int idx) : SourceButtonGroup(idx)
+        {
+            
+        }
+        void resized() override;
+        void paint(juce::Graphics& g) override;
+    };
+    ParamCompVertical(SynthParam* p);
+    ~ParamCompVertical() {mainSlider.setLookAndFeel(nullptr); }
+    void buttonClicked(juce::Button* b) override;
+    void addModSource(ParamComponent* src) override;
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+private:
+    void resetIndeces()
+    {
+        for(int i = 0; i < buttonGroups.size(); ++i)
+        {
+            buttonGroups[i]->srcIndex = i;
+        }
+    }
+    juce::OwnedArray<DepthSliderVertical> depthSliders;
+    juce::OwnedArray<SourceButtonsVertical> buttonGroups;
+    SourceButtonsVertical* currentButttons;
+    DepthSliderVertical* currentDepthSlider;
+    ModSystemLookAndFeel LnF;
+    int selectedIndex;
+};

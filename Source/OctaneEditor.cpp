@@ -12,8 +12,7 @@
 
 EnvelopePanel::EnvelopeGraph::EnvelopeGraph(EnvelopePanel* panel) : linkedPanel(panel)
 {
-    setFramesPerSecond(REPAINT_FPS);
-    
+    startTimerHz(REPAINT_FPS);
 }
 
 void EnvelopePanel::EnvelopeGraph::updateNumbers()

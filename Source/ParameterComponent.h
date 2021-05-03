@@ -68,7 +68,7 @@ public:
     CloseButton cButton;
 };
 
-class ParamComponent : public juce::Component, public juce::DragAndDropTarget, public juce::Slider::Listener
+class ParamComponent : public juce::Component, public juce::DragAndDropTarget
 {
 public:
     ParamComponent(SynthParam* p);
@@ -101,12 +101,12 @@ public:
             ++idx;
         }
     }
-    void sliderValueChanged(juce::Slider* s) override;
+    
     juce::Slider mainSlider;
     std::vector<ParamComponent*> addedSources;
 };
 
-class ParamCompRotary : public ParamComponent, public juce::Button::Listener
+class ParamCompRotary : public ParamComponent, public juce::Button::Listener, public juce::Slider::Listener
 {
 public:
     class DepthSliderRotary : public juce::Component, juce::Slider::Listener
@@ -145,6 +145,7 @@ public:
     ParamCompRotary(SynthParam* p);
     ~ParamCompRotary() {mainSlider.setLookAndFeel(nullptr); }
     void buttonClicked(juce::Button* b) override;
+    void sliderValueChanged(juce::Slider* s) override;
     void addModSource(ParamComponent* src) override;
     void resized() override;
     void paint(juce::Graphics& g) override;
@@ -166,13 +167,14 @@ private:
 
 //=========================================================================
 
-class ParamCompVertical : public ParamComponent, public juce::Button::Listener
+class ParamCompVertical : public ParamComponent, public juce::Button::Listener, public juce::Slider::Listener
 {
 public:
     class DepthSliderVertical : public juce::Component, public juce::Slider::Listener
     {
     public:
         DepthSliderVertical(ModSource* s, ParamComponent* sComp);
+        ~DepthSliderVertical() {dSlider.setLookAndFeel(nullptr); }
         ModSource* const src;
         ParamComponent* const srcComp;
         void sliderValueChanged(juce::Slider* s) override
@@ -204,6 +206,10 @@ public:
     ParamCompVertical(SynthParam* p);
     ~ParamCompVertical() {mainSlider.setLookAndFeel(nullptr); }
     void buttonClicked(juce::Button* b) override;
+    void sliderValueChanged(juce::Slider* s) override
+    {
+        linkedParam->setDierct(s->getValue());
+    }
     void addModSource(ParamComponent* src) override;
     void resized() override;
     void paint(juce::Graphics& g) override;

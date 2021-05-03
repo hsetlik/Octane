@@ -16,12 +16,12 @@
 class EnvelopePanel : public juce::Component
 {
 public:
-    class EnvelopeGraph : public juce::AnimatedAppComponent
+    class EnvelopeGraph : public juce::Component, public juce::Timer
     {
     public:
         EnvelopeGraph(EnvelopePanel* panel);
         EnvelopePanel* const linkedPanel;
-        void update() override
+        void timerCallback() override
         {
             updateNumbers();
             repaint();

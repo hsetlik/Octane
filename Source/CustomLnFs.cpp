@@ -39,7 +39,7 @@ void ModSystemLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int
                             , float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &slider)
 {
     auto fPos = slider.getValue() / (slider.getMaximum() - slider.getMinimum() + 0.00001f);
-    auto fBounds = slider.getBounds().toFloat();
+    auto fBounds = slider.getLocalBounds().toFloat();
     auto bkgndWidth = fBounds.getWidth() * 0.2f;
     auto xOffsetBkgnd = (fBounds.getWidth() / 2.0f) - (bkgndWidth / 2.0f);
     auto corner = bkgndWidth / 3.5f;
@@ -98,8 +98,33 @@ void DepthSliderLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, i
     g.strokePath(thumb, strokeType);
 }
 
-void DepthSliderLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &s)
+void DepthSliderLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &slider)
 {
+    auto fPos = slider.getValue() / (slider.getMaximum() - slider.getMinimum() + 0.00001f);
+    auto fBounds = slider.getBounds().toFloat();
+    auto bkgndWidth = fBounds.getWidth() * 0.2f;
+    auto xOffsetBkgnd = (fBounds.getWidth() / 2.0f) - (bkgndWidth / 2.0f);
+    auto corner = bkgndWidth / 3.5f;
+    auto thumbWidth = fBounds.getWidth() * 0.45f;
+    
+    auto thumbXOffset = (fBounds.getWidth() / 2.0f) - (thumbWidth / 2.0f);
+    auto thumbHeight = (fBounds.getHeight() - slider.getTextBoxHeight()) * 0.1f;
+    auto thumbY = (1.0f - fPos) * ((fBounds.getHeight() - slider.getTextBoxHeight()) - thumbHeight - 5);
+    thumbY += 5;
+    //draw the background
+    g.setColour(UXPalette::darkGray);
+    g.fillRoundedRectangle(x + xOffsetBkgnd,
+                           5,
+                           bkgndWidth,
+                           fBounds.getHeight() - (slider.getTextBoxHeight() * 1.2f) - 5,
+                           corner);
+    //draw the thumb
+    g.setColour(UXPalette::highlight);
+    g.fillRoundedRectangle(x + thumbXOffset,
+                           thumbY,
+                           thumbWidth,
+                           thumbHeight,
+                           corner);
     
 }
 

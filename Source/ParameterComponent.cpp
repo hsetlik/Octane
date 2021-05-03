@@ -41,7 +41,6 @@ void CloseButton::paintButton(juce::Graphics &g, bool, bool)
 
 ParamComponent::ParamComponent(SynthParam* p) : linkedParam(p)
 {
-    mainSlider.addListener(this);
     setInterceptsMouseClicks(true, true);
 }
 
@@ -64,10 +63,6 @@ void ParamComponent::mouseDown(const juce::MouseEvent &e)
     juce::DragAndDropContainer::findParentDragContainerFor(this)->startDragging(linkedParam->name, this);
 }
 
-void ParamComponent::sliderValueChanged(juce::Slider *s)
-{
-    linkedParam->setBase((float)s->getValue());
-}
 
 //======================================================================================================
 
@@ -83,7 +78,14 @@ selectedIndex(0)
     mainSlider.setRange(linkedParam->getMin(), linkedParam->getMax());
     mainSlider.setValue(linkedParam->getBaseValue());
     mainSlider.setLookAndFeel(&LnF);
+    mainSlider.addListener(this);
 }
+
+void ParamCompRotary::sliderValueChanged(juce::Slider *s)
+{
+    linkedParam->setBase((float)s->getValue());
+}
+
 
 ParamCompRotary::DepthSliderRotary::DepthSliderRotary(ModSource* s, ParamComponent* sComp) : src(s), srcComp(sComp)
 {
@@ -250,7 +252,15 @@ srcComp(sComp)
 
 void ParamCompVertical::SourceButtonsVertical::resized()
 {
-    
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 3.0f;
+    auto dY = fBounds.getHeight() / 8.0f;
+    if(dX > dY)
+        dX = dY;
+    auto closeBounds = juce::Rectangle<int>(0, (int)7 * dY, dX, dX);
+    cButton.setBounds(closeBounds.reduced(dX / 8));
+    auto selBounds = juce::Rectangle<int>(2 * dX, srcIndex * dX, dX, dX);
+    sButton.setBounds(selBounds.reduced(dX / 8));
 }
 
 void ParamCompVertical::SourceButtonsVertical::paint(juce::Graphics &g)
@@ -266,25 +276,111 @@ currentButttons(nullptr),
 currentDepthSlider(nullptr), //! these get initialized to \c nullptr because there are no mod sources yet
 selectedIndex(0)
 {
-    
+    addAndMakeVisible(&mainSlider);
+    mainSlider.addListener(this);
+    mainSlider.setSliderStyle(juce::Slider::LinearVertical);
+    mainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
+    mainSlider.setRange(linkedParam->getMin(), linkedParam->getMax());
+    mainSlider.setValue(linkedParam->getBaseValue());
+    mainSlider.setLookAndFeel(&LnF);
 }
 
 void ParamCompVertical::buttonClicked(juce::Button *b)
 {
-    
+    CloseButton* cButton;
+    SelectorButton* sButton;
+    if((cButton = dynamic_cast<CloseButton*>(b)))
+    {
+        auto idx = cButton->groupIndex;
+        if(buttonGroups.size() > 1)
+        {
+            if(idx > 0)
+            {
+                currentButttons = buttonGroups[idx - 1];
+                currentDepthSlider = depthSliders[idx - 1];
+            }
+            else if(idx == 0)
+            {
+                currentButttons = buttonGroups[idx + 1];
+                currentDepthSlider = depthSliders[idx + 1];
+            }
+        }
+        else
+        {
+            //! set these back to \c nullptr when all sources are removed
+            currentButttons = nullptr;
+            currentDepthSlider = nullptr;
+        }
+        removeModSource(depthSliders[idx]->srcComp);
+        buttonGroups.remove(idx);
+        depthSliders.remove(idx);
+        resetIndeces();
+    }
+    else if((sButton = dynamic_cast<SelectorButton*>(b)))
+    {
+        auto idx = sButton->groupIndex;
+        currentButttons = buttonGroups[idx];
+        currentDepthSlider = depthSliders[idx];
+    }
+    resized();
 }
 
 void ParamCompVertical::addModSource(ParamComponent *src)
 {
-    
+    printf("%s is adding Source: %s\n", linkedParam->name.toRawUTF8(), src->linkedParam->name.toRawUTF8());
+    depthSliders.add(new DepthSliderVertical(src->linkedParam->makeSource(0.5f), src));
+    buttonGroups.add(new SourceButtonsVertical(depthSliders.size() - 1));
+    auto nSlider = depthSliders.getLast();
+    auto nButtons = buttonGroups.getLast();
+    addAndMakeVisible(nSlider);
+    addAndMakeVisible(nButtons);
+    nButtons->cButton.addListener(this);
+    nButtons->sButton.addListener(this);
+    currentButttons = nButtons;
+    currentDepthSlider = nSlider;
+    resized();
 }
 
 void ParamCompVertical::resized()
 {
-    
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 10;
+    auto childBounds = fBounds.reduced(dX);
+    auto third = childBounds.getWidth() / 4.0f;
+    auto depthSliderBounds = juce::Rectangle<float>(childBounds.getX() + (2 * third),
+                                                    childBounds.getY(),
+                                                    third,
+                                                    childBounds.getHeight());
+    auto mainSliderBounds = juce::Rectangle<float>(childBounds.getX() + third,
+                                                    childBounds.getY(),
+                                                    third,
+                                                    childBounds.getHeight());
+    for(auto grp : buttonGroups)
+        grp->setBounds(childBounds.toType<int>());
+    for(auto d : depthSliders)
+        d->setBounds(depthSliderBounds.toType<int>());
+    mainSlider.setBounds(mainSliderBounds.toType<int>());
+    if(currentDepthSlider != nullptr)
+    {
+        currentButttons->toFront(true);
+        currentDepthSlider->toFront(true);
+        currentButttons->cButton.setVisible(true);
+        currentButttons->cButton.setEnabled(true);
+        
+        for(auto grp : buttonGroups)
+        {
+            if(grp != currentButttons)
+            {
+                grp->cButton.setVisible(false);
+                grp->cButton.setEnabled(false);
+            }
+        }
+    }
+    mainSlider.toFront(true);
+    repaint();
 }
 
 void ParamCompVertical::paint(juce::Graphics &g)
 {
-    
+    g.fillAll(juce::Colours::white);
 }

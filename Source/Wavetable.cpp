@@ -161,8 +161,7 @@ WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0), phase(0.0f), 
         frames.add(new WavetableFrame(fArray));
         buffer.clear();
         currentSample += TABLESIZE;
-        if(i != (numFrames - 1))
-            reader->read(&buffer, 0, TABLESIZE, currentSample, true, true);
+        reader->read(&buffer, 0, TABLESIZE, currentSample, true, true);
     }
     delete reader;
     delete manager;
@@ -188,9 +187,9 @@ doubleVec WavetableOscCore::getGraphData(int resolution)
 }
 float WavetableOscCore::getSample(double hz, float position)
 {
-    bottomIndex = floor(position * frames.size());
-    topIndex = (bottomIndex == frames.size() - 1) ? 0 : bottomIndex + 1;
-    skew = (position * frames.size()) - bottomIndex;
+    bottomIndex = floor(position * (numFrames - 1));
+    topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
+    skew = (position * (numFrames - 1)) - bottomIndex;
     phaseDelta = hz / sampleRate;
     phase += phaseDelta;
     if(phase > 1.0f)
@@ -207,7 +206,7 @@ position(0.0f),
 level(1.0f),
 pOsc(std::make_unique<WavetableOscCore>(src))
 {
-    
+   
 }
 
 void OctaneOsc::replace(juce::File src)

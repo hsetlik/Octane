@@ -80,8 +80,8 @@ selectedIndex(0)
     addAndMakeVisible(&mainSlider);
     mainSlider.setSliderStyle(juce::Slider::Rotary);
     mainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
-    mainSlider.setRange(linkedParam->min, linkedParam->max);
-    mainSlider.setValue(linkedParam->currentBaseValue);
+    mainSlider.setRange(linkedParam->getMin(), linkedParam->getMax());
+    mainSlider.setValue(linkedParam->getBaseValue());
     mainSlider.setLookAndFeel(&LnF);
 }
 

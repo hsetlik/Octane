@@ -30,6 +30,7 @@ void OscillatorPanel::resized()
 
 OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup) : paramGroup(pGroup)
 {
+    glContext.attachTo(*this);
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
         auto lPtr = paramGroup->oscLevels[i];

@@ -73,7 +73,7 @@ private:
 class OctaneSynth : public juce::Synthesiser
 {
 public:
-    OctaneSynth();
+    OctaneSynth(juce::AudioProcessorValueTreeState* tree);
     void setAllSampleRates(double rate)
     {
         setCurrentPlaybackSampleRate(rate);

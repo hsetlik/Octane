@@ -91,18 +91,19 @@ public:
     }
     void replace(juce::File src);
     void setSampleRate(double rate);
-    float getSample(double hz, float position) {return pOsc->getSample(hz, position); }
     float getSample(double hz)
     {
         modEnv.clockOutput();
-        return ampEnv.process(pOsc->getSample(hz, position)) * level;
+        return ampEnv.process(pOsc->getSample(hz, position) * level);
     }
     doubleVec getGraphData(int resolution) {return pOsc->getGraphData(resolution); }
     int getNumFrames() {return pOsc->numFrames; }
-    float position;
-    float level;
+    void setPosition(float newPos) {position = newPos;}
+    void setLevel(float newLevel) {level = newLevel;}
     DAHDSR ampEnv;
     DAHDSR modEnv;
 private:
+    float position;
+    float level;
     std::unique_ptr<WavetableOscCore> pOsc;
 };

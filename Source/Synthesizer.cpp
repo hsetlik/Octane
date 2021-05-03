@@ -16,7 +16,7 @@ fundamental(440.0f)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
-        oscillators.add(new OctaneOsc(waveFolder[i]));
+        oscillators.add(new OctaneOsc(waveFolder[i + 1]));
     }
 }
 
@@ -42,6 +42,7 @@ void OctaneVoice::stopNote(float velocity, bool allowTailOff)
 
 void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
+    tickBlock();
     for(sample = startSample; sample < (startSample + numSamples); ++sample)
     {
         tickSample();
@@ -62,14 +63,15 @@ void OctaneVoice::tickSample()
     lastOutput = 0.0f;
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
-        oscillators[oscIndex]->position = params->oscPositions[oscIndex]->getActual();
-        oscillators[oscIndex]->level = params->oscLevels[oscIndex]->getActual();
+        oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual());
+        oscillators[oscIndex]->setLevel(params->oscLevels[oscIndex]->getActual());
         lastOutput += (oscillators[oscIndex]->getSample(fundamental) / (float) NUM_OSCILLATORS);
     }
 }
 //==============================================================================================================
 
-OctaneSynth::OctaneSynth()
+OctaneSynth::OctaneSynth(juce::AudioProcessorValueTreeState* tree) :
+paramGroup(tree)
 {
     auto appFolder = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory);
     appFolder.setAsCurrentWorkingDirectory();

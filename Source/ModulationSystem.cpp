@@ -56,23 +56,24 @@ void SynthParam::tickValue()
     {
         return;
     }
-    else if(fabs(currentBaseValue - targetBaseValue) <= maxSampleDelta)
-    {
-        currentBaseValue = targetBaseValue;
-    }
-    else if(targetBaseValue > currentBaseValue)
+    else if(targetBaseValue > (currentBaseValue + maxSampleDelta))
     {
         currentBaseValue += maxSampleDelta;
     }
-    else if(targetBaseValue < currentBaseValue)
+    else if(targetBaseValue < (currentBaseValue - maxSampleDelta))
     {
         currentBaseValue -= maxSampleDelta;
+    }
+    else
+    {
+        currentBaseValue = targetBaseValue;
     }
 }
 
 //=======================================================================
 
-SynthParameterGroup::SynthParameterGroup() //this constructor does the heavy lifting of creating parameters
+SynthParameterGroup::SynthParameterGroup(juce::AudioProcessorValueTreeState* tree) : //this constructor does the heavy lifting of creating parameters
+linkedTree(tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
@@ -131,7 +132,7 @@ void SynthParameterGroup::updateForBlock(apvts &tree)
     {
         for(auto param : *vec)
         {
-            param->setBase(tree);
+            param->setBase(*tree.getRawParameterValue(param->name));
         }
     }
 }

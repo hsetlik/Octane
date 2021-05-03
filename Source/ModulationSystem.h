@@ -20,7 +20,7 @@ class SynthParam;
 struct ModSource //represents a modulation source
 {
     ModSource(SynthParam* source, float d=1.0f) : src(source), depth(d) {}
-    SynthParam* src;
+    SynthParam* const src;
     float depth;
 };
 
@@ -33,46 +33,60 @@ public:
     max(hi),
     currentBaseValue(normal),
     targetBaseValue(normal),
-    maxSampleDelta((max - min) / 4000.0f),
+    maxSampleDelta((max - min) / 3000.0f),
     paramColor(juce::Colours::lightblue),
     hasChosenColor(false)
     {
-        
+        levelMin = 0.9f;
     }
-    juce::String name; //every parameter needs a distinct name. The SynthParam name and the id of the associated APVTS parameter are the same
+    ~SynthParam()
+    {
+        if(levelMin != 0.9f)
+        {
+            printf("Parameter: %s has minimum level: %f\n", name.toRawUTF8(), levelMin);
+            printf("last level: %f\n", currentBaseValue);
+            printf("last target: %f\n\n", targetBaseValue);
+        }
+    }
+     //every parameter needs a distinct name. The SynthParam name and the id of the associated APVTS parameter are the same
     std::vector<ModSource*> modSources;
+    const juce::String name;
     void tickValue();
-    float min, max;
-    float currentBaseValue;
-    float targetBaseValue;
-    float maxSampleDelta;
     float getActual();
     float getAdjusted(); //the value normalized to the range 0 - 1
     ModSource* makeSource(float d);
     void setBase(float val) //for setting the value from a silder or similar
     {
         targetBaseValue = val;
+        if(name.contains("Level") && val == 1.0f)
+            targetBaseValue = 1.0f;
     }
-    void setBase(juce::AudioProcessorValueTreeState& tree)
-    {
-        targetBaseValue = *tree.getRawParameterValue(name);
-    }
+    float getBaseValue() {return currentBaseValue; }
+    float getMin() {return min; }
+    float getMax() {return max; }
     void addSource(ModSource* newSrc) { modSources.push_back(newSrc); }
     void addSource(SynthParam* src, float depth = 1.0f) {modSources.push_back(src->makeSource(depth)); }
     void removeSource(ModSource* toRemove);
     juce::Colour getColor() {return paramColor; }
+private:
+    float min, max;
+    float currentBaseValue;
+    float targetBaseValue;
+    float maxSampleDelta;
 protected:
     float actualOffset(ModSource* mod);
     float actualOut;
     float adjOut;
     juce::Colour paramColor;
     bool hasChosenColor;
+    float levelMin;
+    bool targetBelow01;
 };
 
 class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it
 {
 public:
-    SynthParameterGroup();
+    SynthParameterGroup(juce::AudioProcessorValueTreeState* t);
     using paramVec = juce::OwnedArray<SynthParam>;
     using paramVecPtr = juce::OwnedArray<SynthParam>*;
     using apvts = juce::AudioProcessorValueTreeState;
@@ -95,6 +109,7 @@ public:
     paramVec oscPositions;
     paramVec oscLevels;
     std::vector<paramVecPtr> allVecs;
+    apvts* const linkedTree;
 };
 
 

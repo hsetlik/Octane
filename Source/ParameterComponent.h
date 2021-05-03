@@ -73,7 +73,7 @@ class ParamComponent : public juce::Component, public juce::DragAndDropTarget, p
 public:
     ParamComponent(SynthParam* p);
     virtual ~ParamComponent() {}
-    SynthParam* linkedParam;
+    SynthParam* const linkedParam;
     void itemDropped(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override;
     void itemDragEnter(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override{}
     void itemDragExit(const juce::DragAndDropTarget::SourceDetails &dragSourceDetails) override{}
@@ -101,7 +101,7 @@ public:
     public:
         DepthSliderRotary(ModSource* s);
         ~DepthSliderRotary() {dSlider.setLookAndFeel(nullptr);}
-        ModSource* src;
+        ModSource* const src;
         void sliderValueChanged(juce::Slider* s) override
         {
             src->depth = s->getValue();

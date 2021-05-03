@@ -27,6 +27,7 @@ public:
     OctaneEditor(SynthParameterGroup* allParams);
     void resized() override;
 private:
+    juce::OpenGLContext glContext;
     std::vector<juce::Rectangle<int>> oscBoundRects;
     SynthParameterGroup* paramGroup;
     juce::OwnedArray<OscillatorPanel> oscPanels;

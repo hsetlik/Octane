@@ -79,13 +79,17 @@ void OctaneVoice::tickBlock()
 void OctaneVoice::tickSample()
 {
     lastOutput = 0.0f;
+    lastOscLevel = 0.0f;
+    oscLevelSum = 0.0f;
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
         ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
         modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
         oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual());
-        oscillators[oscIndex]->setLevel(params->oscLevels[oscIndex]->getActual());
-        lastOutput += (oscillators[oscIndex]->getSample(fundamental) / (float) NUM_OSCILLATORS);
+        lastOscLevel = params->oscLevels[oscIndex]->getActual();
+        oscLevelSum += lastOscLevel;
+        oscillators[oscIndex]->setLevel(lastOscLevel);
+        lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
     }
 }
 //==============================================================================================================

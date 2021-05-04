@@ -104,6 +104,9 @@ public:
     
     juce::Slider mainSlider;
     std::vector<ParamComponent*> addedSources;
+    bool isSource() {return source; }
+protected:
+    bool source;
 };
 
 //=====================================================================================================================
@@ -113,7 +116,7 @@ class ParamCompSource : public ParamComponent
 public:
     ParamCompSource(SynthParam* s) : ParamComponent(s)
     {
-        
+        source = true;
     }
     void addModSource(ParamComponent* src) override
     {

@@ -39,7 +39,7 @@ void CloseButton::paintButton(juce::Graphics &g, bool, bool)
 
 //===============================================================================================================
 
-ParamComponent::ParamComponent(SynthParam* p) : linkedParam(p)
+ParamComponent::ParamComponent(SynthParam* p) : linkedParam(p), source(false)
 {
     setInterceptsMouseClicks(true, true);
 }
@@ -49,9 +49,8 @@ void ParamComponent::itemDropped(const juce::DragAndDropTarget::SourceDetails &d
     ParamComponent* sourceComp;
     if((sourceComp = dynamic_cast<ParamComponent*>(dragSourceDetails.sourceComponent.get())))
     {
-        if(!StlUtil::existsIn(addedSources, sourceComp) &&(sourceComp != this))
+        if(!StlUtil::existsIn(addedSources, sourceComp) &&(sourceComp != this) && (sourceComp->isSource()))
         {
-            
             addedSources.push_back(sourceComp);
             addModSource(sourceComp);
         }
@@ -61,7 +60,8 @@ void ParamComponent::itemDropped(const juce::DragAndDropTarget::SourceDetails &d
 
 void ParamComponent::mouseDown(const juce::MouseEvent &e)
 {
-    juce::DragAndDropContainer::findParentDragContainerFor(this)->startDragging(linkedParam->name, this);
+    if(isSource())
+        juce::DragAndDropContainer::findParentDragContainerFor(this)->startDragging(linkedParam->name, this);
 }
 
 

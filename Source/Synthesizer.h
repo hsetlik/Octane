@@ -68,6 +68,8 @@ private:
     std::vector<ContinuousVoiceParam*> ampOutputs;
     std::vector<ContinuousVoiceParam*> modOutputs;
     juce::OwnedArray<OctaneOsc> oscillators;
+    float oscLevelSum;
+    float lastOscLevel;
     float lastOutput;
     int sample;
 };

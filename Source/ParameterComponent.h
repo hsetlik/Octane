@@ -106,6 +106,31 @@ public:
     std::vector<ParamComponent*> addedSources;
 };
 
+//=====================================================================================================================
+
+class ParamCompSource : public ParamComponent
+{
+public:
+    ParamCompSource(SynthParam* s) : ParamComponent(s)
+    {
+        
+    }
+    void addModSource(ParamComponent* src) override
+    {
+        removeModSource(src); //! don't allow these components to recieve modulation
+    }
+    void paint(juce::Graphics &g) override
+    {
+        g.setColour(UXPalette::darkGray);
+        auto fBounds = getLocalBounds().toFloat();
+        g.fillEllipse(fBounds);
+        g.setColour(linkedParam->getColor());
+        g.fillEllipse(fBounds.reduced(fBounds.getWidth() / 8.0f));
+    }
+};
+
+//======================================================================================================================
+
 class ParamCompRotary : public ParamComponent, public juce::Button::Listener, public juce::Slider::Listener
 {
 public:

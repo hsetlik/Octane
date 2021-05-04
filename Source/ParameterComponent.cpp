@@ -51,8 +51,9 @@ void ParamComponent::itemDropped(const juce::DragAndDropTarget::SourceDetails &d
     {
         if(!StlUtil::existsIn(addedSources, sourceComp) &&(sourceComp != this))
         {
-            addModSource(sourceComp);
+            
             addedSources.push_back(sourceComp);
+            addModSource(sourceComp);
         }
     }
         

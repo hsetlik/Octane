@@ -43,7 +43,8 @@ public:
                   SynthParam* hold,
                   SynthParam* decay,
                   SynthParam* sustain,
-                  SynthParam* release);
+                  SynthParam* release,
+                  SynthParam* src);
     void resized() override;
     void paint(juce::Graphics& g) override;
     ParamCompVertical delayComp;
@@ -52,6 +53,9 @@ public:
     ParamCompVertical decayComp;
     ParamCompVertical sustainComp;
     ParamCompVertical releaseComp;
+    
+    ParamCompSource srcComp;
+    
     EnvelopeGraph graph;
 };
 

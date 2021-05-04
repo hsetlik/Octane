@@ -71,13 +71,15 @@ EnvelopePanel::EnvelopePanel(SynthParam* delay,
                              SynthParam* hold,
                              SynthParam* decay,
                              SynthParam* sustain,
-                             SynthParam* release) :
+                             SynthParam* release,
+                             SynthParam* src) :
 delayComp(delay),
 attackComp(attack),
 holdComp(hold),
 decayComp(decay),
 sustainComp(sustain),
 releaseComp(release),
+srcComp(src),
 graph(this)
 {
     addAndMakeVisible(&delayComp);
@@ -87,6 +89,7 @@ graph(this)
     addAndMakeVisible(&sustainComp);
     addAndMakeVisible(&releaseComp);
     addAndMakeVisible(&graph);
+    addAndMakeVisible(&srcComp);
 }
 
 void EnvelopePanel::resized()
@@ -102,6 +105,10 @@ void EnvelopePanel::resized()
     decayComp.setBounds(3 * dX, halfHeight, dX, halfHeight);
     sustainComp.setBounds(4 * dX, halfHeight, dX, halfHeight);
     releaseComp.setBounds(5 * dX, halfHeight, dX, halfHeight);
+    
+    dX = getWidth() / 24.0f;
+    srcComp.setBounds(18 * dX, 2 * dX, 4 * dX, 4 * dX);
+    srcComp.toFront(true);
 }
 
 void EnvelopePanel::paint(juce::Graphics &g)
@@ -141,7 +148,8 @@ envPanel(allParams->aDelays[index],
          allParams->aHolds[index],
          allParams->aDecays[index],
          allParams->aSustains[index],
-         allParams->aReleases[index])
+         allParams->aReleases[index],
+         allParams->oscAmpEnvs[index])
 {
     addAndMakeVisible(&oscPanel);
     addAndMakeVisible(&envPanel);

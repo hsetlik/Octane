@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "Wavetable.h"
 #include "DAHDSR.h"
+#include "LFO.h"
 #include "ModulationSystem.h"
 
 
@@ -62,11 +63,14 @@ public:
     SynthParameterGroup* const params;
     const int voiceIndex;
     int oscIndex;
+    int lfoIndex;
     double fundamental;
     float position;
     std::vector<ContinuousVoiceParam*> ampOutputs;
     std::vector<ContinuousVoiceParam*> modOutputs;
+    std::vector<ContinuousVoiceParam*> lfoOutputs;
     juce::OwnedArray<OctaneOsc> oscillators;
+    juce::OwnedArray<OctaneLFO> lfos;
     float oscLevelSum;
     float lastOscLevel;
     float lastOutput;

@@ -22,6 +22,11 @@ fundamental(440.0f)
         ampOutputs.push_back(pAmp);
         modOutputs.push_back(pMod);
     }
+    for(lfoIndex = 0; lfoIndex < NUM_LFOS; ++lfoIndex)
+    {
+        lfos.add(new OctaneLFO(LFO_Functions::createSineTable));
+    }
+    
 }
 
 OctaneVoice::~OctaneVoice()
@@ -121,9 +126,8 @@ paramGroup(tree)
         oVoices.push_back(vOct);
     }
     addSound(new OctaneSound());
-    auto& graphVectors = paramGroup.oscGraphVectors;
     int idx = 0;
-    for(auto osc : graphVectors)
+    for(auto& osc : paramGroup.oscGraphVectors)
     {
         osc = oVoices[0]->oscillators[idx]->getGraphData(128);
         ++idx;

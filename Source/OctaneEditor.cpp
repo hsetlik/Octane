@@ -116,64 +116,15 @@ void EnvelopePanel::paint(juce::Graphics &g)
     
 }
 //=========================================================================
-OscillatorPanel::WaveDisplay::WaveDisplay(std::vector<std::vector<float>> d) : data(d)
-{
-    createWaves();
-    setFramesPerSecond(REPAINT_FPS);
-}
 
-void OscillatorPanel::WaveDisplay::update()
-{
-    repaint();
-}
-
-void OscillatorPanel::WaveDisplay::createWaves()
-{
-    if(data.size() > 0)
-    {
-        auto fBounds = getLocalBounds().toFloat();
-        auto width = fBounds.getWidth();
-        auto y0 = fBounds.getHeight() / 2.0f;
-        auto amplitude = y0 * 1.5f;
-        auto dX = width / data[0].size();
-        paths.clear();
-        for(auto frame : data)
-        {
-            paths.add(new juce::Path());
-            auto& path = *paths.getLast();
-            path.startNewSubPath(0.0f, fBounds.getHeight());
-            path.lineTo(0.0f, y0);
-            int idx = 0;
-            for(auto point : frame)
-            {
-                path.lineTo(idx * dX, y0 + (point * amplitude));
-                ++idx;
-            }
-            path.lineTo(fBounds.getWidth(), fBounds.getHeight());
-            path.closeSubPath();
-            alterFor3d(&path, (float)idx);
-        }
-    }
-}
-
-void OscillatorPanel::WaveDisplay::paint(juce::Graphics &g)
-{
-    g.fillAll(UXPalette::darkBkgnd);
-    g.setColour(UXPalette::highlight);
-    auto stroke = juce::PathStrokeType(1.0f);
-    for(auto path : paths)
-        g.strokePath(*path, stroke);
-}
 
 //==============================================================================
-OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> d) :
+OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam) :
 levelComp(lParam),
-posComp(pParam),
-graph(d)
+posComp(pParam)
 {
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
-    addAndMakeVisible(&graph);
 }
 
 void OscillatorPanel::resized()
@@ -183,8 +134,8 @@ void OscillatorPanel::resized()
     auto dY = fBounds.getHeight() / 10;
     auto squareSide = (dX > dY) ? dY : dX;
     auto trim = dX / 2.5f;
-    auto displayBounds = juce::Rectangle<float>(0.0f, dY, 5 * dX, 8 * dY);
-    graph.setBounds(displayBounds.reduced(trim).toType<int>());
+    //auto displayBounds = juce::Rectangle<float>(0.0f, dY, 5 * dX, 8 * dY);
+    //graph.setBounds(displayBounds.reduced(trim).toType<int>());
     auto topBounds = juce::Rectangle<float>(5 * dX, dY, 5 * squareSide, 5 * squareSide);
     auto bottomBounds = juce::Rectangle<float>(5 * dX, 5 * dY, 5 * squareSide, 5 * squareSide);
     posComp.setBounds(topBounds.reduced(trim).toType<int>());
@@ -198,8 +149,7 @@ void OscillatorPanel::paint(juce::Graphics &g)
 //===============================================================================
 SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index) :
 oscPanel(allParams->oscLevels[index],
-         allParams->oscPositions[index],
-         allParams->oscGraphVectors[index]),
+         allParams->oscPositions[index]),
 ampEnvPanel(allParams->aDelays[index],
          allParams->aAttacks[index],
          allParams->aHolds[index],

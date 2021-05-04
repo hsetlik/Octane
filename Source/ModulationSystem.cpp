@@ -106,8 +106,12 @@ linkedTree(tree)
         oscModEnvs.add(new ContinuousVoiceParam(mOutput, 0.0f, 1.0f, 0.0f));
         oscAmpEnvs.add(new ContinuousVoiceParam(aOutput, 0.0f, 1.0f, 0.0f));
     }
-    
-    
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        auto iStr = juce::String(i);
+        auto lfoId = "LfoOutput" + iStr;
+        lfoOutputs.add( new ContinuousVoiceParam(lfoId, 0.0f, 1.0f, 0.0f));
+    }
 }
 
 void SynthParameterGroup::updateForBlock(apvts &tree)

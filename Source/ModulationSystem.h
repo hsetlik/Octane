@@ -11,6 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "DAHDSR.h"
+#include "LFO.h"
 //macros to define what parameters should be created
 #define NUM_OSCILLATORS 4
 #define NUM_LFOS 4
@@ -145,10 +146,14 @@ public:
     paramVecGTarget aReleases;
     paramVecGTarget oscPositions;
     paramVecGTarget oscLevels;
+    paramVecGTarget lfoRates;
+    paramVecGTarget lfoRetriggers;
     paramVecCont oscAmpEnvs;
     paramVecCont oscModEnvs;
+    paramVecCont lfoOutputs;
     apvts* const linkedTree;
     std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
+    std::array<lfoArray, NUM_LFOS> lfoShapes;
 };
 
 

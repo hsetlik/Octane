@@ -17,6 +17,7 @@ using lfoFunc = std::function<void(lfoArray&)>;
 
 class LFO_Functions
 {
+public:
     static void createSineTable(lfoArray& dest)
     {
         auto phaseDelta = juce::MathConstants<float>::twoPi / (float)LFO_POINTS;

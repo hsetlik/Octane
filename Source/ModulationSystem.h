@@ -148,6 +148,7 @@ public:
     paramVecCont oscAmpEnvs;
     paramVecCont oscModEnvs;
     apvts* const linkedTree;
+    std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
 };
 
 

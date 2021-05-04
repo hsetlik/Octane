@@ -14,7 +14,7 @@
 #include "DAHDSR.h"
 #include "ModulationSystem.h"
 
-#define NUM_VOICES 4
+
 
 class OctaneSound : public juce::SynthesiserSound
 {
@@ -59,7 +59,6 @@ public:
     //===============================================
     void tickBlock(); //update the things that need to be updated once per buffer
     void tickSample(); //update the things that need continuous modulation
-private:
     SynthParameterGroup* const params;
     const int voiceIndex;
     int oscIndex;

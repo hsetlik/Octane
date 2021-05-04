@@ -71,17 +71,28 @@ public:
         void update() override;
         void paint(juce::Graphics& g) override;
         void createWaves();
+        void alterFor3d(juce::Path* p, float index)
+        {
+            auto numTraces = paths.size();
+            auto fBounds = getBounds().toFloat();
+            auto dX = fBounds.getWidth() / numTraces / 4;
+            auto dY = fBounds.getHeight() / numTraces / 4;
+            auto t = juce::AffineTransform::scale(0.55f, 0.55f).followedBy(juce::AffineTransform::shear(0.0f, 0.2f)).followedBy(juce::AffineTransform::translation((dX * index) + (fBounds.getWidth() / 8), -(dY * index * 0.7f) +  (fBounds.getHeight() / 5)));
+            p->applyTransform(t);
+        }
         void setData(std::vector<std::vector<float>>& d) {data = d; }
     private:
         std::vector<std::vector<float>> data;
         juce::OwnedArray<juce::Path> paths;
     };
-    OscillatorPanel(SynthParam* lParam, SynthParam* pParam);
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> d);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
+    WaveDisplay graph;
+    
 };
 
 class SoundSourcePanel : public juce::Component

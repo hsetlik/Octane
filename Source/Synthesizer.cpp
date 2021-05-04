@@ -121,4 +121,11 @@ paramGroup(tree)
         oVoices.push_back(vOct);
     }
     addSound(new OctaneSound());
+    auto& graphVectors = paramGroup.oscGraphVectors;
+    int idx = 0;
+    for(auto osc : graphVectors)
+    {
+        osc = oVoices[0]->oscillators[idx]->getGraphData(128);
+        ++idx;
+    }
 }

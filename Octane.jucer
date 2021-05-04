@@ -5,6 +5,13 @@
               companyName="Setlik" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="BlyAuj" name="Octane">
     <GROUP id="{928B63EB-1631-FD93-F26F-D2D356867D80}" name="Source">
+      <GROUP id="{3D985EE7-878A-7D50-68C5-D17E6DF8EE9F}" name="OpenGLUtil">
+        <FILE id="SYE22V" name="OpenGLUtil.hpp" compile="0" resource="0" file="Source/OpenGLUtil/OpenGLUtil.hpp"/>
+        <FILE id="zgrlww" name="WavefrontObjFile.hpp" compile="0" resource="0"
+              file="Source/OpenGLUtil/WavefrontObjFile.hpp"/>
+        <FILE id="lQbi4P" name="WavefrontShape.hpp" compile="0" resource="0"
+              file="Source/OpenGLUtil/WavefrontShape.hpp"/>
+      </GROUP>
       <FILE id="obAGki" name="ModulationSystem.cpp" compile="1" resource="0"
             file="Source/ModulationSystem.cpp"/>
       <FILE id="KNvQIA" name="ModulationSystem.h" compile="0" resource="0"
@@ -41,6 +48,8 @@
         <FILE id="NcghUy" name="ParamSlider.cpp" compile="1" resource="0" file="Source/ParamSlider.cpp"/>
         <FILE id="pjD9VN" name="ParamSlider.h" compile="0" resource="0" file="Source/ParamSlider.h"/>
         <FILE id="N7L9pF" name="RgbColor.h" compile="0" resource="0" file="Source/RgbColor.h"/>
+        <FILE id="JggTqI" name="WaveDisplay.cpp" compile="1" resource="0" file="Source/WaveDisplay.cpp"/>
+        <FILE id="v2CrIS" name="WaveDisplay.h" compile="0" resource="0" file="Source/WaveDisplay.h"/>
       </GROUP>
       <FILE id="ZjzaAX" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>

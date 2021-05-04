@@ -79,7 +79,8 @@ public:
     void resized() override;
 private:
     OscillatorPanel oscPanel;
-    EnvelopePanel envPanel;
+    EnvelopePanel ampEnvPanel;
+    EnvelopePanel modEnvPanel;
 };
 
 class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
@@ -87,6 +88,7 @@ class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
 public:
     OctaneEditor(SynthParameterGroup* allParams);
     void resized() override;
+    void paint(juce::Graphics& g) override;
 private:
     juce::OpenGLContext glContext;
     std::vector<juce::Rectangle<int>> oscBoundRects;

@@ -143,23 +143,32 @@ void OscillatorPanel::paint(juce::Graphics &g)
 SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index) :
 oscPanel(allParams->oscLevels[index],
          allParams->oscPositions[index]),
-envPanel(allParams->aDelays[index],
+ampEnvPanel(allParams->aDelays[index],
          allParams->aAttacks[index],
          allParams->aHolds[index],
          allParams->aDecays[index],
          allParams->aSustains[index],
          allParams->aReleases[index],
-         allParams->oscAmpEnvs[index])
+         allParams->oscAmpEnvs[index]),
+modEnvPanel(allParams->mDelays[index],
+         allParams->mAttacks[index],
+         allParams->mHolds[index],
+         allParams->mDecays[index],
+         allParams->mSustains[index],
+         allParams->mReleases[index],
+         allParams->oscModEnvs[index])
 {
     addAndMakeVisible(&oscPanel);
-    addAndMakeVisible(&envPanel);
+    addAndMakeVisible(&ampEnvPanel);
+    addAndMakeVisible(&modEnvPanel);
 }
 
 void SoundSourcePanel::resized()
 {
     auto fBounds = getLocalBounds().toFloat();
     oscPanel.setBounds(0, 0, fBounds.getWidth(), fBounds.getHeight() / 2);
-    envPanel.setBounds(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
+    ampEnvPanel.setBounds(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
+    modEnvPanel.setBounds(fBounds.getWidth() / 2, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
 }
 //==============================================================================
 
@@ -189,4 +198,9 @@ void OctaneEditor::resized()
         osc->setBounds(oscBoundRects[idx]);
         ++idx;
     }
+}
+
+void OctaneEditor::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colours::white);
 }

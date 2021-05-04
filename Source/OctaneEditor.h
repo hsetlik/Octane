@@ -64,6 +64,18 @@ public:
 class OscillatorPanel : public juce::Component
 {
 public:
+    class WaveDisplay : public juce::AnimatedAppComponent
+    {
+    public:
+        WaveDisplay(std::vector<std::vector<float>> d);
+        void update() override;
+        void paint(juce::Graphics& g) override;
+        void createWaves();
+        void setData(std::vector<std::vector<float>>& d) {data = d; }
+    private:
+        std::vector<std::vector<float>> data;
+        juce::OwnedArray<juce::Path> paths;
+    };
     OscillatorPanel(SynthParam* lParam, SynthParam* pParam);
     void resized() override;
     void paint(juce::Graphics& g) override;

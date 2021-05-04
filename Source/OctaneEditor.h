@@ -11,6 +11,7 @@
 #pragma once
 #include "ParameterComponent.h"
 #include "DAHDSR.h"
+#include "WaveDisplay.h"
 #define REPAINT_FPS 24
 
 class EnvelopePanel : public juce::Component
@@ -23,7 +24,6 @@ public:
         EnvelopePanel* const linkedPanel;
         void timerCallback() override
         {
-            updateNumbers();
             repaint();
         }
         void updateNumbers();
@@ -64,12 +64,13 @@ public:
 class OscillatorPanel : public juce::Component
 {
 public:
-    OscillatorPanel(SynthParam* lParam, SynthParam* pParam);
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
+    std::unique_ptr<WaveGraphOpenGL> display;
     
 };
 
@@ -91,7 +92,6 @@ public:
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
-    juce::OpenGLContext glContext;
     std::vector<juce::Rectangle<int>> oscBoundRects;
     SynthParameterGroup* paramGroup;
     juce::OwnedArray<SoundSourcePanel> oscPanels;

@@ -43,6 +43,7 @@ void EnvelopePanel::EnvelopeGraph::updateNumbers()
 
 void EnvelopePanel::EnvelopeGraph::paint(juce::Graphics &g)
 {
+    updateNumbers();
     g.fillAll(UXPalette::darkBkgnd);
     g.setColour(UXPalette::highlight);
     auto fBounds = getLocalBounds().toFloat();
@@ -119,12 +120,14 @@ void EnvelopePanel::paint(juce::Graphics &g)
 
 
 //==============================================================================
-OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam) :
+OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData) :
 levelComp(lParam),
-posComp(pParam)
+posComp(pParam),
+display(std::make_unique<WaveGraphOpenGL>(graphData, pParam))
 {
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
+    addAndMakeVisible(*display);
 }
 
 void OscillatorPanel::resized()
@@ -134,8 +137,8 @@ void OscillatorPanel::resized()
     auto dY = fBounds.getHeight() / 10;
     auto squareSide = (dX > dY) ? dY : dX;
     auto trim = dX / 2.5f;
-    //auto displayBounds = juce::Rectangle<float>(0.0f, dY, 5 * dX, 8 * dY);
-    //graph.setBounds(displayBounds.reduced(trim).toType<int>());
+    auto displayBounds = juce::Rectangle<float>(0.0f, dY, 5 * dX, 8 * dY);
+    display->setBounds(displayBounds.reduced(trim).toType<int>());
     auto topBounds = juce::Rectangle<float>(5 * dX, dY, 5 * squareSide, 5 * squareSide);
     auto bottomBounds = juce::Rectangle<float>(5 * dX, 5 * dY, 5 * squareSide, 5 * squareSide);
     posComp.setBounds(topBounds.reduced(trim).toType<int>());
@@ -149,7 +152,8 @@ void OscillatorPanel::paint(juce::Graphics &g)
 //===============================================================================
 SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index) :
 oscPanel(allParams->oscLevels[index],
-         allParams->oscPositions[index]),
+         allParams->oscPositions[index],
+         allParams->oscGraphVectors[index]),
 ampEnvPanel(allParams->aDelays[index],
          allParams->aAttacks[index],
          allParams->aHolds[index],
@@ -181,7 +185,6 @@ void SoundSourcePanel::resized()
 
 OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup) : paramGroup(pGroup)
 {
-    glContext.attachTo(*this);
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
         oscPanels.add(new SoundSourcePanel(paramGroup, i));

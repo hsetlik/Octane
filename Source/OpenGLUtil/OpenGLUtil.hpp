@@ -7,9 +7,11 @@
 //
 
 #pragma once
+#include <JuceHeader.h>
 
 namespace OpenGLUtil
 {
+using namespace juce;
 // OpenGL Uniform & Attribute Helpers ==========================================
 
 /** Fail-safe method for creating an OpenGLShaderProgram::Uniform.

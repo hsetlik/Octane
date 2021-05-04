@@ -5,6 +5,14 @@
               companyName="Setlik" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="BlyAuj" name="Octane">
     <GROUP id="{928B63EB-1631-FD93-F26F-D2D356867D80}" name="Source">
+      <GROUP id="{D2E3887E-D864-E9D9-1C91-552CD2919081}" name="Resources">
+        <GROUP id="{5A420FB1-98DD-CC34-4237-09840207F402}" name="OpenGLShaderPrograms">
+          <FILE id="RdJxWP" name="BasicFragment.glsl" compile="0" resource="1"
+                file="Source/OpenGLShaderPrograms/BasicFragment.glsl"/>
+          <FILE id="nuHiaa" name="BasicVertex.glsl" compile="0" resource="1"
+                file="Source/OpenGLShaderPrograms/BasicVertex.glsl"/>
+        </GROUP>
+      </GROUP>
       <GROUP id="{3D985EE7-878A-7D50-68C5-D17E6DF8EE9F}" name="OpenGLUtil">
         <FILE id="SYE22V" name="OpenGLUtil.hpp" compile="0" resource="0" file="Source/OpenGLUtil/OpenGLUtil.hpp"/>
         <FILE id="zgrlww" name="WavefrontObjFile.hpp" compile="0" resource="0"

@@ -20,11 +20,19 @@ public juce::OpenGLRenderer,
 private juce::AsyncUpdater
 {
 public:
+    WaveGraphOpenGL(std::vector<std::vector<float>>& graphData, SynthParam* p);
+    ~WaveGraphOpenGL();
     //GL callbacks
     void newOpenGLContextCreated() override;
     void openGLContextClosing() override;
     void renderOpenGL() override;
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+    void handleAsyncUpdate() override;
+    std::vector<juce::Vector3D<GLfloat>> generateFromGraph();
 private:
+    std::vector<std::vector<float>> rawData;
+    SynthParam* const positionParam;
     //GL vars
     /** Attempts to compile the OpenGL program at runtime and setup OpenGL variables. */
     void compileOpenGLShaderProgram();

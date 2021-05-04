@@ -14,7 +14,7 @@ OctaneAudioProcessorEditor::OctaneAudioProcessorEditor (OctaneAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor(p), editor(&audioProcessor.synth.paramGroup)
 {
     addAndMakeVisible(&editor);
-    setSize (1000, 800);
+    setSize (1200, 900);
 }
 
 OctaneAudioProcessorEditor::~OctaneAudioProcessorEditor()

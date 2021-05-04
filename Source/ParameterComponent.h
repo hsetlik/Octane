@@ -14,6 +14,8 @@
 #include "GraphicsUtility.h"
 #include "StlUtil.h"
 
+#define SOURCE_APLHA 0.85f
+
 class SelectorButton : public juce::ShapeButton
 {
 public:
@@ -117,6 +119,7 @@ public:
     ParamCompSource(SynthParam* s) : ParamComponent(s)
     {
         source = true;
+        setAlpha(SOURCE_APLHA);
     }
     void addModSource(ParamComponent* src) override
     {

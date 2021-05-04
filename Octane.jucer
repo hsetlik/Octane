@@ -13,6 +13,8 @@
         <FILE id="gVyeza" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
         <FILE id="fzYwPu" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
         <FILE id="EbwKRO" name="FFT.h" compile="0" resource="0" file="Source/FFT.h"/>
+        <FILE id="KOMi4S" name="LFO.cpp" compile="1" resource="0" file="Source/LFO.cpp"/>
+        <FILE id="iCCKAw" name="LFO.h" compile="0" resource="0" file="Source/LFO.h"/>
         <FILE id="Rk0cga" name="StlUtil.cpp" compile="1" resource="0" file="Source/StlUtil.cpp"/>
         <FILE id="xeTYbH" name="StlUtil.h" compile="0" resource="0" file="Source/StlUtil.h"/>
         <FILE id="ZHvWKM" name="Synthesizer.cpp" compile="1" resource="0" file="Source/Synthesizer.cpp"/>

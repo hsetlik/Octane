@@ -11,6 +11,9 @@
 #pragma once
 #include <JuceHeader.h>
 #define LFO_POINTS 2048
+#define RATE_MIN 0.0f
+#define RATE_MAX 20.0f
+#define RATE_DEFAULT 1.0f
 using lfoArray = std::array<float, LFO_POINTS>;
 using lfoFunc = std::function<void(lfoArray&)>;
 

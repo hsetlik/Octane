@@ -111,6 +111,11 @@ linkedTree(tree)
         auto iStr = juce::String(i);
         auto lfoId = "LfoOutput" + iStr;
         lfoOutputs.add( new ContinuousVoiceParam(lfoId, 0.0f, 1.0f, 0.0f));
+        
+        auto rateId = "LfoRate" + iStr;
+        auto retrigId = "LfoRetrig" + iStr;
+        lfoRates.add(new GlobalTargetParam(rateId, RATE_MIN, RATE_MAX, RATE_DEFAULT));
+        lfoRetriggers.add(new GlobalTargetParam(retrigId, 0.0f, 1.0f, 0.0f));
     }
 }
 

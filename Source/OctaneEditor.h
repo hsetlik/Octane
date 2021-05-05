@@ -59,7 +59,18 @@ public:
     EnvelopeGraph graph;
 };
 
+//====================================================================================================================
+class LFOPanel : public juce::Component
+{
+public:
+    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array);
+    ParamCompRotary rateComp;
+    ParamCompSource outputComp;
+    SynthParam* const retrigParam;
+    lfoArray* const linkedArray;
+};
 
+//====================================================================================================================
 
 class OscillatorPanel : public juce::Component
 {
@@ -74,6 +85,8 @@ private:
     
 };
 
+//==============================================================================
+
 class SoundSourcePanel : public juce::Component
 {
 public:
@@ -84,6 +97,8 @@ private:
     EnvelopePanel ampEnvPanel;
     EnvelopePanel modEnvPanel;
 };
+
+//================================================================================
 
 class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
 {

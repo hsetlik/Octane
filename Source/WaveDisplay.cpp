@@ -151,11 +151,13 @@ juce::Matrix3D<GLfloat> WaveGraphOpenGL::calculateViewMatrix() const
                                                                               angleZ / scaleFactor));
     juce::Matrix3D<GLfloat> translate (juce::Vector3D<GLfloat> (0.0f, 0.0f, -10.0f));
     auto out = scale * rotation * translate;
+    /*
     printf("\nNEW MATRIX\n");
     for(int i = 0; i < 16; ++i)
     {
         printf("Matrix value %d: %f\n", i, out.mat[i]);
     }
+     */
     return out;
 }
 

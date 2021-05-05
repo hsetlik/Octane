@@ -25,6 +25,8 @@ fundamental(440.0f)
     for(lfoIndex = 0; lfoIndex < NUM_LFOS; ++lfoIndex)
     {
         lfos.add(new OctaneLFO(LFO_Functions::createSineTable));
+        auto pOut = params->lfoOutputs[lfoIndex];
+        lfoOutputs.push_back(pOut);
     }
     
 }
@@ -38,6 +40,8 @@ void OctaneVoice::startNote(int midiNoteNumber, float velocity, juce::Synthesise
 {
     for(auto o : oscillators)
         o->triggerOn();
+    for(auto l : lfos)
+        l->noteOn();
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
 }
 
@@ -45,6 +49,8 @@ void OctaneVoice::stopNote(float velocity, bool allowTailOff)
 {
     for(auto o : oscillators)
         o->triggerOff();
+    for(auto l : lfos)
+        l->noteOff();
     if(!allowTailOff)
         clearCurrentNote();
 }
@@ -78,6 +84,8 @@ void OctaneVoice::tickBlock()
         oscillators[oscIndex]->modEnv.setSustain(params->mSustains[oscIndex]->getActual());
         oscillators[oscIndex]->ampEnv.setRelease(params->aReleases[oscIndex]->getActual());
         oscillators[oscIndex]->modEnv.setRelease(params->mReleases[oscIndex]->getActual());
+        lfos[oscIndex]->setRateHz(params->lfoRates[oscIndex]->getActual());
+        lfos[oscIndex]->setTrigger((params->lfoRetriggers[oscIndex]->getActual() > 0.0f) ? true : false);
     }
 }
 
@@ -85,9 +93,10 @@ void OctaneVoice::tickSample()
 {
     lastOutput = 0.0f;
     lastOscLevel = 0.0f;
-    oscLevelSum = 0.0f;
+    oscLevelSum = 1.0f;
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
+        lfoOutputs[oscIndex]->setOutput(voiceIndex, lfos[oscIndex]->getOutput());
         ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
         modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
         oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual());

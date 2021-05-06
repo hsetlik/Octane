@@ -60,12 +60,26 @@ public:
 };
 
 //====================================================================================================================
-class LFOPanel : public juce::Component
+class LFOPanel : public juce::Component, public juce::Button::Listener
 {
 public:
+    class RetrigButton : public juce::ShapeButton
+    {
+    public:
+        RetrigButton();
+        void paintButton(juce::Graphics& g, bool mouseOver, bool isMouseDown) override;
+    };
     LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array);
+    void buttonClicked(juce::Button* b) override
+    {
+        float newValue = (b->getToggleState()) ? 1.0f : 0.0f;
+        retrigParam->setBase(newValue);
+    }
+    void resized() override;
+    void paint(juce::Graphics& g) override;
     ParamCompRotary rateComp;
     ParamCompSource outputComp;
+    RetrigButton rButton;
     SynthParam* const retrigParam;
     lfoArray* const linkedArray;
 };
@@ -110,6 +124,7 @@ private:
     std::vector<juce::Rectangle<int>> oscBoundRects;
     SynthParameterGroup* paramGroup;
     juce::OwnedArray<SoundSourcePanel> oscPanels;
+    juce::OwnedArray<LFOPanel> lfoPanels;
     
 };
 

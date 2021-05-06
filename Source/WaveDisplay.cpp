@@ -26,7 +26,7 @@ WaveGraphOpenGL::~WaveGraphOpenGL()
     openGLContext.detach();
 }
 
-std::vector<juce::Vector3D<GLfloat>> WaveGraphOpenGL::generateFromGraph()
+std::vector<juce::Vector3D<GLfloat>> WaveGraphOpenGL::generateFromGraph() //! turns the wave data into a 3D mesh
 {
     std::vector<juce::Vector3D<GLfloat>> vec;
     int idx = 0;

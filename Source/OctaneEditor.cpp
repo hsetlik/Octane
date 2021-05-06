@@ -117,8 +117,58 @@ void EnvelopePanel::paint(juce::Graphics &g)
     
 }
 //=========================================================================
+LFOPanel::RetrigButton::RetrigButton() : juce::ShapeButton("retrigButton",  juce::Colours::black, juce::Colours::black, juce::Colours::black)
+{
+    setClickingTogglesState(true);
+}
+
+void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool isMouseDown)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto corner = fBounds.getWidth() / 10.0f;
+    if(getToggleState())
+        g.setColour(UXPalette::darkGray);
+    else
+        g.setColour(UXPalette::lightGray);
+    g.fillRoundedRectangle(fBounds, corner);
+}
 
 
+
+//=========================================================================
+
+LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array) :
+rateComp(rate),
+outputComp(src),
+retrigParam(retrig),
+linkedArray(array)
+{
+    addAndMakeVisible(&rButton);
+    rButton.addListener(this);
+    
+    addAndMakeVisible(&rateComp);
+    addAndMakeVisible(&outputComp);
+    
+}
+
+void LFOPanel::resized()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 6.0f;
+    auto dY = fBounds.getHeight() / 6.0f;
+    auto retrigBounds = juce::Rectangle<float>(4 * dX, dY, dX, dY);
+    rButton.setBounds(retrigBounds.reduced(dX / 3.0f).toType<int>());
+    auto squareSide = (dX > dY) ? dY : dX;
+    auto rateBounds = juce::Rectangle<int>(0, 0, 2 * squareSide, 2 * squareSide);
+    auto sourceBounds = juce::Rectangle<int>(dX, 2 * squareSide, squareSide, squareSide);
+    rateComp.setBounds(rateBounds.reduced((int)dX / 3));
+    outputComp.setBounds(sourceBounds.reduced((int)dX / 3));
+}
+
+void LFOPanel::paint(juce::Graphics &g)
+{
+    
+}
 //==============================================================================
 OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData) :
 levelComp(lParam),
@@ -191,11 +241,23 @@ OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup) : paramGroup(pGroup)
         auto panel = oscPanels.getLast();
         addAndMakeVisible(panel);
     }
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        auto pRate = paramGroup->lfoRates[i];
+        auto pRetrig = paramGroup->lfoRetriggers[i];
+        auto pOut = paramGroup->lfoOutputs[i];
+        auto pArray = &paramGroup->lfoShapes[i];
+        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pArray));
+        auto panel = lfoPanels.getLast();
+        addAndMakeVisible(panel);
+    }
 }
 
 void OctaneEditor::resized()
 {
-    auto halfX = getLocalBounds().getWidth() / 2;
+    auto iBounds = getLocalBounds();
+    auto dX = iBounds.getWidth() / 5;
+    auto halfX = (4 * dX) / 2;
     auto halfY = getLocalBounds().getHeight() / 2;
     oscBoundRects.clear();
     oscBoundRects.push_back(juce::Rectangle<int>(0, 0, halfX, halfY));
@@ -207,6 +269,11 @@ void OctaneEditor::resized()
     {
         osc->setBounds(oscBoundRects[idx]);
         ++idx;
+    }
+    auto lHeight = iBounds.getHeight() / NUM_LFOS;
+    for(idx = 0; idx < NUM_LFOS; ++idx)
+    {
+        lfoPanels[idx]->setBounds(4 * dX, lHeight * idx, dX, lHeight);
     }
 }
 

@@ -13,6 +13,7 @@
 #include "DAHDSR.h"
 #include "WaveDisplay.h"
 #define REPAINT_FPS 24
+using apvts = juce::AudioProcessorValueTreeState;
 
 class EnvelopePanel : public juce::Component
 {
@@ -48,7 +49,8 @@ public:
                   SynthParam* decay,
                   SynthParam* sustain,
                   SynthParam* release,
-                  SynthParam* src);
+                  SynthParam* src,
+                  apvts* tree);
     void resized() override;
     void paint(juce::Graphics& g) override;
     ParamCompVertical delayComp;
@@ -61,6 +63,13 @@ public:
     ParamCompSource srcComp;
     
     EnvelopeGraph graph;
+    apvts* const linkedTree;
+    std::unique_ptr<apvts::SliderAttachment> delayAttach;
+    std::unique_ptr<apvts::SliderAttachment> attackAttach;
+    std::unique_ptr<apvts::SliderAttachment> holdAttach;
+    std::unique_ptr<apvts::SliderAttachment> decayAttach;
+    std::unique_ptr<apvts::SliderAttachment> sustainAttach;
+    std::unique_ptr<apvts::SliderAttachment> releaseAttach;
 };
 
 //====================================================================================================================
@@ -121,13 +130,16 @@ public:
 class OscillatorPanel : public juce::Component
 {
 public:
-    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData);
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData, apvts* tree);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
+    std::unique_ptr<apvts::SliderAttachment> levelAttach;
+    std::unique_ptr<apvts::SliderAttachment> posAttach;
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
     std::unique_ptr<WaveGraphOpenGL> display;
+    apvts* const linkedTree;
     
 };
 
@@ -136,12 +148,13 @@ private:
 class SoundSourcePanel : public juce::Component
 {
 public:
-    SoundSourcePanel(SynthParameterGroup* paramGrp, int index);
+    SoundSourcePanel(SynthParameterGroup* paramGrp, int index, apvts* tree);
     void resized() override;
 private:
     OscillatorPanel oscPanel;
     EnvelopePanel ampEnvPanel;
     EnvelopePanel modEnvPanel;
+    apvts* const linkedTree;
 };
 
 //================================================================================
@@ -149,12 +162,13 @@ private:
 class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
 {
 public:
-    OctaneEditor(SynthParameterGroup* allParams);
+    OctaneEditor(SynthParameterGroup* allParams, apvts* tree);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
     std::vector<juce::Rectangle<int>> oscBoundRects;
-    SynthParameterGroup* paramGroup;
+    SynthParameterGroup* const paramGroup;
+    apvts* linkedTree;
     juce::OwnedArray<SoundSourcePanel> oscPanels;
     juce::OwnedArray<LFOPanel> lfoPanels;
     

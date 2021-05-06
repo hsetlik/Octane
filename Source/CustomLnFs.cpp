@@ -38,7 +38,7 @@ void ModSystemLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int
 void ModSystemLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos
                             , float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &slider)
 {
-    auto fPos = slider.getValue() / (slider.getMaximum() - slider.getMinimum() + 0.00001f);
+    auto fPos = 1.0f - (sliderPos / maxSliderPos);
     auto fBounds = slider.getLocalBounds().toFloat();
     auto bkgndWidth = fBounds.getWidth() * 0.2f;
     auto xOffsetBkgnd = (fBounds.getWidth() / 2.0f) - (bkgndWidth / 2.0f);
@@ -49,11 +49,6 @@ void ModSystemLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int
     auto thumbHeight = (fBounds.getHeight() - slider.getTextBoxHeight()) * 0.1f;
     auto thumbY = (1.0f - fPos) * ((fBounds.getHeight() - slider.getTextBoxHeight()) - thumbHeight - 5);
     thumbY += 5;
-    
-    /*
-    printf("Slider Position: %f\n", sliderPos);
-    printf("Thumb is at: %f\n", thumbY);
-     */
     //draw the background
     g.setColour(UXPalette::darkGray);
     g.fillRoundedRectangle(x + xOffsetBkgnd,
@@ -100,7 +95,8 @@ void DepthSliderLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, i
 
 void DepthSliderLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &slider)
 {
-    auto fPos = slider.getValue() / (slider.getMaximum() - slider.getMinimum() + 0.00001f);
+    
+    auto fPos = 1.0f - (sliderPos / maxSliderPos);
     auto fBounds = slider.getBounds().toFloat();
     auto bkgndWidth = fBounds.getWidth() * 0.2f;
     auto xOffsetBkgnd = (fBounds.getWidth() / 2.0f) - (bkgndWidth / 2.0f);
@@ -110,6 +106,7 @@ void DepthSliderLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, i
     auto thumbXOffset = (fBounds.getWidth() / 2.0f) - (thumbWidth / 2.0f);
     auto thumbHeight = (fBounds.getHeight() - slider.getTextBoxHeight()) * 0.1f;
     auto thumbY = (1.0f - fPos) * ((fBounds.getHeight() - slider.getTextBoxHeight()) - thumbHeight - 5);
+    
     thumbY += 5;
     //draw the background
     g.setColour(UXPalette::darkGray);

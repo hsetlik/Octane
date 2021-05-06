@@ -76,7 +76,8 @@ EnvelopePanel::EnvelopePanel(SynthParam* delay,
                              SynthParam* decay,
                              SynthParam* sustain,
                              SynthParam* release,
-                             SynthParam* src) :
+                             SynthParam* src,
+                             apvts* tree) :
 delayComp(delay),
 attackComp(attack),
 holdComp(hold),
@@ -84,7 +85,8 @@ decayComp(decay),
 sustainComp(sustain),
 releaseComp(release),
 srcComp(src),
-graph(this)
+graph(this),
+linkedTree(tree)
 {
     addAndMakeVisible(&delayComp);
     addAndMakeVisible(&attackComp);
@@ -94,6 +96,13 @@ graph(this)
     addAndMakeVisible(&releaseComp);
     addAndMakeVisible(&graph);
     addAndMakeVisible(&srcComp);
+    
+    delayAttach.reset(new apvts::SliderAttachment(*linkedTree, delayComp.linkedParam->name, delayComp.mainSlider));
+    attackAttach.reset(new apvts::SliderAttachment(*linkedTree, attackComp.linkedParam->name, attackComp.mainSlider));
+    holdAttach.reset(new apvts::SliderAttachment(*linkedTree, holdComp.linkedParam->name, holdComp.mainSlider));
+    decayAttach.reset(new apvts::SliderAttachment(*linkedTree, decayComp.linkedParam->name, decayComp.mainSlider));
+    sustainAttach.reset(new apvts::SliderAttachment(*linkedTree, sustainComp.linkedParam->name, sustainComp.mainSlider));
+    releaseAttach.reset(new apvts::SliderAttachment(*linkedTree, releaseComp.linkedParam->name, releaseComp.mainSlider));
 }
 
 void EnvelopePanel::resized()
@@ -101,7 +110,9 @@ void EnvelopePanel::resized()
     auto fBounds = getBounds().toFloat();
     auto dX = fBounds.getWidth() / 6.0f;
     auto halfHeight = fBounds.getHeight() / 2.0f;
-    graph.setBounds(0, 0, 6 * dX, halfHeight);
+    auto gBounds = juce::Rectangle<int>(0, 0, 6 * dX, halfHeight).reduced(dX / 3);
+    graph.setBounds(gBounds);
+    
     
     delayComp.setBounds(0, halfHeight, dX, halfHeight);
     attackComp.setBounds(dX, halfHeight, dX, halfHeight);
@@ -177,14 +188,17 @@ void LFOPanel::paint(juce::Graphics &g)
     
 }
 //==============================================================================
-OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData) :
+OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData, apvts* tree) :
 levelComp(lParam),
 posComp(pParam),
-display(std::make_unique<WaveGraphOpenGL>(graphData, pParam))
+display(std::make_unique<WaveGraphOpenGL>(graphData, pParam)),
+linkedTree(tree)
 {
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
     addAndMakeVisible(*display);
+    //levelAttach.reset(new apvts::SliderAttachment(*linkedTree, levelComp.linkedParam->name, levelComp.mainSlider));
+    //posAttach.reset(new apvts::SliderAttachment(*linkedTree, posComp.linkedParam->name, posComp.mainSlider));
 }
 
 void OscillatorPanel::resized()
@@ -207,24 +221,28 @@ void OscillatorPanel::paint(juce::Graphics &g)
     g.fillAll(juce::Colours::white);
 }
 //===============================================================================
-SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index) :
+SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index, apvts* tree) :
 oscPanel(allParams->oscLevels[index],
          allParams->oscPositions[index],
-         allParams->oscGraphVectors[index]),
+         allParams->oscGraphVectors[index],
+         tree),
 ampEnvPanel(allParams->aDelays[index],
          allParams->aAttacks[index],
          allParams->aHolds[index],
          allParams->aDecays[index],
          allParams->aSustains[index],
          allParams->aReleases[index],
-         allParams->oscAmpEnvs[index]),
+         allParams->oscAmpEnvs[index],
+            tree),
 modEnvPanel(allParams->mDelays[index],
          allParams->mAttacks[index],
          allParams->mHolds[index],
          allParams->mDecays[index],
          allParams->mSustains[index],
          allParams->mReleases[index],
-         allParams->oscModEnvs[index])
+         allParams->oscModEnvs[index],
+            tree),
+linkedTree(tree)
 {
     addAndMakeVisible(&oscPanel);
     addAndMakeVisible(&ampEnvPanel);
@@ -235,16 +253,20 @@ void SoundSourcePanel::resized()
 {
     auto fBounds = getLocalBounds().toFloat();
     oscPanel.setBounds(0, 0, fBounds.getWidth(), fBounds.getHeight() / 2);
-    ampEnvPanel.setBounds(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
-    modEnvPanel.setBounds(fBounds.getWidth() / 2, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
+    auto ampBounds = juce::Rectangle<int>(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
+    ampEnvPanel.setBounds(ampBounds);
+    auto modBounds = juce::Rectangle<int>(fBounds.getWidth() / 2, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
+    modEnvPanel.setBounds(modBounds);
 }
 //==============================================================================
 
-OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup) : paramGroup(pGroup)
+OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree) :
+paramGroup(pGroup),
+linkedTree(tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
-        oscPanels.add(new SoundSourcePanel(paramGroup, i));
+        oscPanels.add(new SoundSourcePanel(paramGroup, i, tree));
         auto panel = oscPanels.getLast();
         addAndMakeVisible(panel);
     }

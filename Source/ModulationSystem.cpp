@@ -96,7 +96,7 @@ linkedTree(tree)
         mDecays.add(new GlobalTargetParam(mDecay, DECAY_MIN, DECAY_MAX, DECAY_DEFAULT));
         aDecays.add(new GlobalTargetParam(aDecay, DECAY_MIN, DECAY_MAX, DECAY_DEFAULT));
         mSustains.add(new GlobalTargetParam(mSustain, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
-        aSustains.add(new GlobalTargetParam(aDelay, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
+        aSustains.add(new GlobalTargetParam(aSustain, SUSTAIN_MIN, SUSTAIN_MAX, SUSTAIN_DEFAULT));
         mReleases.add(new GlobalTargetParam(mRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
         aReleases.add(new GlobalTargetParam(aRelease, RELEASE_MIN, RELEASE_MAX, RELEASE_DEFAULT));
         

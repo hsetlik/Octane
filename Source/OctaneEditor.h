@@ -26,6 +26,36 @@ public:
         {
             repaint();
         }
+        float onCurve(float input) //! input is between 0 and 1
+        {
+            exp = input / log(input);
+            difference = 1.0f - pow(juce::MathConstants<float>::euler, exp);
+            return input - difference;
+        }
+        void toCurve()
+        {
+            //! put all the values onto a curve and recalculate lengthMs
+            lengthMs = 0.0f;
+            delayEnd = onCurve(delayEnd);
+            lengthMs += delayEnd;
+            attackEnd = onCurve(attackEnd);
+            lengthMs += attackEnd;
+            holdEnd = onCurve(holdEnd);
+            lengthMs += holdEnd;
+            decayEnd = onCurve(decayEnd);
+            lengthMs += decayEnd;
+            sustainEnd = onCurve(sustainEnd);
+            lengthMs += sustainEnd;
+            releaseEnd = onCurve(releaseEnd);
+            lengthMs += releaseEnd;
+            //!  rescale everything back to 0-1
+            delayEnd /= lengthMs;
+            attackEnd /= lengthMs;
+            holdEnd /= lengthMs;
+            decayEnd /= lengthMs;
+            sustainEnd /= lengthMs;
+            releaseEnd /= lengthMs;
+        }
         void updateNumbers();
         void paint(juce::Graphics& g) override;
     private:
@@ -37,6 +67,9 @@ public:
         float sustainEnd;
         float releaseEnd;
         float fSustain;
+        
+        float exp;
+        float difference;
     };
     EnvelopePanel(SynthParam* delay,
                   SynthParam* attack,

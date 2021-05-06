@@ -145,7 +145,6 @@ public:
     {
         for(int i = 0; i < NUM_VOICES; ++i)
         {
-            voiceOutputs[i] = normal;
             voiceOffsets[i] = 0.0f;
         }
         //=============================
@@ -163,12 +162,10 @@ public:
     void tickModulation(int voice)
     {
         voiceOffsets[voice] = 0.0f;
-        //jassert(voiceOffsets[voice] <= max);
         for(auto src : modSources)
         {
             voiceOffsets[voice] += actualOffset(src, voice);
         }
-        //jassert(voiceOffsets[voice] <= max);
     }
     float getActual(int voiceIndex) override
     {
@@ -178,15 +175,8 @@ public:
     void setBase(float val) override
     {
         currentBaseValue = val;
-        for(auto v : voiceOutputs)
-        {
-            v = val;
-            jassert(v <= max);
-        }
-            
     }
 private:
-    std::array<float, NUM_VOICES> voiceOutputs;
     std::array<float, NUM_VOICES> voiceOffsets;
 };
 

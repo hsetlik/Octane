@@ -15,8 +15,6 @@
 #include "LFO.h"
 #include "ModulationSystem.h"
 
-
-
 class OctaneSound : public juce::SynthesiserSound
 {
     bool appliesToNote(int /*midiNoteNumber*/) //just plays this sound for any midi note

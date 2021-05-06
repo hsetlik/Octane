@@ -160,7 +160,7 @@ void LFOPanel::resized()
     rButton.setBounds(retrigBounds.reduced(dX / 3.0f).toType<int>());
     auto squareSide = (dX > dY) ? dY : dX;
     auto rateBounds = juce::Rectangle<int>(0, 0, 2 * squareSide, 2 * squareSide);
-    auto sourceBounds = juce::Rectangle<int>(dX, 2 * squareSide, squareSide, squareSide);
+    auto sourceBounds = juce::Rectangle<int>(dX, 2 * squareSide, 2 * squareSide, 2 * squareSide);
     rateComp.setBounds(rateBounds.reduced((int)dX / 3));
     outputComp.setBounds(sourceBounds.reduced((int)dX / 3));
 }

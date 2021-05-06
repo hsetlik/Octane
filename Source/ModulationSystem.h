@@ -49,7 +49,7 @@ public:
     virtual float getActual(int voiceIndex=0) {return 0.0f; }
     float getAdjusted(int voice = 0); //the value normalized to the range 0 - 1
     ModSource* makeSource(float d);
-    virtual void setBase(float val, int voice=0) //for setting the value from a silder or similar
+    virtual void setBase(float val) //for setting the value from a silder or similar
     {
         targetBaseValue = val;
     }
@@ -101,7 +101,7 @@ public:
         }
         return actualOut;
     }
-    void setBase(float newVal, int voice) override
+    void setBase(float newVal) override
     {
         targetBaseValue = newVal;
     }
@@ -125,9 +125,13 @@ public:
     {
         return voiceOutputs[voiceIndex];
     }
-    void setBase(float val, int voice=0) override
+    void setBase(float val) override
     {
-        setOutput(voice, val);
+        currentBaseValue = val;
+        for(auto v : voiceOutputs)
+        {
+            v = val;
+        }
     }
 private:
     std::array<float, NUM_VOICES> voiceOutputs;
@@ -169,10 +173,11 @@ public:
     float getActual(int voiceIndex) override
     {
         tickModulation(voiceIndex);
-        return voiceOutputs[voiceIndex] + voiceOffsets[voiceIndex];
+        return currentBaseValue + voiceOffsets[voiceIndex];
     }
-    void setBase(float val, int voice) override
+    void setBase(float val) override
     {
+        currentBaseValue = val;
         for(auto v : voiceOutputs)
         {
             v = val;

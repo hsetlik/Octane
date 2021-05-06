@@ -14,6 +14,7 @@
 #define RATE_MIN 0.0f
 #define RATE_MAX 20.0f
 #define RATE_DEFAULT 1.0f
+#define RATE_CENTER 1.25f
 using lfoArray = std::array<float, LFO_POINTS>;
 using lfoFunc = std::function<lfoArray(void)>;
 

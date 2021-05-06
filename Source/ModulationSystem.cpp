@@ -179,6 +179,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthParameterGroup::createL
     {
         auto iStr = juce::String(i);
         auto rateRange = fRange(RATE_MIN, RATE_MAX, 0.0001f);
+        rateRange.setSkewForCentre(RATE_CENTER);
         auto retrigRange = fRange(0.0f, 1.0f, 0.5f);
         auto rateId = "LfoRate" + iStr;
         auto retrigId = "LfoRetrig" + iStr;

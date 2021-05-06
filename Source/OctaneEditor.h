@@ -109,7 +109,7 @@ public:
         RetrigButton();
         void paintButton(juce::Graphics& g, bool mouseOver, bool isMouseDown) override;
     };
-    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array);
+    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree);
     void buttonClicked(juce::Button* b) override
     {
         float newValue = (b->getToggleState()) ? 1.0f : 0.0f;
@@ -123,6 +123,8 @@ public:
     LevelMeter meter;
     SynthParam* const retrigParam;
     lfoArray* const linkedArray;
+    apvts* const linkedTree;
+    std::unique_ptr<apvts::SliderAttachment> rateAttach;
 };
 
 //====================================================================================================================
@@ -134,10 +136,10 @@ public:
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
-    std::unique_ptr<apvts::SliderAttachment> levelAttach;
-    std::unique_ptr<apvts::SliderAttachment> posAttach;
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
+    std::unique_ptr<apvts::SliderAttachment> levelAttach;
+    std::unique_ptr<apvts::SliderAttachment> posAttach;
     std::unique_ptr<WaveGraphOpenGL> display;
     apvts* const linkedTree;
     

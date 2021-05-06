@@ -151,12 +151,13 @@ void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool
 
 //=========================================================================
 
-LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array) :
+LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree) :
 rateComp(rate),
 outputComp(src),
 meter(src),
 retrigParam(retrig),
-linkedArray(array)
+linkedArray(array),
+linkedTree(tree)
 {
     addAndMakeVisible(&rButton);
     rButton.addListener(this);
@@ -164,6 +165,8 @@ linkedArray(array)
     addAndMakeVisible(&rateComp);
     addAndMakeVisible(&outputComp);
     addAndMakeVisible(&meter);
+    
+    rateAttach.reset(new apvts::SliderAttachment(*linkedTree, rateComp.linkedParam->name, rateComp.mainSlider));
     
 }
 
@@ -197,8 +200,8 @@ linkedTree(tree)
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
     addAndMakeVisible(*display);
-    //levelAttach.reset(new apvts::SliderAttachment(*linkedTree, levelComp.linkedParam->name, levelComp.mainSlider));
-    //posAttach.reset(new apvts::SliderAttachment(*linkedTree, posComp.linkedParam->name, posComp.mainSlider));
+    levelAttach.reset(new apvts::SliderAttachment(*linkedTree, levelComp.linkedParam->name, levelComp.mainSlider));
+    posAttach.reset(new apvts::SliderAttachment(*linkedTree, posComp.linkedParam->name, posComp.mainSlider));
 }
 
 void OscillatorPanel::resized()
@@ -276,7 +279,7 @@ linkedTree(tree)
         auto pRetrig = paramGroup->lfoRetriggers[i];
         auto pOut = paramGroup->lfoOutputs[i];
         auto pArray = &paramGroup->lfoShapes[i];
-        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pArray));
+        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pArray, tree));
         auto panel = lfoPanels.getLast();
         addAndMakeVisible(panel);
     }

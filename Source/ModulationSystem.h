@@ -58,6 +58,8 @@ public:
         setBase(val);
         currentBaseValue = targetBaseValue;
     }
+    float getFloatAdj()
+    {return currentBaseValue / (max - min); }
     float getBaseValue() {return currentBaseValue; }
     float getMin() {return min; }
     float getMax() {return max; }
@@ -119,6 +121,7 @@ public:
     }
     void setOutput(int voiceIndex, float newValue)
     {
+        //currentBaseValue = newValue;
         voiceOutputs[voiceIndex] = newValue;
     }
     float getActual(int voiceIndex=0) override

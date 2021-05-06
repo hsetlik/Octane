@@ -26,36 +26,6 @@ public:
         {
             repaint();
         }
-        float onCurve(float input) //! input is between 0 and 1
-        {
-            exp = input / log(input);
-            difference = 1.0f - pow(juce::MathConstants<float>::euler, exp);
-            return input - difference;
-        }
-        void toCurve()
-        {
-            //! put all the values onto a curve and recalculate lengthMs
-            lengthMs = 0.0f;
-            delayEnd = onCurve(delayEnd);
-            lengthMs += delayEnd;
-            attackEnd = onCurve(attackEnd);
-            lengthMs += attackEnd;
-            holdEnd = onCurve(holdEnd);
-            lengthMs += holdEnd;
-            decayEnd = onCurve(decayEnd);
-            lengthMs += decayEnd;
-            sustainEnd = onCurve(sustainEnd);
-            lengthMs += sustainEnd;
-            releaseEnd = onCurve(releaseEnd);
-            lengthMs += releaseEnd;
-            //!  rescale everything back to 0-1
-            delayEnd /= lengthMs;
-            attackEnd /= lengthMs;
-            holdEnd /= lengthMs;
-            decayEnd /= lengthMs;
-            sustainEnd /= lengthMs;
-            releaseEnd /= lengthMs;
-        }
         void updateNumbers();
         void paint(juce::Graphics& g) override;
     private:
@@ -67,7 +37,8 @@ public:
         float sustainEnd;
         float releaseEnd;
         float fSustain;
-        
+        float cMin;
+        float cMax;
         float exp;
         float difference;
     };
@@ -96,6 +67,33 @@ public:
 class LFOPanel : public juce::Component, public juce::Button::Listener
 {
 public:
+    class LevelMeter : public juce::AnimatedAppComponent
+    {
+    public:
+        LevelMeter(SynthParam* output) : outputParam(output), level(0.0f)
+        {
+            setFramesPerSecond(REPAINT_FPS);
+        }
+        SynthParam* const outputParam;
+        void update() override
+        {
+            level = outputParam->getAdjusted(0);
+            //printf("%s level is : %f\n", outputParam->name.toRawUTF8(), level);
+            repaint();
+        }
+        void paint(juce::Graphics& g) override
+        {
+            auto fBounds = getLocalBounds().toFloat();
+            auto height = fBounds.getHeight();
+            auto meterTop = height - (height * level);
+            g.setColour(UXPalette::lightGray);
+            g.fillRect(fBounds);
+            g.setColour(UXPalette::highlight);
+            g.fillRect(0.0f, meterTop, fBounds.getWidth(), height * level);
+        }
+    private:
+        float level;
+    };
     class RetrigButton : public juce::ShapeButton
     {
     public:
@@ -113,6 +111,7 @@ public:
     ParamCompRotary rateComp;
     ParamCompSource outputComp;
     RetrigButton rButton;
+    LevelMeter meter;
     SynthParam* const retrigParam;
     lfoArray* const linkedArray;
 };

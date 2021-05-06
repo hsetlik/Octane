@@ -24,7 +24,7 @@ fundamental(440.0f)
     }
     for(lfoIndex = 0; lfoIndex < NUM_LFOS; ++lfoIndex)
     {
-        lfos.add(new OctaneLFO(LFO_Functions::createSineTable));
+        lfos.add(new OctaneLFO());
         auto pOut = params->lfoOutputs[lfoIndex];
         lfoOutputs.push_back(pOut);
     }

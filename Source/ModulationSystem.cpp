@@ -175,6 +175,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthParameterGroup::createL
         layout.add(std::make_unique<floatParam>(posId, posId, posRange, 0.0f));
         layout.add(std::make_unique<floatParam>(levelId, levelId, levelRange, 1.0f));
     }
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        auto iStr = juce::String(i);
+        auto rateRange = fRange(RATE_MIN, RATE_MAX, 0.0001f);
+        auto retrigRange = fRange(0.0f, 1.0f, 0.5f);
+        auto rateId = "LfoRate" + iStr;
+        auto retrigId = "LfoRetrig" + iStr;
+        layout.add(std::make_unique<floatParam>(rateId, rateId, rateRange, RATE_DEFAULT));
+        layout.add(std::make_unique<floatParam>(retrigId, retrigId, retrigRange, 0.0f));
+    }
     return layout;
 }
 

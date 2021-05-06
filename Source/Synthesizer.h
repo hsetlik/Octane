@@ -47,6 +47,8 @@ public:
     {
         for(auto o : oscillators)
             o->setSampleRate(rate);
+        for(auto l : lfos)
+            l->setSampleRate(rate);
         setCurrentPlaybackSampleRate(rate);
     }
     //===============================================

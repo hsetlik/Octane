@@ -15,14 +15,15 @@
 #define RATE_MAX 20.0f
 #define RATE_DEFAULT 1.0f
 using lfoArray = std::array<float, LFO_POINTS>;
-using lfoFunc = std::function<void(lfoArray&)>;
+using lfoFunc = std::function<lfoArray(void)>;
 
 
 class LFO_Functions
 {
 public:
-    static void createSineTable(lfoArray& dest)
+    static lfoArray createSineTable()
     {
+        lfoArray dest;
         auto phaseDelta = juce::MathConstants<float>::twoPi / (float)LFO_POINTS;
         float phase = 0.0f;
         for(auto point : dest)
@@ -30,9 +31,11 @@ public:
             point = (std::sin(phase) / 2.0f) + 0.5f; //map the value between 0 and 1
             phase += phaseDelta;
         }
+        return dest;
     }
-    static void createSawTable(lfoArray& dest)
+    static lfoArray createSawTable()
     {
+        lfoArray dest;
         float value = 1.0f;
         auto valueDelta = value / (float)LFO_POINTS;
         for(auto point : dest)
@@ -40,9 +43,11 @@ public:
             point = value;
             value -= valueDelta;
         }
+        return dest;
     }
-    static void createTriTable(lfoArray& dest)
+    static lfoArray createTriTable()
     {
+        lfoArray dest;
         int idx = 0;
         float value = 0.0f;
         auto valueDelta = 2.0f / (float)LFO_POINTS;
@@ -59,6 +64,7 @@ public:
             }
             ++idx;
         }
+        return dest;
     }
     
 };
@@ -66,13 +72,12 @@ public:
 class OctaneLFO
 {
 public:
-    //! LFOs are iniitalized with a periodic function with an input in the range 0-1 (sine, saw, triangle, etc) and then shaped later
-    OctaneLFO(lfoFunc srcFunction);
-    void resetFromFunction(lfoFunc newFunc) {newFunc(points); }
+    OctaneLFO();
+    void resetFromFunction(lfoFunc newFunc) {points = newFunc(); }
     void setPoint(int idx, float value) {points[idx] = value; }
     void setPoint(float _phase, float value) {points[floor(_phase * LFO_POINTS)] = value; }
-    void setPlaying(bool shouldPlay) {isPlaying = shouldPlay; }
     void setRateHz(double hz);
+    void setSampleRate(double rate) {sampleRate = rate; }
     void noteOn();
     void noteOff();
     void setTrigger(bool shouldTrigger);
@@ -83,12 +88,12 @@ private:
     double sampleRate;
     float phase;
     float phaseDelta;
-    bool isPlaying;
     bool triggerMode;
     int lowerIndex;
-    int lowerVal;
-    int upperVal;
+    float lowerVal;
+    float upperVal;
     float skew;
+    float lastOutput;
     lfoArray points;
 };
 

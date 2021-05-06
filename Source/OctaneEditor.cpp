@@ -10,7 +10,10 @@
 
 #include "OctaneEditor.h"
 
-EnvelopePanel::EnvelopeGraph::EnvelopeGraph(EnvelopePanel* panel) : linkedPanel(panel)
+EnvelopePanel::EnvelopeGraph::EnvelopeGraph(EnvelopePanel* panel) :
+linkedPanel(panel),
+cMin(pow(juce::MathConstants<float>::euler, 0.0f)),
+cMax(pow(juce::MathConstants<float>::euler, 1.0f))
 {
     startTimerHz(REPAINT_FPS);
 }
@@ -140,6 +143,7 @@ void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool
 LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array) :
 rateComp(rate),
 outputComp(src),
+meter(src),
 retrigParam(retrig),
 linkedArray(array)
 {
@@ -148,6 +152,7 @@ linkedArray(array)
     
     addAndMakeVisible(&rateComp);
     addAndMakeVisible(&outputComp);
+    addAndMakeVisible(&meter);
     
 }
 
@@ -161,8 +166,10 @@ void LFOPanel::resized()
     auto squareSide = (dX > dY) ? dY : dX;
     auto rateBounds = juce::Rectangle<int>(0, 0, 2 * squareSide, 2 * squareSide);
     auto sourceBounds = juce::Rectangle<int>(dX, 2 * squareSide, 2 * squareSide, 2 * squareSide);
+    auto meterBounds = juce::Rectangle<int>(4 * dX, 2 * dY, dX / 2, 3 * dY);
     rateComp.setBounds(rateBounds.reduced((int)dX / 3));
     outputComp.setBounds(sourceBounds.reduced((int)dX / 3));
+    meter.setBounds(meterBounds);
 }
 
 void LFOPanel::paint(juce::Graphics &g)

@@ -136,7 +136,9 @@ void ParamCompRotary::SourceButtonsRotary::paint(juce::Graphics &g)
 void ParamCompRotary::addModSource(ParamComponent *src)
 {
     printf("%s is adding Source: %s\n", linkedParam->name.toRawUTF8(), src->linkedParam->name.toRawUTF8());
-    depthSliders.add(new DepthSliderRotary(src->linkedParam->makeSource(0.5f), src));
+    auto mSource = src->linkedParam->makeSource(0.5f);
+    linkedParam->addSource(mSource);
+    depthSliders.add(new DepthSliderRotary(mSource, src));
     buttonGroups.add(new SourceButtonsRotary(depthSliders.size() - 1));
     auto nSlider = depthSliders.getLast();
     auto nButtons = buttonGroups.getLast();

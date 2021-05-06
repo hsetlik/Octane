@@ -12,9 +12,9 @@
 
 
 
-float SynthParam::getAdjusted()
+float SynthParam::getAdjusted(int voice)
 {
-    return (max - min) * getActual();
+    return (max - min) * getActual(voice);
 }
 
 ModSource* SynthParam::makeSource(float d)
@@ -22,9 +22,9 @@ ModSource* SynthParam::makeSource(float d)
     return new ModSource(this, d);
 }
 
-float SynthParam::actualOffset(ModSource *mod)
+float SynthParam::actualOffset(ModSource *mod, int index)
 {
-    return (max - min) * (mod->src->getAdjusted() * mod->depth);
+    return (max - min) * (mod->src->getAdjusted(index) * mod->depth);
 }
 
 void SynthParam::removeSource(ModSource *toRemove)
@@ -70,9 +70,9 @@ linkedTree(tree)
     {
         auto iStr = juce::String(i);
         juce::String posName = "OscillatorPos" + iStr;
-        oscPositions.add(new GlobalTargetParam(posName, 0.0f, 1.0f, 0.0f));
+        oscPositions.add(new VoiceTargetParam(posName, 0.0f, 1.0f, 0.0f));
         auto levelName = "OscillatorLevel" + iStr;
-        oscLevels.add(new GlobalTargetParam(levelName, 0.0f, 1.0f, 1.0f));
+        oscLevels.add(new VoiceTargetParam(levelName, 0.0f, 1.0f, 1.0f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;

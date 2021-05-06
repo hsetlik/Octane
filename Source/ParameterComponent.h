@@ -98,6 +98,7 @@ public:
             if(toRemove == src)
             {
                 addedSources.erase(addedSources.begin() + idx);
+                linkedParam->removeSource(idx);
                 return;
             }
             ++idx;

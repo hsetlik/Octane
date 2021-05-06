@@ -47,9 +47,9 @@ public:
     const juce::String name;
     void tickValue();
     virtual float getActual(int voiceIndex=0) {return 0.0f; }
-    float getAdjusted(); //the value normalized to the range 0 - 1
+    float getAdjusted(int voice = 0); //the value normalized to the range 0 - 1
     ModSource* makeSource(float d);
-    void setBase(float val) //for setting the value from a silder or similar
+    virtual void setBase(float val, int voice=0) //for setting the value from a silder or similar
     {
         targetBaseValue = val;
     }
@@ -64,13 +64,18 @@ public:
     void addSource(ModSource* newSrc) { modSources.push_back(newSrc); }
     void addSource(SynthParam* src, float depth = 1.0f) {modSources.push_back(src->makeSource(depth)); }
     void removeSource(ModSource* toRemove);
+    void removeSource(int index)
+    {
+        modSources.erase(modSources.begin() + index);
+    }
     juce::Colour getColor() {return paramColor; }
 protected:
     float min, max;
     float currentBaseValue;
     float targetBaseValue;
     float maxSampleDelta;
-    float actualOffset(ModSource* mod);
+    float actualOffset(ModSource* mod, int index=0);
+    
     float actualOut;
     float adjOut;
     juce::Colour paramColor;
@@ -96,10 +101,14 @@ public:
         }
         return actualOut;
     }
+    void setBase(float newVal, int voice) override
+    {
+        targetBaseValue = newVal;
+    }
 };
 
 //=============================================================================================================
-class ContinuousVoiceParam : public SynthParam
+class ContinuousVoiceParam : public SynthParam //! to be used for modulator outputs, represents the output of an LFO or envelope for example. must be updated every sample
 {
 public:
     ContinuousVoiceParam(juce::String n, float lo=0.0f, float hi=1.0f, float normal=0.5f) :
@@ -116,8 +125,64 @@ public:
     {
         return voiceOutputs[voiceIndex];
     }
+    void setBase(float val, int voice=0) override
+    {
+        setOutput(voice, val);
+    }
 private:
     std::array<float, NUM_VOICES> voiceOutputs;
+};
+
+class VoiceTargetParam : public SynthParam //! use for osc level, wt position, etc
+{
+public:
+    VoiceTargetParam(juce::String n, float lo=0.0f, float hi=1.0f, float normal=0.5f) :
+    SynthParam(n, lo, hi, normal)
+    {
+        for(int i = 0; i < NUM_VOICES; ++i)
+        {
+            voiceOutputs[i] = normal;
+            voiceOffsets[i] = 0.0f;
+        }
+        //=============================
+        /*
+        printf("Parameter %s initial values\n", name.toRawUTF8());
+        printf("Normal is %f\n", normal);
+        for(int i = 0; i < NUM_VOICES; ++i)
+        {
+            printf("Output #%d: %f\n", i, voiceOutputs[i]);
+            printf("Offest #%d: %f\n", i, voiceOffsets[i]);
+        }
+        printf("\n");
+         */
+    }
+    void tickModulation(int voice)
+    {
+        voiceOffsets[voice] = 0.0f;
+        //jassert(voiceOffsets[voice] <= max);
+        for(auto src : modSources)
+        {
+            voiceOffsets[voice] += actualOffset(src, voice);
+        }
+        //jassert(voiceOffsets[voice] <= max);
+    }
+    float getActual(int voiceIndex) override
+    {
+        tickModulation(voiceIndex);
+        return voiceOutputs[voiceIndex] + voiceOffsets[voiceIndex];
+    }
+    void setBase(float val, int voice) override
+    {
+        for(auto v : voiceOutputs)
+        {
+            v = val;
+            jassert(v <= max);
+        }
+            
+    }
+private:
+    std::array<float, NUM_VOICES> voiceOutputs;
+    std::array<float, NUM_VOICES> voiceOffsets;
 };
 
 class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it
@@ -126,6 +191,7 @@ public:
     SynthParameterGroup(juce::AudioProcessorValueTreeState* t);
     using paramVecGTarget = juce::OwnedArray<GlobalTargetParam>;
     using paramVecCont = juce::OwnedArray<ContinuousVoiceParam>;
+    using paramVecTarget = juce::OwnedArray<VoiceTargetParam>;
     using paramVecPtr = juce::OwnedArray<GlobalTargetParam>*;
     using apvts = juce::AudioProcessorValueTreeState;
     using floatParam = juce::AudioParameterFloat;
@@ -144,8 +210,8 @@ public:
     paramVecGTarget aSustains;
     paramVecGTarget mReleases;
     paramVecGTarget aReleases;
-    paramVecGTarget oscPositions;
-    paramVecGTarget oscLevels;
+    paramVecTarget oscPositions;
+    paramVecTarget oscLevels;
     paramVecGTarget lfoRates;
     paramVecGTarget lfoRetriggers;
     paramVecCont oscAmpEnvs;

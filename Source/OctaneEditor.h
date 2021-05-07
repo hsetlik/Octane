@@ -12,7 +12,8 @@
 #include "ParameterComponent.h"
 #include "DAHDSR.h"
 #include "WaveDisplay.h"
-#define REPAINT_FPS 24
+#include "LFOEditor.h"
+
 using apvts = juce::AudioProcessorValueTreeState;
 
 class EnvelopePanel : public juce::Component
@@ -142,7 +143,6 @@ private:
     std::unique_ptr<apvts::SliderAttachment> posAttach;
     std::unique_ptr<WaveGraphOpenGL> display;
     apvts* const linkedTree;
-    
 };
 
 //==============================================================================

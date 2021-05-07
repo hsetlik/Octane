@@ -46,6 +46,8 @@
               file="Source/GraphicsUtility.cpp"/>
         <FILE id="OeFmFH" name="GraphicsUtility.h" compile="0" resource="0"
               file="Source/GraphicsUtility.h"/>
+        <FILE id="VghlvT" name="LFOEditor.cpp" compile="1" resource="0" file="Source/LFOEditor.cpp"/>
+        <FILE id="Pvouka" name="LFOEditor.h" compile="0" resource="0" file="Source/LFOEditor.h"/>
         <FILE id="mr4utZ" name="OctaneEditor.cpp" compile="1" resource="0"
               file="Source/OctaneEditor.cpp"/>
         <FILE id="BcWlGH" name="OctaneEditor.h" compile="0" resource="0" file="Source/OctaneEditor.h"/>

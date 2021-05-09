@@ -109,72 +109,7 @@ public:
 class LFOPointHandle : public juce::Component
 {
 public:
-    class CenterHandle : public juce::Component
-    {
-    public:
-        CenterHandle(Constrainer* c, juce::Component* front, juce::Component* rear);
-        void paint(juce::Graphics& g) override
-        {
-            g.setColour(UXPalette::thumbBlue);
-            g.fillEllipse(getLocalBounds().toFloat());
-        }
-        Constrainer* const constrainer;
-        juce::ComponentDragger dragger;
-        juce::Component* frontHandle;
-        juce::Component* rearHandle;
-        void mouseDown(const juce::MouseEvent& e) override
-        {
-            dragger.startDraggingComponent(this, e);
-            if(frontHandle != nullptr)
-            {
-                dragger.startDraggingComponent(frontHandle, e);
-                dragger.startDraggingComponent(rearHandle, e);
-            }
-        }
-        void mouseDrag(const juce::MouseEvent& e) override
-        {
-            dragger.dragComponent(this, e, constrainer);
-            if(frontHandle != nullptr)
-            {
-                dragger.dragComponent(frontHandle, e, constrainer);
-                dragger.dragComponent(rearHandle, e, constrainer);
-            }
-            
-        }
-    };
-    class SplineHandle : public juce::Component
-    {
-    public:
-        SplineHandle(Constrainer* c) : constrainer(c)
-        {
-            
-        }
-        Constrainer* const constrainer;
-        void paint(juce::Graphics& g) override
-        {
-            g.setColour(UXPalette::thumbBlue);
-            g.fillEllipse(getLocalBounds().toFloat());
-        }
-        juce::ComponentDragger dragger;
-        void mouseDown(const juce::MouseEvent& e) override
-        {
-            dragger.startDraggingComponent(this, e);
-        }
-        void mouseDrag(const juce::MouseEvent& e) override
-        {
-            dragger.dragComponent(this, e, constrainer);
-        }
-    };
-    LFOPointHandle(Constrainer* c, fPoint center);
-    LFOPointHandle(Constrainer* c, fPoint center, fPoint front, fPoint rear, bool isSplit);
-    void updatePoint();
-    Constrainer* const constrainer;
-    LFOPoint point;
-    void mouseDown(const juce::MouseEvent& e) override;
-    void mouseDrag(const juce::MouseEvent& e) override;
-    CenterHandle centerComp;
-    SplineHandle front;
-    SplineHandle rear;
+   
 };
 
 
@@ -185,7 +120,15 @@ public:
     LFOEditor(lfoArray* arr);
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
+    void resized() override;
+    void connectPoints(LFOPoint* first, LFOPoint* second); //!  sets the array's values for this sector of the shape, ensures the corrects paths are drawn
+    void addPoint();
+    void removePoint(int idx);
+    juce::Rectangle<float> fBounds;
+    LFOPoint startPoint;
+    LFOPoint endPoint;
     juce::OwnedArray<LFOPointHandle> pointHandles;
+    juce::OwnedArray<juce::Path> paths;
     lfoArray* const linkedArray;
-    lfoArray* dataArray;
+    lfoArray dataArray;
 };

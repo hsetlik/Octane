@@ -154,6 +154,7 @@ void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool
 LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree) :
 rateComp(rate),
 outputComp(src),
+editor(array),
 meter(src),
 retrigParam(retrig),
 linkedArray(array),
@@ -165,6 +166,7 @@ linkedTree(tree)
     addAndMakeVisible(&rateComp);
     addAndMakeVisible(&outputComp);
     addAndMakeVisible(&meter);
+    addAndMakeVisible(&editor);
     
     rateAttach.reset(new apvts::SliderAttachment(*linkedTree, rateComp.linkedParam->name, rateComp.mainSlider));
     
@@ -179,11 +181,13 @@ void LFOPanel::resized()
     rButton.setBounds(retrigBounds.reduced(dX / 3.0f).toType<int>());
     auto squareSide = (dX > dY) ? dY : dX;
     auto rateBounds = juce::Rectangle<int>(0, 0, 2 * squareSide, 2 * squareSide);
-    auto sourceBounds = juce::Rectangle<int>(dX, 2 * squareSide, 2 * squareSide, 2 * squareSide);
+    auto sourceBounds = juce::Rectangle<int>(dX, 2 * squareSide, squareSide, squareSide);
+    auto editorBounds = juce::Rectangle<int>(dX, 3 * squareSide, 2 * squareSide, 2 * squareSide);
     auto meterBounds = juce::Rectangle<int>(4 * dX, 2 * dY, dX / 2, 3 * dY);
     rateComp.setBounds(rateBounds.reduced((int)dX / 3));
     outputComp.setBounds(sourceBounds.reduced((int)dX / 3));
     meter.setBounds(meterBounds);
+    editor.setBounds(editorBounds);
 }
 
 void LFOPanel::paint(juce::Graphics &g)

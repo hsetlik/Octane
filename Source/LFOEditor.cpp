@@ -11,38 +11,42 @@
 #include "LFOEditor.h"
 
 
-LFOPointHandle::CenterHandle::CenterHandle(Constrainer* c, juce::Component* f, juce::Component* r) :
-constrainer(c),
-frontHandle(f),
-rearHandle(r)
+LFOShape::LFOShape()
 {
     
 }
 
-LFOPointHandle::LFOPointHandle(Constrainer* c, fPoint center) :
-constrainer(c),
-point(center.getX(), center.getY(), false),
-centerComp(c, &front, &rear),
-front(constrainer),
-rear(constrainer)
+void LFOShape::applyToArray()
 {
-    addAndMakeVisible(&centerComp);
+    
 }
 
-LFOPointHandle::LFOPointHandle(Constrainer* c, fPoint center, fPoint f, fPoint r, bool isSplit) :
-constrainer(c),
-point(center.getX(), center.getY(), true, isSplit),
-centerComp(c, &front, &rear),
-front(constrainer),
-rear(constrainer)
-{
-    addAndMakeVisible(&centerComp);
-    addAndMakeVisible(&front);
-    addAndMakeVisible(&rear);
-}
 
 LFOEditor::LFOEditor(lfoArray* arr) :
+startPoint(0.0f, 0.0f, false),
+endPoint(1.0f, 0.0f, false),
 linkedArray(arr)
+{
+   
+}
+
+void LFOEditor::timerCallback()
 {
     
 }
+
+void LFOEditor::resized()
+{
+    
+}
+
+void LFOEditor::paint(juce::Graphics &g)
+{
+    g.fillAll(UXPalette::darkBkgnd);
+    
+}
+void LFOEditor::connectPoints(LFOPoint* first, LFOPoint* second)
+{
+    
+}
+

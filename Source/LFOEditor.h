@@ -147,7 +147,23 @@ public:
     {
         return relativeCenter;
     }
-    void setCenter(float x, float y) {relativeCenter = fPoint(x, y); }
+    void setCenter(float x, float y)
+    {
+        relativeCenter = fPoint(x, y);
+        if(parentComp != nullptr)
+        {
+            auto aX = parentComp->proportionOfWidth(relativeCenter.x);
+            auto aY = parentComp->proportionOfWidth(relativeCenter.y);
+            setCentrePosition(aX, aY);
+        }
+    }
+    void setCenter(float x, float y, juce::Component* container)
+    {
+        relativeCenter = fPoint(x, y);
+        auto aX = container->proportionOfWidth(relativeCenter.x);
+        auto aY = container->proportionOfWidth(relativeCenter.y);
+        setCentrePosition(aX, aY);
+    }
     void startDrag(const juce::MouseEvent& e) {dragger.startDraggingComponent(this, e); }
     void drag(const juce::MouseEvent& e) {dragger.dragComponent(this, e, &constrainer); }
     int dX;
@@ -173,6 +189,11 @@ public:
     {
         
     }
+    void paint(juce::Graphics& g) override
+    {
+        g.setColour(UXPalette::lightGray);
+        g.fillEllipse(getLocalBounds().toFloat());
+    }
 };
 
 class CenterHandle : public PointHandle
@@ -182,7 +203,8 @@ public:
     PointHandle(container, x, y),
     parentComp(container),
     currentType(type),
-    needsHandles(false)
+    needsHandles((type != PointType::Linear)),
+    handles(nullptr)
     {
         
     }
@@ -195,11 +217,40 @@ public:
             return;
         }
         dragger.startDraggingComponent(this, e);
+        if(handles != nullptr)
+        {
+            handles->front.startDrag(e);
+            handles->rear.startDrag(e);
+        }
     }
     void mouseDrag(const juce::MouseEvent& e) override
     {
         dragger.dragComponent(this, e, &constrainer);
+        if(handles != nullptr)
+        {
+            handles->front.drag(e);
+            handles->rear.drag(e);
+        }
     }
+    fPoint getLeadHandlePoint(juce::Component* container)
+    {
+        if(isSpline())
+        {
+            auto pCenter = handles->front.getCenter();
+            return fPoint((float)container->proportionOfWidth(pCenter.x), (float)container->proportionOfHeight(pCenter.y));
+        }
+        return fPoint(0.0f, 0.0f);
+    }
+    fPoint getRearHandlePoint(juce::Component* container)
+    {
+        if(isSpline())
+        {
+            auto pCenter = handles->rear.getCenter();
+            return fPoint((float)container->proportionOfWidth(pCenter.x), (float)container->proportionOfHeight(pCenter.y));
+        }
+        return fPoint(0.0f, 0.0f);
+    }
+    bool isSpline() {return (currentType != PointType::Linear); }
     juce::Path outline;
     juce::Component* const parentComp;
     PointType currentType;
@@ -213,7 +264,9 @@ public:
         parentComp(parent),
         front(parent),
         rear(parent),
-        isSplit(split)
+        isSplit(split),
+        xDelta(0.2f),
+        yDelta(0.0f)
         {
             front.addComponentListener(this);
             rear.addComponentListener(this);
@@ -226,14 +279,29 @@ public:
         void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override
         {
             //! each  move the unclicked handle to match the clicked one relative to the center (if not split ofc)
-            if(&comp == &front && !isSplit)
+            if(!isSplit)
             {
-                return;
+                setDeltas();
+                if(&comp == &front)
+                {
+                    rear.setCenter(xCenter - xDelta, yCenter - yDelta, parentComp);
+                    return;
+                }
+                else if(&comp == &rear)
+                {
+                    front.setCenter(xCenter + xDelta, yCenter - yDelta, parentComp);
+                    return;
+                }
             }
-            else if(&comp == &rear && !isSplit)
-            {
-                return;
-            }
+        }
+        void setDeltas()
+        {
+            auto pCenter = linkedCenter->getCenter();
+            xCenter = pCenter.x;
+            yCenter = pCenter.y;
+            auto lCenter = front.getCenter();
+            xDelta = lCenter.x = pCenter.x;
+            yDelta = lCenter.y = pCenter.y;
         }
         CenterHandle* const linkedCenter;
         juce::Component* const parentComp;
@@ -241,9 +309,12 @@ public:
         CurveHandle rear;
     private:
         bool isSplit;
+        float xCenter, yCenter;
+        float xDelta, yDelta; //! to represent the distance between the front handle and the center
     };
     //=======================================================================================
     CurveHandlePair* makeHandlePair();
+    CurveHandlePair* handles;
     void nextHandleType();
 };
 
@@ -262,13 +333,18 @@ public:
     void setArray();
     void addPoint(); //! TODO: write something to find the largest gap between points and put a point in the middle
     void calculatePaths();
+    void updateHandles();
+    void setHandlesFor(CenterHandle* center);
     void removePoint(int idx);
     juce::Rectangle<float> fBounds;
     LFOPoint startPoint;
     LFOPoint endPoint;
     juce::OwnedArray<LFOPoint> points;
-    juce::OwnedArray<CenterHandle> pointHandles;
+    juce::OwnedArray<CenterHandle> centerHandles;
+    juce::OwnedArray<CenterHandle::CurveHandlePair> handlePairs;
     juce::OwnedArray<juce::Path> paths;
     lfoArray* const linkedArray;
     lfoArray dataArray;
+private:
+    int frameIndex;
 };

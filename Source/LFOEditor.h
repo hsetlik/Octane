@@ -165,35 +165,6 @@ enum class PointType
     Bezier,
     Split
 };
-class CenterHandle : public PointHandle
-{
-public:
-    CenterHandle(PointHandle* front, PointHandle* rear, juce::Component* container=nullptr, float x=0.5f, float y=0.5f) :
-    PointHandle(container, x, y),
-    frontComp(front),
-    rearComp(rear)
-    {
-        
-    }
-    void mouseDown(const juce::MouseEvent& e) override
-    {
-        dragger.startDraggingComponent(this, e);
-        if(frontComp != nullptr)
-            frontComp->startDrag(e);
-        if(rearComp != nullptr)
-            rearComp->startDrag(e);
-    }
-    void mouseDrag(const juce::MouseEvent& e) override
-    {
-        dragger.dragComponent(this, e, &constrainer);
-        if(frontComp != nullptr)
-            frontComp->drag(e);
-        if(rearComp != nullptr)
-            rearComp->drag(e);
-    }
-    PointHandle* const frontComp;
-    PointHandle* const rearComp;
-};
 
 class CurveHandle : public PointHandle
 {
@@ -204,43 +175,79 @@ public:
     }
 };
 
-class CurveHandlePair : public juce::ComponentListener
+class CenterHandle : public PointHandle
 {
 public:
-    CurveHandlePair(CenterHandle* center, juce::Component* parent, bool split=false) :
-    linkedCenter(center),
-    parentComp(parent),
-    front(parent),
-    rear(parent),
-    isSplit(split)
+    CenterHandle(juce::Component* container=nullptr, PointType type=PointType::Linear, float x=0.5f, float y=0.5f) :
+    PointHandle(container, x, y),
+    parentComp(container),
+    currentType(type),
+    needsHandles(false)
     {
-        front.addComponentListener(this);
-        rear.addComponentListener(this);
+        
     }
-    void makeVisible()
+    void paint(juce::Graphics& g) override;
+    void mouseDown(const juce::MouseEvent& e) override
     {
-        parentComp->addAndMakeVisible(&front);
-        parentComp->addAndMakeVisible(&rear);
-    }
-    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override
-    {
-        //! each  move the unclicked handle to match the clicked one relative to the center (if not split ofc)
-        if(&comp == &front && !split)
+        if(e.mods.isRightButtonDown())
         {
+            nextHandleType();
             return;
         }
-        else if(&comp == &rear && !split)
-        {
-            return;
-        }
+        dragger.startDraggingComponent(this, e);
     }
-    CenterHandle* const linkedCenter;
+    void mouseDrag(const juce::MouseEvent& e) override
+    {
+        dragger.dragComponent(this, e, &constrainer);
+    }
+    juce::Path outline;
     juce::Component* const parentComp;
-    CurveHandle front;
-    CurveHandle rear;
-private:
-    bool isSplit;
+    PointType currentType;
+    bool needsHandles;
+    //=====================================================================================================
+    class CurveHandlePair : public juce::ComponentListener
+    {
+    public:
+        CurveHandlePair(CenterHandle* center, juce::Component* parent, bool split=false) :
+        linkedCenter(center),
+        parentComp(parent),
+        front(parent),
+        rear(parent),
+        isSplit(split)
+        {
+            front.addComponentListener(this);
+            rear.addComponentListener(this);
+        }
+        void makeVisible()
+        {
+            parentComp->addAndMakeVisible(&front);
+            parentComp->addAndMakeVisible(&rear);
+        }
+        void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override
+        {
+            //! each  move the unclicked handle to match the clicked one relative to the center (if not split ofc)
+            if(&comp == &front && !isSplit)
+            {
+                return;
+            }
+            else if(&comp == &rear && !isSplit)
+            {
+                return;
+            }
+        }
+        CenterHandle* const linkedCenter;
+        juce::Component* const parentComp;
+        CurveHandle front;
+        CurveHandle rear;
+    private:
+        bool isSplit;
+    };
+    //=======================================================================================
+    CurveHandlePair* makeHandlePair();
+    void nextHandleType();
 };
+
+
 
 
 
@@ -252,14 +259,15 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     void connectPoints(LFOPoint* first, LFOPoint* second); //!  sets the array's values for this sector of the shape, ensures the corrects paths are drawn
+    void setArray();
     void addPoint(); //! TODO: write something to find the largest gap between points and put a point in the middle
     void calculatePaths();
     void removePoint(int idx);
     juce::Rectangle<float> fBounds;
     LFOPoint startPoint;
     LFOPoint endPoint;
+    juce::OwnedArray<LFOPoint> points;
     juce::OwnedArray<CenterHandle> pointHandles;
-    juce::OwnedArray<CurveHandlePair> handlePairs;
     juce::OwnedArray<juce::Path> paths;
     lfoArray* const linkedArray;
     lfoArray dataArray;

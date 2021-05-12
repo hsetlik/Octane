@@ -56,6 +56,7 @@ void CenterHandle::paint(juce::Graphics &g)
 
 void CenterHandle::nextHandleType()
 {
+    auto startType = currentType;
     if(currentType != PointType::Split)
     {
         currentType = (PointType)((int)currentType + 1);
@@ -69,6 +70,10 @@ void CenterHandle::nextHandleType()
         needsHandles = true;
     else
         needsHandles = false;
+    if(startType != PointType::Linear && currentType == PointType::Linear)
+        needsHandlesRemoved = true;
+    else
+        needsHandlesRemoved = false;
 }
 
 CenterHandle::CurveHandlePair* CenterHandle::makeHandlePair()
@@ -348,6 +353,9 @@ void LFOEditor::updateHandles()
     {
         if(center->needsHandles)
             setHandlesFor(center);
+        if(center->needsHandlesRemoved)
+            removeHandlesFrom(center);
+        
     }
 }
 

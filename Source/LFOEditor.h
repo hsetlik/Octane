@@ -41,29 +41,11 @@ public:
     {
         frontHandleX = newX;
         frontHandleY = newY;
-        /*
-        if(!split)
-        {
-            auto dX = newX - xPos;
-            auto dY = newY - yPos;
-            rearHandleX = xPos - dX;
-            rearHandleY = yPos - dY;
-        }
-         */
     }
     void setRearHandle(float newX, float newY)
     {
         rearHandleX = newX;
         rearHandleY = newY;
-        /*
-        if(!split)
-        {
-            auto dX = xPos - newX;
-            auto dY = yPos - newY;
-            frontHandleX = xPos + dX;
-            frontHandleY = yPos + dY;
-        }
-         */
     }
     void setPosition(float newX, float newY)
     {
@@ -226,6 +208,7 @@ public:
     parentComp(container),
     currentType(type),
     needsHandles((type != PointType::Linear)),
+    needsHandlesRemoved(false),
     handles(nullptr)
     {
         
@@ -277,6 +260,7 @@ public:
     juce::Component* const parentComp;
     PointType currentType;
     bool needsHandles;
+    bool needsHandlesRemoved;
     //=====================================================================================================
     class CurveHandlePair : public juce::ComponentListener
     {
@@ -302,6 +286,13 @@ public:
         {
             parentComp->addAndMakeVisible(*front);
             parentComp->addAndMakeVisible(*rear);
+        }
+        void makeInvisible()
+        {
+            front->setVisible(false);
+            front->setEnabled(false);
+            rear->setVisible(false);
+            rear->setEnabled(false);
         }
         void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
         
@@ -360,12 +351,24 @@ public:
     juce::OwnedArray<juce::Path> paths;
     lfoArray* const linkedArray;
     lfoArray dataArray;
+    void hideHandles(CenterHandle* center)
+    {
+        for(auto pair : handlePairs)
+        {
+            if(pair->linkedCenter == center)
+            {
+                pair->makeInvisible();
+                return;
+            }
+        }
+    }
     void removeHandlesFrom(CenterHandle* center)
     {
         for(auto pair : handlePairs)
         {
             if(pair->linkedCenter == center)
             {
+                center->handles = nullptr;
                 handlePairs.removeObject(pair);
                 return;
             }

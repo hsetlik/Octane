@@ -75,6 +75,7 @@ class OctaneLFO
 public:
     OctaneLFO();
     void resetFromFunction(lfoFunc newFunc) {points = newFunc(); }
+    void resetFromArray(lfoArray& newValues) {points = newValues; }
     void setPoint(int idx, float value) {points[idx] = value; }
     void setPoint(float _phase, float value) {points[floor(_phase * LFO_POINTS)] = value; }
     void setRateHz(double hz);

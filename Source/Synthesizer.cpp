@@ -142,3 +142,32 @@ paramGroup(tree)
         ++idx;
     }
 }
+
+void OctaneSynth::replaceLfos(int index)
+{
+    auto& array = paramGroup.lfoShapes[index];
+    for(auto voice : oVoices)
+    {
+        voice->lfos[index]->resetFromArray(array);
+    }
+}
+//==========================================================================
+OctaneUpdater::OctaneUpdater(OctaneSynth* synth) : linkedSynth(synth), blockIndex(0)
+{
+    
+}
+
+void OctaneUpdater::tick()
+{
+    ++blockIndex;
+    if(blockIndex == BLOCKS_PER_UPDATE)
+    {
+        triggerAsyncUpdate();
+        blockIndex = 0;
+    }
+}
+
+void OctaneUpdater::handleAsyncUpdate()
+{
+    
+}

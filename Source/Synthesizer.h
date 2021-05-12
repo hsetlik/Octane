@@ -14,6 +14,7 @@
 #include "DAHDSR.h"
 #include "LFO.h"
 #include "ModulationSystem.h"
+#define BLOCKS_PER_UPDATE 15
 
 class OctaneSound : public juce::SynthesiserSound
 {
@@ -75,8 +76,8 @@ public:
     float lastOscLevel;
     float lastOutput;
     int sample;
+    int blockIndex;
 };
-
 class OctaneSynth : public juce::Synthesiser
 {
 public:
@@ -88,10 +89,21 @@ public:
             v->setAllSampleRate(rate);
     }
     int getNumWaves() {return waveFiles.size(); }
+    void replaceLfos(int index);
     SynthParameterGroup paramGroup;
 private:
     juce::File waveFolder;
     juce::Array<juce::File> waveFiles;
     std::vector<OctaneVoice*> oVoices;
-    
+};
+
+class OctaneUpdater : public juce::AsyncUpdater
+{
+public:
+    OctaneUpdater(OctaneSynth* synth);
+    void tick();
+    OctaneSynth* const linkedSynth;
+    void handleAsyncUpdate() override;
+private:
+    int blockIndex;
 };

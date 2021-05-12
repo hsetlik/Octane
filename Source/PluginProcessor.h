@@ -56,6 +56,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     //==============================================================================
     OctaneSynth synth;
+    OctaneUpdater updater;
     juce::AudioProcessorValueTreeState tree;
 private:
     //==============================================================================

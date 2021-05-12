@@ -25,6 +25,7 @@ OctaneAudioProcessor::OctaneAudioProcessor()
                      #endif
                        ),
 synth(&tree),
+updater(&synth),
 tree(*this, nullptr, "AllParameters", synth.paramGroup.createLayout())
 #endif
 {
@@ -139,9 +140,8 @@ bool OctaneAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void OctaneAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    updater.tick();
     buffer.clear();
-    //! this can be uncommented once the APVTS slider attachments get set up
-    //synth.paramGroup.updateForBlock(tree);
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 

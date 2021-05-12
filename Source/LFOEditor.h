@@ -143,6 +143,7 @@ public:
     {
         return relativeCenter;
     }
+    float relativeX() {return relativeCenter.x; }
     fPoint getCenter(juce::Component* container)
     {
         return fPoint(container->proportionOfWidth(relativeCenter.x),
@@ -375,6 +376,7 @@ public:
     void connectPoints(CenterHandle* first, CenterHandle* second); //!  sets the array's values for this sector of the shape, ensures the corrects paths are drawn
     void setArray();
     void addPoint(); //! TODO: write something to find the largest gap between points and put a point in the middle
+    void removePoint();
     void calculatePaths();
     void updateHandles();
     void setHandlesFor(CenterHandle* center);
@@ -398,6 +400,34 @@ public:
                 return;
             }
         }
+    }
+    struct PointGap //! to keep track of gaps between the points so new points can be added in the correct place
+    {
+        int lowerIdx;
+        int upperIdx;
+        float gapSize;
+        PointGap(int lower, int upper, float size) :
+        lowerIdx(lower),
+        upperIdx(upper),
+        gapSize(size)
+        {
+        }
+    };
+    static PointGap largestGap(std::vector<PointGap>& vec)
+    {
+        int largestIdx = 0;
+        float largestGap = std::numeric_limits<float>::min();
+        int idx = 0;
+        for(auto gap : vec)
+        {
+            if(gap.gapSize > largestGap)
+            {
+                largestGap = gap.gapSize;
+                largestIdx = idx;
+            }
+            ++idx;
+        }
+        return vec[largestIdx];
     }
 private:
     int frameIndex;

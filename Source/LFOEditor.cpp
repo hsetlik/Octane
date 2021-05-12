@@ -428,6 +428,35 @@ void LFOEditor::setHandlesFor(CenterHandle *center)
     newPair->makeVisible();
     resized();
 }
+
+void LFOEditor::addPoint()
+{
+    //! 1: determine all the gaps between points
+    std::vector<PointGap> gaps;
+    for(int i = 1; i < centerHandles.size(); ++i)
+    {
+        auto size = centerHandles[i]->relativeX() - centerHandles[i - 1]->relativeX();
+        gaps.push_back(PointGap(i - 1, i, size));
+    }
+    //! 2: find the largest one
+    auto gap = largestGap(gaps);
+    auto xValue = centerHandles[gap.lowerIdx]->relativeX() + (gap.gapSize / 2.0f);
+    auto yValue = dataArray[floor(xValue * LFO_POINTS)];
+    addAndMakeVisible(centerHandles.insert(gap.upperIdx, new CenterHandle(this, PointType::Linear, xValue, yValue)));
+    resized();
+}
+void LFOEditor::removePoint()
+{
+    if(centerHandles.size() < 4)
+        return;
+    else
+    {
+        auto* toRemove = centerHandles[centerHandles.size() - 2]; //! remove the second-to last point
+        removeHandlesFrom(toRemove);
+        centerHandles.removeObject(toRemove);
+        resized();
+    }
+}
 //=====================================================================
 LFOEditorPanel::LFOEditorPanel(lfoArray* array) :
 editor(std::make_unique<LFOEditor>(array))
@@ -457,5 +486,12 @@ void LFOEditorPanel::paint(juce::Graphics &g)
 
 void LFOEditorPanel::buttonClicked(juce::Button *b)
 {
-    
+    if(b == &addButton)
+    {
+        editor->addPoint();
+    }
+    if(b == &delButton)
+    {
+        editor->removePoint();
+    }
 }

@@ -131,7 +131,16 @@ public:
 };
 
 //====================================================================================================================
-
+class WaveSelector : public juce::Component
+{
+public:
+    WaveSelector(SynthParam* pParam, OctaneUpdater* updater, int index);
+    SynthParam* const positionParam;
+    OctaneUpdater* const linkedUpdater;
+private:
+    std::unique_ptr<WaveGraphOpenGL> display;
+};
+//====================================================================================================================
 class OscillatorPanel : public juce::Component
 {
 public:
@@ -147,18 +156,18 @@ private:
     apvts* const linkedTree;
 };
 
-//==============================================================================
-
+//====================================================================================================================
 class SoundSourcePanel : public juce::Component
 {
 public:
-    SoundSourcePanel(SynthParameterGroup* paramGrp, int index, apvts* tree);
+    SoundSourcePanel(SynthParameterGroup* paramGrp, int index, apvts* tree, OctaneUpdater* updater);
     void resized() override;
 private:
     OscillatorPanel oscPanel;
     EnvelopePanel ampEnvPanel;
     EnvelopePanel modEnvPanel;
     apvts* const linkedTree;
+    OctaneUpdater* const linkedUpdater;
 };
 
 //================================================================================

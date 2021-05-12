@@ -13,6 +13,7 @@
 #include "ModulationSystem.h"
 #include "RgbColor.h"
 #include "GraphicsUtility.h"
+#include "SymbolButton.h"
 #define REPAINT_FPS 24
 #define MIN_POINT_DIFFERENCE 0.01f
 #define MAX_LFO_HANDLES 10
@@ -129,6 +130,10 @@ public:
         dragger.startDraggingComponent(this, e);
         
     }
+    void mouseUp(const juce::MouseEvent& e) override
+    {
+        getParentComponent()->mouseDown(e);
+    }
     void mouseDrag(const juce::MouseEvent& e) override
     {
         dragger.dragComponent(this, e, &constrainer);
@@ -187,9 +192,6 @@ protected:
     fPoint relativeCenter;
 };
 
-
-
-
 class CurveHandle : public PointHandle
 {
 public:
@@ -233,10 +235,7 @@ public:
             handles->rear->startDrag(e);
         }
     }
-    void mouseUp(const juce::MouseEvent& e) override
-    {
-        getParentComponent()->mouseDown(e);
-    }
+    
     void mouseDrag(const juce::MouseEvent& e) override
     {
         dragger.dragComponent(this, e, &constrainer);
@@ -314,7 +313,6 @@ public:
             xDelta = lCenter.x - pCenter.x;
             yDelta = lCenter.y - pCenter.y;
         }
-        
         fPoint idealFrontPos();
         fPoint idealRearPos();
         CenterHandle* const linkedCenter;
@@ -331,46 +329,6 @@ public:
     CurveHandlePair* handles;
     void nextHandleType();
     
-};
-//===========================================================================================
-class PointControlButton : public juce::ShapeButton
-{
-public:
-    PointControlButton(juce::String name) :
-    juce::ShapeButton(name,
-                      UXPalette::darkGray,
-                      UXPalette::darkGray,
-                      UXPalette::darkGray)
-    {
-        
-    }
-    void paintButton(juce::Graphics& g, bool, bool) override
-    {
-    }
-};
-class AddPointButton : public PointControlButton
-{
-public:
-    AddPointButton() : PointControlButton("add_point")
-    {
-        
-    }
-    void paintButton(juce::Graphics& g, bool, bool) override;
-    void resized() override;
-    juce::Path outline;
-    juce::Path symbol;
-};
-class RemovePointButton : public PointControlButton
-{
-public:
-    RemovePointButton() : PointControlButton("remove_point")
-    {
-        
-    }
-    void paintButton(juce::Graphics& g, bool, bool) override;
-    void resized() override;
-    juce::Path outline;
-    juce::Path symbol;
 };
 //==========================================================================================
 class LFOEditor : public juce::Component, juce::Timer
@@ -455,8 +413,8 @@ public:
     void buttonClicked(juce::Button* b) override;
 private:
     OctaneUpdater* const linkedUpdater;
-    AddPointButton addButton;
-    RemovePointButton delButton;
+    PlusButton addButton;
+    MinusButton delButton;
     std::unique_ptr<LFOEditor> editor;
     const int lfoIndex;
 };

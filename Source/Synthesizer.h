@@ -93,9 +93,9 @@ public:
     void replaceLfos(int index);
     void replaceWaves(int index, juce::File newWave);
     SynthParameterGroup paramGroup;
-private:
     juce::File waveFolder;
     juce::Array<juce::File> waveFiles;
+private:
     std::vector<OctaneVoice*> oVoices;
 };
 enum class ChangeType

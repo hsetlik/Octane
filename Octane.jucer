@@ -58,6 +58,9 @@
         <FILE id="NcghUy" name="ParamSlider.cpp" compile="1" resource="0" file="Source/ParamSlider.cpp"/>
         <FILE id="pjD9VN" name="ParamSlider.h" compile="0" resource="0" file="Source/ParamSlider.h"/>
         <FILE id="N7L9pF" name="RgbColor.h" compile="0" resource="0" file="Source/RgbColor.h"/>
+        <FILE id="U443Zz" name="SymbolButton.cpp" compile="1" resource="0"
+              file="Source/SymbolButton.cpp"/>
+        <FILE id="g07QCI" name="SymbolButton.h" compile="0" resource="0" file="Source/SymbolButton.h"/>
         <FILE id="JggTqI" name="WaveDisplay.cpp" compile="1" resource="0" file="Source/WaveDisplay.cpp"/>
         <FILE id="v2CrIS" name="WaveDisplay.h" compile="0" resource="0" file="Source/WaveDisplay.h"/>
       </GROUP>

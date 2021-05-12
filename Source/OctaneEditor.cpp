@@ -229,7 +229,7 @@ void OscillatorPanel::paint(juce::Graphics &g)
     g.fillAll(juce::Colours::white);
 }
 //===============================================================================
-SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index, apvts* tree) :
+SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index, apvts* tree, OctaneUpdater* updater) :
 oscPanel(allParams->oscLevels[index],
          allParams->oscPositions[index],
          allParams->oscGraphVectors[index],
@@ -250,7 +250,8 @@ modEnvPanel(allParams->mDelays[index],
          allParams->mReleases[index],
          allParams->oscModEnvs[index],
             tree),
-linkedTree(tree)
+linkedTree(tree),
+linkedUpdater(updater)
 {
     addAndMakeVisible(&oscPanel);
     addAndMakeVisible(&ampEnvPanel);
@@ -275,7 +276,7 @@ linkedUpdater(update)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
-        oscPanels.add(new SoundSourcePanel(paramGroup, i, tree));
+        oscPanels.add(new SoundSourcePanel(paramGroup, i, tree, linkedUpdater));
         auto panel = oscPanels.getLast();
         addAndMakeVisible(panel);
     }

@@ -13,12 +13,13 @@
 
 class PathUtility
 {
+    using fPoint = juce::Point<float>;
 public:
-    static juce::Point<float> centerPoint(juce::Rectangle<float>& rect)
+    static fPoint centerPoint(juce::Rectangle<float>& rect)
     {
         auto centerX = rect.getX() + (rect.getWidth() / 2);
         auto centerY = rect.getY() + (rect.getHeight() / 2);
-        return juce::Point<float>(centerX, centerY);
+        return fPoint(centerX, centerY);
     }
     static juce::Path betweenEllipses(juce::Rectangle<float>& r1, juce::Rectangle<float>& r2)
     {
@@ -42,6 +43,45 @@ public:
         path.closeSubPath();
         
         return path;
+    }
+    static fPoint lerp(fPoint a, fPoint b, float t)
+    {
+        return a + ((b - a) * t);
+    }
+    static float bezierAt(fPoint startPoint, fPoint endPoint, fPoint controlPoint, float t)
+    {
+        auto start = lerp(startPoint, controlPoint, t);
+        auto end = lerp(controlPoint, endPoint, t);
+        auto finalPoint = lerp(start, end, t);
+        return finalPoint.y;
+    }
+    static fPoint bezierPointAt(fPoint startPoint, fPoint endPoint, fPoint controlPoint, float t)
+    {
+        auto start = lerp(startPoint, controlPoint, t);
+        auto end = lerp(controlPoint, endPoint, t);
+        return lerp(start, end, t);
+    }
+    static float bezierAt(fPoint startPoint, fPoint endPoint, fPoint c1, fPoint c2, float t)
+    {
+        auto point12 = lerp(startPoint, c1, t);
+        auto point23 = lerp(c1, c2, t);
+        auto point34 = lerp(c2, endPoint, t);
+        auto p1 = lerp(point12, point23, t);
+        auto p2 = lerp(point23, point34, t);
+        return lerp(p1, p2, t).y;
+    }
+    static fPoint bezierPointAt(fPoint startPoint, fPoint endPoint, fPoint c1, fPoint c2, float t)
+    {
+        auto point12 = lerp(startPoint, c1, t);
+        auto point23 = lerp(c1, c2, t);
+        auto point34 = lerp(c2, endPoint, t);
+        auto p1 = lerp(point12, point23, t);
+        auto p2 = lerp(point23, point34, t);
+        return lerp(p1, p2, t);
+    }
+    static bool distanceGreaterThan(fPoint p1, fPoint p2, float min)
+    {
+        return(fabs(p1.getDistanceFrom(p2)) > min);
     }
     
 };

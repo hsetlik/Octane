@@ -11,6 +11,7 @@
 #include "LFOEditor.h"
 
 
+
 LFOShape::LFOShape()
 {
     
@@ -66,6 +67,8 @@ void CenterHandle::nextHandleType()
     repaint();
     if(currentType != PointType::Linear)
         needsHandles = true;
+    else
+        needsHandles = false;
 }
 
 CenterHandle::CurveHandlePair* CenterHandle::makeHandlePair()
@@ -84,8 +87,8 @@ CenterHandle::CurveHandlePair* CenterHandle::makeHandlePair()
         auto yCenter = getCenter().y;
         auto frontX = (xCenter + 0.2f > 0.95f) ? 0.95f : xCenter + 0.2f;
         auto rearX = (xCenter - 0.2f < 0.05f) ? 0.05f : xCenter - 0.2f;
-        output->front.setCenter(frontX, yCenter);
-        output->rear.setCenter(rearX, yCenter);
+        output->front->setCenter(frontX, yCenter);
+        output->rear->setCenter(rearX, yCenter);
         handles = output;
         return output;
     }
@@ -98,11 +101,54 @@ CenterHandle::CurveHandlePair* CenterHandle::makeHandlePair()
             yCenter -= 0.2f;
         auto frontX = (xCenter + 0.2f > 0.95f) ? 0.95f : xCenter + 0.2f;
         auto rearX = (xCenter - 0.2f < 0.05f) ? 0.05f : xCenter - 0.2f;
-        output->front.setCenter(frontX, yCenter);
-        output->rear.setCenter(rearX, yCenter);
+        output->front->setCenter(frontX, yCenter);
+        output->rear->setCenter(rearX, yCenter);
         handles = output;
         return output;
     }
+}
+
+void CenterHandle::CurveHandlePair::componentMovedOrResized(juce::Component &comp, bool wasMoved, bool wasResized)
+{
+    //!  move the unclicked handle to match the clicked one relative to the center (if not split ofc)
+    if(!isSplit)
+    {
+        /*
+        auto idealRear = idealRearPos();
+        auto idealFront = idealFrontPos();
+        auto currentRear = rear.getCenter();
+        auto currentFront = front.getCenter();
+        if(&comp == &front)
+        {
+            if(PathUtility::distanceGreaterThan(currentRear, idealRear, MIN_POINT_DIFFERENCE))
+            {
+                rear.setCenter(idealRear.x, idealRear.y, parentComp);
+            }
+        }
+        else if(&comp == &rear)
+        {
+            if(PathUtility::distanceGreaterThan(currentFront, idealFront, MIN_POINT_DIFFERENCE))
+            {
+                front.setCenter(idealFront.x, idealFront.y, parentComp);
+            }
+        }
+         */
+    }
+}
+
+fPoint CenterHandle::CurveHandlePair::idealRearPos()
+{
+    auto center = linkedCenter->getCenter();
+    auto fCenter = front->getCenter();
+    auto delta = fCenter - center;
+    return center - delta;
+}
+fPoint CenterHandle::CurveHandlePair::idealFrontPos()
+{
+    auto center = linkedCenter->getCenter();
+    auto rCenter = rear->getCenter();
+    auto delta = center - rCenter;
+    return center + delta;
 }
 //=================================================================
 
@@ -112,21 +158,37 @@ endPoint(1.0f, 0.0f, false),
 linkedArray(arr),
 frameIndex(0)
 {
+    for(auto point : dataArray)
+    {
+        point = 1.0f;
+    }
     addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.05f, 0.95f)));
     addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.5f, 0.05f)));
     addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.95f, 0.95f)));
     //! make sure the first and last points are uneditable
     centerHandles[0]->setInterceptsMouseClicks(false, false);
     centerHandles[2]->setInterceptsMouseClicks(false, false);
-    startTimerHz(30);
+    startTimerHz(REPAINT_FPS);
+}
+
+LFOEditor::~LFOEditor()
+{
+    printf("LFO START\n");
+    int idx = 0;
+    for(auto point : dataArray)
+    {
+        printf("Point %d: %f\n", idx, point);
+        ++idx;
+    }
+    printf("LFO FINISHED\n");
 }
 
 void LFOEditor::timerCallback()
 {
     ++frameIndex;
-    if(frameIndex == 10) //! only need to recalculate the array once every 10 frames or so (every 1/3 second)
+    if(frameIndex == 15) //! only recalculate the array once every 15 frames or so (every 1/2 second) to save on CPU
     {
-        setArray();
+        //setArray();
         frameIndex = 0;
     }
     updateHandles();
@@ -145,7 +207,7 @@ void LFOEditor::calculatePaths()
         auto path = paths.getLast();
         path->startNewSubPath(centerHandles[i]->getBounds().getCentre().x, centerHandles[i]->getBounds().getCentre().y);
         //! determine which type pf path to draw
-        if(centerHandles[i]->isSpline() && centerHandles[i + 1]->isSpline())
+        if(centerHandles[i]->isBezier() && centerHandles[i + 1]->isBezier())
             //! draw a cubic bezier when both points are splines
         {
             auto c1 = centerHandles[i]->getLeadHandlePoint(this);
@@ -155,18 +217,18 @@ void LFOEditor::calculatePaths()
                                  centerHandles[i + 1]->getBounds().getCentre().y));
             
         }
-        else if(!centerHandles[i]->isSpline() && !centerHandles[i + 1]->isSpline())
+        else if(!centerHandles[i]->isBezier() && !centerHandles[i + 1]->isBezier())
             //! draw a line when both points are linear
         {
             path->lineTo(centerHandles[i + 1]->getBounds().getCentre().x, centerHandles[i + 1]->getBounds().getCentre().y);
         }
-        else if(centerHandles[i]->isSpline() && !centerHandles[i + 1]->isSpline())
+        else if(centerHandles[i]->isBezier() && !centerHandles[i + 1]->isBezier())
             //! quatratic using the lead handle of the first point
         {
             auto c1 = centerHandles[i]->getLeadHandlePoint(this);
             path->quadraticTo(c1, fPoint(centerHandles[i + 1]->getBounds().getCentre().x, centerHandles[i + 1]->getBounds().getCentre().y));
         }
-        else if(!centerHandles[i]->isSpline() && centerHandles[i + 1]->isSpline())
+        else if(!centerHandles[i]->isBezier() && centerHandles[i + 1]->isBezier())
             //! quadratic using the rear handle of the second point
         {
             auto c1 = centerHandles[i + 1]->getRearHandlePoint(this);
@@ -177,9 +239,9 @@ void LFOEditor::calculatePaths()
     {
         paths.add(new juce::Path());
         auto path = paths.getLast();
-        path->startNewSubPath(pair->front.getBounds().getCentre().x, pair->front.getBounds().getCentre().y);
+        path->startNewSubPath(pair->front->getBounds().getCentre().x, pair->front->getBounds().getCentre().y);
         path->lineTo(pair->linkedCenter->getBounds().getCentre().x, pair->linkedCenter->getBounds().getCentre().y);
-        path->lineTo(pair->rear.getBounds().getCentre().x, pair->rear.getBounds().getCentre().y);
+        path->lineTo(pair->rear->getBounds().getCentre().x, pair->rear->getBounds().getCentre().y);
     }
 }
 
@@ -196,14 +258,14 @@ void LFOEditor::resized()
     }
     for(auto pair : handlePairs)
     {
-        pair->front.dX = getWidth() / 20;
-        pair->rear.dX = getWidth() / 20;
-        auto rFront = pair->front.getCenter();
-        pair->front.setCenter(rFront.x, rFront.y, this);
-        auto rRear = pair->rear.getCenter();
-        pair->rear.setCenter(rRear.x, rRear.y, this);
-        pair->front.resized();
-        pair->rear.resized();
+        pair->front->dX = getWidth() / 20;
+        pair->rear->dX = getWidth() / 20;
+        auto rFront = pair->front->getCenter();
+        pair->front->setCenter(rFront.x, rFront.y, this);
+        auto rRear = pair->rear->getCenter();
+        pair->rear->setCenter(rRear.x, rRear.y, this);
+        pair->front->resized();
+        pair->rear->resized();
     }
 }
 
@@ -217,19 +279,67 @@ void LFOEditor::paint(juce::Graphics &g)
         g.strokePath(*path, stroke);
     }
 }
-void LFOEditor::connectPoints(LFOPoint* first, LFOPoint* second)
+void LFOEditor::connectPoints(CenterHandle* first, CenterHandle* second)
 {
-    
+    float t = 0.0f;
+    auto center1 = first->getCenter();
+    auto center2 = second->getCenter();
+    auto numPoints = (int)floor(center2.x * (float)LFO_POINTS) - floor(center1.x * (float)LFO_POINTS);
+    auto idx = floor(center1.x * (float)LFO_POINTS);
+    auto dT = 1.0f / numPoints;
+    if(!first->isBezier() && !second->isBezier()) //! both linear
+    {
+        auto yStart = center1.y;
+        auto yEnd = center2.y;
+        for(int i = idx; i < numPoints; ++i)
+        {
+            t += dT;
+            dataArray[i] = yStart + ((yEnd - yStart) * t);
+        }
+        return;
+    }
+    else if(first->isBezier() && second->isBezier()) //! both splie
+    {
+        auto c1 = first->handles->front->getCenter();
+        auto c2 = second->handles->rear->getCenter();
+        for(int i = idx; i < numPoints; ++i)
+        {
+            t += dT;
+            dataArray[i] = PathUtility::bezierAt(center1, center2, c1, c2, t);
+        }
+        return;
+    }
+    else if(!first->isBezier() && second->isBezier()) //! only second is spline
+    {
+        auto c1 = second->handles->rear->getCenter();
+        for(int i = idx; i < numPoints; ++i)
+        {
+            t += dT;
+            dataArray[i] = PathUtility::bezierAt(center1, center2, c1, t);
+        }
+        return;
+    }
+    else if(first->isBezier() && !second->isBezier()) //! only first is spline
+    {
+        auto c1 = first->handles->front->getCenter();
+        for(int i = idx; i < numPoints; ++i)
+        {
+            t += dT;
+            dataArray[i] = PathUtility::bezierAt(center1, center2, c1, t);
+        }
+        return;
+    }
 }
 void LFOEditor::setArray()
 {
-    auto lastPoint = &startPoint;
-    for(auto point : points)
+    auto* lastPoint = centerHandles[0];
+    for(int i = 1; i < centerHandles.size(); ++i)
     {
-        connectPoints(lastPoint, point);
-        lastPoint = point;
+        auto* newPoint = centerHandles[i];
+        connectPoints(lastPoint, newPoint);
+        lastPoint = newPoint;
     }
-    connectPoints(lastPoint, &endPoint);
+    *linkedArray = dataArray;
 }
 
 void LFOEditor::updateHandles()
@@ -237,28 +347,18 @@ void LFOEditor::updateHandles()
     for(auto center : centerHandles)
     {
         if(center->needsHandles)
-        {
             setHandlesFor(center);
-        }
     }
 }
 
 void LFOEditor::setHandlesFor(CenterHandle *center)
 {
     //! go through and delete any existing handles for this center
-    for(auto pair : handlePairs)
-    {
-        if(pair->linkedCenter == center)
-        {
-            handlePairs.removeObject(pair);
-            break;
-        }
-    }
+    removeHandlesFrom(center);
     //! now make the new pair
     handlePairs.add(center->makeHandlePair());
     auto newPair = handlePairs.getLast();
-    addAndMakeVisible(newPair->front);
-    addAndMakeVisible(newPair->rear);
+    newPair->makeVisible();
     resized();
 }
 

@@ -106,6 +106,11 @@ void OctaneVoice::tickSample()
         lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
     }
 }
+
+void OctaneVoice::replaceWave(int index, juce::File newWave)
+{
+    oscillators[index]->replace(newWave);
+}
 //==============================================================================================================
 
 OctaneSynth::OctaneSynth(juce::AudioProcessorValueTreeState* tree) :
@@ -151,7 +156,37 @@ void OctaneSynth::replaceLfos(int index)
         voice->lfos[index]->resetFromArray(array);
     }
 }
+
+void OctaneSynth::replaceWaves(int index, juce::File newWave)
+{
+    for(auto voice : oVoices)
+    {
+        voice->replaceWave(index, newWave);
+    }
+}
 //==========================================================================
+OctaneLFOChange::OctaneLFOChange(OctaneSynth* synth, int lfoIndex) :
+linkedSynth(synth),
+index(lfoIndex)
+{
+}
+void OctaneLFOChange::apply()
+{
+    linkedSynth->replaceLfos(index);
+}
+//===========================================================================
+OctaneWaveChange::OctaneWaveChange(OctaneSynth* synth, int oscIndex, juce::File newWave) :
+linkedSynth(synth),
+index(oscIndex),
+wave(newWave)
+{
+    
+}
+void OctaneWaveChange::apply()
+{
+    linkedSynth->replaceWaves(index, wave);
+}
+//===========================================================================
 OctaneUpdater::OctaneUpdater(OctaneSynth* synth) : linkedSynth(synth), blockIndex(0)
 {
     
@@ -166,8 +201,17 @@ void OctaneUpdater::tick()
         blockIndex = 0;
     }
 }
-
+void OctaneUpdater::stageLfoChange(int index)
+{
+    stagedChanges.add(new OctaneLFOChange(linkedSynth, index));
+}
+void OctaneUpdater::stageWaveChange(int index, juce::File wave)
+{
+    stagedChanges.add(new OctaneWaveChange(linkedSynth, index, wave));
+}
 void OctaneUpdater::handleAsyncUpdate()
 {
-    
+    for(auto change : stagedChanges)
+        change->apply();
+    stagedChanges.clear();
 }

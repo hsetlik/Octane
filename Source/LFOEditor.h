@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "LFO.h"
+#include "Synthesizer.h"
 #include "ModulationSystem.h"
 #include "RgbColor.h"
 #include "GraphicsUtility.h"
@@ -125,7 +125,9 @@ public:
     }
     void mouseDown(const juce::MouseEvent& e) override
     {
+        getParentComponent()->mouseDown(e);
         dragger.startDraggingComponent(this, e);
+        
     }
     void mouseDrag(const juce::MouseEvent& e) override
     {
@@ -218,6 +220,7 @@ public:
     void paint(juce::Graphics& g) override;
     void mouseDown(const juce::MouseEvent& e) override
     {
+        getParentComponent()->mouseDown(e);
         if(e.mods.isRightButtonDown())
         {
             nextHandleType();
@@ -229,6 +232,10 @@ public:
             handles->front->startDrag(e);
             handles->rear->startDrag(e);
         }
+    }
+    void mouseUp(const juce::MouseEvent& e) override
+    {
+        getParentComponent()->mouseDown(e);
     }
     void mouseDrag(const juce::MouseEvent& e) override
     {
@@ -369,7 +376,7 @@ public:
 class LFOEditor : public juce::Component, juce::Timer
 {
 public:
-    LFOEditor(lfoArray* arr);
+    LFOEditor(lfoArray* arr, OctaneUpdater* updater, int idx);
     ~LFOEditor();
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
@@ -382,6 +389,7 @@ public:
     void updateHandles();
     void setHandlesFor(CenterHandle* center);
     void removePoint(int idx);
+    void mouseDown(const juce::MouseEvent& e) override;
     juce::Rectangle<float> fBounds;
     LFOPoint startPoint;
     LFOPoint endPoint;
@@ -432,7 +440,8 @@ public:
     }
 private:
     int frameIndex;
-    int index;
+    OctaneUpdater* const linkedUpdater;
+    const int lfoIndex;
 };
 //==========================================================================
 class LFOEditorPanel :
@@ -440,12 +449,14 @@ public juce::Component,
 public juce::Button::Listener
 {
 public:
-    LFOEditorPanel(lfoArray* array);
+    LFOEditorPanel(lfoArray* array, OctaneUpdater* updater, int index);
     void resized() override;
     void paint(juce::Graphics& g) override;
     void buttonClicked(juce::Button* b) override;
 private:
+    OctaneUpdater* const linkedUpdater;
     AddPointButton addButton;
     RemovePointButton delButton;
     std::unique_ptr<LFOEditor> editor;
+    const int lfoIndex;
 };

@@ -216,11 +216,13 @@ void RemovePointButton::resized()
 
 //===================================================================
 
-LFOEditor::LFOEditor(lfoArray* arr) :
+LFOEditor::LFOEditor(lfoArray* arr, OctaneUpdater* updater, int idx) :
 startPoint(0.0f, 0.0f, false),
 endPoint(1.0f, 0.0f, false),
 linkedArray(arr),
-frameIndex(0)
+frameIndex(0),
+linkedUpdater(updater),
+lfoIndex(idx)
 {
     for(auto point : dataArray)
     {
@@ -260,7 +262,7 @@ void LFOEditor::timerCallback()
         setArray();
         frameIndex = 0;
     }
-    
+    setInterceptsMouseClicks(true, true);
 }
 
 void LFOEditor::calculatePaths()
@@ -411,6 +413,11 @@ void LFOEditor::setArray()
     *linkedArray = dataArray;
 }
 
+void LFOEditor::mouseDown(const juce::MouseEvent &e)
+{
+    linkedUpdater->stageLfoChange(lfoIndex);
+}
+
 void LFOEditor::updateHandles()
 {
     for(auto center : centerHandles)
@@ -466,15 +473,19 @@ void LFOEditor::removePoint()
     }
 }
 //=====================================================================
-LFOEditorPanel::LFOEditorPanel(lfoArray* array) :
-editor(std::make_unique<LFOEditor>(array))
+LFOEditorPanel::LFOEditorPanel(lfoArray* array, OctaneUpdater* updater, int index) :
+linkedUpdater(updater),
+editor(std::make_unique<LFOEditor>(array, updater, index)),
+lfoIndex(index)
 {
     addAndMakeVisible(&addButton);
     addAndMakeVisible(&delButton);
     addAndMakeVisible(&*editor);
     addButton.addListener(this);
     delButton.addListener(this);
+    setInterceptsMouseClicks(true, true);
 }
+
 
 void LFOEditorPanel::resized()
 {
@@ -502,4 +513,5 @@ void LFOEditorPanel::buttonClicked(juce::Button *b)
     {
         editor->removePoint();
     }
+    linkedUpdater->stageLfoChange(lfoIndex);
 }

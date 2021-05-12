@@ -151,14 +151,15 @@ void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool
 
 //=========================================================================
 
-LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree) :
+LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index) :
 rateComp(rate),
 outputComp(src),
-editor(array),
+editor(array, updater, index),
 meter(src),
 retrigParam(retrig),
 linkedArray(array),
-linkedTree(tree)
+linkedTree(tree),
+lfoIndex(index)
 {
     addAndMakeVisible(&rButton);
     rButton.addListener(this);
@@ -267,9 +268,10 @@ void SoundSourcePanel::resized()
 }
 //==============================================================================
 
-OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree) :
+OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
 paramGroup(pGroup),
-linkedTree(tree)
+linkedTree(tree),
+linkedUpdater(update)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
@@ -283,7 +285,7 @@ linkedTree(tree)
         auto pRetrig = paramGroup->lfoRetriggers[i];
         auto pOut = paramGroup->lfoOutputs[i];
         auto pArray = &paramGroup->lfoShapes[i];
-        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pArray, tree));
+        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pArray, tree, linkedUpdater, i));
         auto panel = lfoPanels.getLast();
         addAndMakeVisible(panel);
     }

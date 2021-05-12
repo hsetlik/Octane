@@ -59,6 +59,7 @@ public:
     //===============================================
     void renderNextBlock (juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples) override;
     //===============================================
+    void replaceWave(int index, juce::File newWave);
     void tickBlock(); //update the things that need to be updated once per buffer
     void tickSample(); //update the things that need continuous modulation
     SynthParameterGroup* const params;
@@ -90,11 +91,45 @@ public:
     }
     int getNumWaves() {return waveFiles.size(); }
     void replaceLfos(int index);
+    void replaceWaves(int index, juce::File newWave);
     SynthParameterGroup paramGroup;
 private:
     juce::File waveFolder;
     juce::Array<juce::File> waveFiles;
     std::vector<OctaneVoice*> oVoices;
+};
+enum class ChangeType
+{
+    WaveChange,
+    LfoChange
+};
+
+class OctaneChange
+{
+public:
+    virtual ~OctaneChange() {}
+    virtual void apply() {}
+};
+
+class OctaneLFOChange : public OctaneChange
+{
+public:
+    OctaneLFOChange(OctaneSynth* synth, int lfoIndex);
+    void apply() override;
+private:
+    OctaneSynth* const linkedSynth;
+    const int index;
+};
+
+class OctaneWaveChange : public OctaneChange
+{
+public:
+    OctaneWaveChange(OctaneSynth* synth, int oscIndex, juce::File newWave);
+    void apply() override;
+private:
+    OctaneSynth* const linkedSynth;
+    const int index;
+    juce::File wave;
 };
 
 class OctaneUpdater : public juce::AsyncUpdater
@@ -104,6 +139,9 @@ public:
     void tick();
     OctaneSynth* const linkedSynth;
     void handleAsyncUpdate() override;
+    void stageLfoChange(int index);
+    void stageWaveChange(int index, juce::File wave);
 private:
+    juce::OwnedArray<OctaneChange> stagedChanges;
     int blockIndex;
 };

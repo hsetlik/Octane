@@ -110,7 +110,7 @@ public:
         RetrigButton();
         void paintButton(juce::Graphics& g, bool mouseOver, bool isMouseDown) override;
     };
-    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree);
+    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index);
     void buttonClicked(juce::Button* b) override
     {
         float newValue = (b->getToggleState()) ? 1.0f : 0.0f;
@@ -127,6 +127,7 @@ public:
     lfoArray* const linkedArray;
     apvts* const linkedTree;
     std::unique_ptr<apvts::SliderAttachment> rateAttach;
+    const int lfoIndex;
 };
 
 //====================================================================================================================
@@ -165,13 +166,14 @@ private:
 class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
 {
 public:
-    OctaneEditor(SynthParameterGroup* allParams, apvts* tree);
+    OctaneEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
     std::vector<juce::Rectangle<int>> oscBoundRects;
     SynthParameterGroup* const paramGroup;
     apvts* linkedTree;
+    OctaneUpdater* const linkedUpdater;
     juce::OwnedArray<SoundSourcePanel> oscPanels;
     juce::OwnedArray<LFOPanel> lfoPanels;
     

@@ -156,6 +156,65 @@ fPoint CenterHandle::CurveHandlePair::idealFrontPos()
     return center + delta;
 }
 //=================================================================
+void AddPointButton::paintButton(juce::Graphics &g, bool isHighlighted, bool isDown)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto corner = fBounds.getHeight() / 4.0f;
+    //outline.clear();
+    g.setColour(UXPalette::lightGray);
+    if(isDown)
+        g.setColour(UXPalette::darkGray);
+    g.fillRoundedRectangle(fBounds, corner);
+    g.setColour(UXPalette::highlight);
+    g.fillPath(symbol);
+}
+void AddPointButton::resized() //! use the \c resized methods to lay out the symbol paths
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 16;
+    auto dY = fBounds.getHeight() / 8;
+    symbol.clear();
+    symbol.startNewSubPath(5 * dX, 3 * dY);
+    symbol.lineTo(7 * dX, 3 * dY);
+    symbol.lineTo(7 * dX, 1 * dY);
+    symbol.lineTo(9 * dX, 1 * dY);
+    symbol.lineTo(9 * dX, 3 * dY);
+    symbol.lineTo(11 * dX, 3 * dY);
+    symbol.lineTo(11 * dX, 5 * dY);
+    symbol.lineTo(9 * dX, 5 * dY);
+    symbol.lineTo(9 * dX, 7 * dY);
+    symbol.lineTo(7 * dX, 7 * dY);
+    symbol.lineTo(7 * dX, 5 * dY);
+    symbol.lineTo(5 * dX, 5 * dY);
+    symbol.closeSubPath();
+    
+}
+void RemovePointButton::paintButton(juce::Graphics &g, bool isHighlighted, bool isDown)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto corner = fBounds.getHeight() / 4.0f;
+    //outline.clear();
+    g.setColour(UXPalette::lightGray);
+    if(isDown)
+        g.setColour(UXPalette::darkGray);
+    g.fillRoundedRectangle(fBounds, corner);
+    g.setColour(UXPalette::highlight);
+    g.fillPath(symbol);
+}
+void RemovePointButton::resized()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 16;
+    auto dY = fBounds.getHeight() / 8;
+    symbol.clear();
+    symbol.startNewSubPath(5 * dX, 3 * dY);
+    symbol.lineTo(11 * dX, 3 * dY);
+    symbol.lineTo(11 * dX, 5 * dY);
+    symbol.lineTo(5 * dX, 5 * dY);
+    symbol.closeSubPath();
+}
+
+//===================================================================
 
 LFOEditor::LFOEditor(lfoArray* arr) :
 startPoint(0.0f, 0.0f, false),
@@ -193,7 +252,7 @@ void LFOEditor::timerCallback()
     ++frameIndex;
     if(frameIndex == 15) //! only recalculate the array once every 15 frames or so (every 1/2 second) to save on CPU
     {
-        //setArray();
+        setArray();
         frameIndex = 0;
     }
     updateHandles();
@@ -369,4 +428,34 @@ void LFOEditor::setHandlesFor(CenterHandle *center)
     newPair->makeVisible();
     resized();
 }
+//=====================================================================
+LFOEditorPanel::LFOEditorPanel(lfoArray* array) :
+editor(std::make_unique<LFOEditor>(array))
+{
+    addAndMakeVisible(&addButton);
+    addAndMakeVisible(&delButton);
+    addAndMakeVisible(&*editor);
+    addButton.addListener(this);
+    delButton.addListener(this);
+}
 
+void LFOEditorPanel::resized()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getHeight() / 8.5f;
+    auto buttonBox = fBounds.removeFromTop(dX);
+    auto minorTrim = dX / 6.0f;
+    addButton.setBounds(buttonBox.removeFromLeft(2 * dX).reduced(minorTrim).toType<int>());
+    delButton.setBounds(buttonBox.removeFromLeft(2 * dX).reduced(minorTrim).toType<int>());
+    editor->setBounds(fBounds.toType<int>());
+}
+
+void LFOEditorPanel::paint(juce::Graphics &g)
+{
+    
+}
+
+void LFOEditorPanel::buttonClicked(juce::Button *b)
+{
+    
+}

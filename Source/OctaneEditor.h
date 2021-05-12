@@ -120,7 +120,7 @@ public:
     void paint(juce::Graphics& g) override;
     ParamCompRotary rateComp;
     ParamCompSource outputComp;
-    LFOEditor editor;
+    LFOEditorPanel editor;
     RetrigButton rButton;
     LevelMeter meter;
     SynthParam* const retrigParam;

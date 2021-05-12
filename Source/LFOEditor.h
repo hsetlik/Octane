@@ -323,11 +323,47 @@ public:
     void nextHandleType();
     
 };
-
-
-
-
-
+//===========================================================================================
+class PointControlButton : public juce::ShapeButton
+{
+public:
+    PointControlButton(juce::String name) :
+    juce::ShapeButton(name,
+                      UXPalette::darkGray,
+                      UXPalette::darkGray,
+                      UXPalette::darkGray)
+    {
+        
+    }
+    void paintButton(juce::Graphics& g, bool, bool) override
+    {
+    }
+};
+class AddPointButton : public PointControlButton
+{
+public:
+    AddPointButton() : PointControlButton("add_point")
+    {
+        
+    }
+    void paintButton(juce::Graphics& g, bool, bool) override;
+    void resized() override;
+    juce::Path outline;
+    juce::Path symbol;
+};
+class RemovePointButton : public PointControlButton
+{
+public:
+    RemovePointButton() : PointControlButton("remove_point")
+    {
+        
+    }
+    void paintButton(juce::Graphics& g, bool, bool) override;
+    void resized() override;
+    juce::Path outline;
+    juce::Path symbol;
+};
+//==========================================================================================
 class LFOEditor : public juce::Component, juce::Timer
 {
 public:
@@ -351,17 +387,6 @@ public:
     juce::OwnedArray<juce::Path> paths;
     lfoArray* const linkedArray;
     lfoArray dataArray;
-    void hideHandles(CenterHandle* center)
-    {
-        for(auto pair : handlePairs)
-        {
-            if(pair->linkedCenter == center)
-            {
-                pair->makeInvisible();
-                return;
-            }
-        }
-    }
     void removeHandlesFrom(CenterHandle* center)
     {
         for(auto pair : handlePairs)
@@ -377,4 +402,19 @@ public:
 private:
     int frameIndex;
     int index;
+};
+//==========================================================================
+class LFOEditorPanel :
+public juce::Component,
+public juce::Button::Listener
+{
+public:
+    LFOEditorPanel(lfoArray* array);
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+    void buttonClicked(juce::Button* b) override;
+private:
+    AddPointButton addButton;
+    RemovePointButton delButton;
+    std::unique_ptr<LFOEditor> editor;
 };

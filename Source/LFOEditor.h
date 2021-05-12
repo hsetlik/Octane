@@ -15,6 +15,7 @@
 #include "GraphicsUtility.h"
 #define REPAINT_FPS 24
 #define MIN_POINT_DIFFERENCE 0.01f
+#define MAX_LFO_HANDLES 10
 using Constrainer = juce::ComponentBoundsConstrainer;
 using fPoint = juce::Point<float>;
 

@@ -226,9 +226,9 @@ frameIndex(0)
     {
         point = 1.0f;
     }
-    addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.05f, 0.95f)));
+    addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.0f, 0.95f)));
     addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.5f, 0.05f)));
-    addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 0.95f, 0.95f)));
+    addAndMakeVisible(centerHandles.add(new CenterHandle(this, PointType::Linear, 1.0f, 0.95f)));
     //! make sure the first and last points are uneditable
     centerHandles[0]->setInterceptsMouseClicks(false, false);
     centerHandles[2]->setInterceptsMouseClicks(false, false);
@@ -237,6 +237,7 @@ frameIndex(0)
 
 LFOEditor::~LFOEditor()
 {
+    /*
     printf("LFO START\n");
     int idx = 0;
     for(auto point : dataArray)
@@ -245,19 +246,20 @@ LFOEditor::~LFOEditor()
         ++idx;
     }
     printf("LFO FINISHED\n");
+    */
 }
 
 void LFOEditor::timerCallback()
 {
+    updateHandles();
+    calculatePaths();
+    repaint();
     ++frameIndex;
     if(frameIndex == 15) //! only recalculate the array once every 15 frames or so (every 1/2 second) to save on CPU
     {
         setArray();
         frameIndex = 0;
     }
-    updateHandles();
-    calculatePaths();
-    repaint();
     
 }
 
@@ -355,10 +357,10 @@ void LFOEditor::connectPoints(CenterHandle* first, CenterHandle* second)
     {
         auto yStart = center1.y;
         auto yEnd = center2.y;
-        for(int i = idx; i < numPoints; ++i)
+        for(int i = idx; i < (idx + numPoints); ++i)
         {
             t += dT;
-            dataArray[i] = yStart + ((yEnd - yStart) * t);
+            dataArray[i] = 1.0f - (yStart + ((yEnd - yStart) * t));
         }
         return;
     }
@@ -366,30 +368,30 @@ void LFOEditor::connectPoints(CenterHandle* first, CenterHandle* second)
     {
         auto c1 = first->handles->front->getCenter();
         auto c2 = second->handles->rear->getCenter();
-        for(int i = idx; i < numPoints; ++i)
+        for(int i = idx; i < (idx + numPoints); ++i)
         {
             t += dT;
-            dataArray[i] = PathUtility::bezierAt(center1, center2, c1, c2, t);
+            dataArray[i] = 1.0f - PathUtility::bezierAt(center1, center2, c1, c2, t);
         }
         return;
     }
     else if(!first->isBezier() && second->isBezier()) //! only second is spline
     {
         auto c1 = second->handles->rear->getCenter();
-        for(int i = idx; i < numPoints; ++i)
+        for(int i = idx; i < (idx + numPoints); ++i)
         {
             t += dT;
-            dataArray[i] = PathUtility::bezierAt(center1, center2, c1, t);
+            dataArray[i] = 1.0f - PathUtility::bezierAt(center1, center2, c1, t);
         }
         return;
     }
     else if(first->isBezier() && !second->isBezier()) //! only first is spline
     {
         auto c1 = first->handles->front->getCenter();
-        for(int i = idx; i < numPoints; ++i)
+        for(int i = idx; i < (idx + numPoints); ++i)
         {
             t += dT;
-            dataArray[i] = PathUtility::bezierAt(center1, center2, c1, t);
+            dataArray[i] = 1.0f - PathUtility::bezierAt(center1, center2, c1, t);
         }
         return;
     }
@@ -397,12 +399,15 @@ void LFOEditor::connectPoints(CenterHandle* first, CenterHandle* second)
 void LFOEditor::setArray()
 {
     auto* lastPoint = centerHandles[0];
+    auto* newPoint = centerHandles[1];
+    auto* endPoint = centerHandles.getLast();
     for(int i = 1; i < centerHandles.size(); ++i)
     {
-        auto* newPoint = centerHandles[i];
+        newPoint = centerHandles[i];
         connectPoints(lastPoint, newPoint);
         lastPoint = newPoint;
     }
+    connectPoints(newPoint, endPoint);
     *linkedArray = dataArray;
 }
 
@@ -431,19 +436,22 @@ void LFOEditor::setHandlesFor(CenterHandle *center)
 
 void LFOEditor::addPoint()
 {
-    //! 1: determine all the gaps between points
-    std::vector<PointGap> gaps;
-    for(int i = 1; i < centerHandles.size(); ++i)
+    if(centerHandles.size() < MAX_LFO_HANDLES)
     {
-        auto size = centerHandles[i]->relativeX() - centerHandles[i - 1]->relativeX();
-        gaps.push_back(PointGap(i - 1, i, size));
+        //! 1: determine all the gaps between points
+        std::vector<PointGap> gaps;
+        for(int i = 1; i < centerHandles.size(); ++i)
+        {
+            auto size = centerHandles[i]->relativeX() - centerHandles[i - 1]->relativeX();
+            gaps.push_back(PointGap(i - 1, i, size));
+        }
+        //! 2: find the largest one
+        auto gap = largestGap(gaps);
+        auto xValue = centerHandles[gap.lowerIdx]->relativeX() + (gap.gapSize / 2.0f);
+        auto yValue = dataArray[floor(xValue * LFO_POINTS)];
+        addAndMakeVisible(centerHandles.insert(gap.upperIdx, new CenterHandle(this, PointType::Linear, xValue, yValue)));
+        resized();
     }
-    //! 2: find the largest one
-    auto gap = largestGap(gaps);
-    auto xValue = centerHandles[gap.lowerIdx]->relativeX() + (gap.gapSize / 2.0f);
-    auto yValue = dataArray[floor(xValue * LFO_POINTS)];
-    addAndMakeVisible(centerHandles.insert(gap.upperIdx, new CenterHandle(this, PointType::Linear, xValue, yValue)));
-    resized();
 }
 void LFOEditor::removePoint()
 {

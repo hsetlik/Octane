@@ -224,7 +224,10 @@ textButton(selectedFile.getFileName())
 }
 void WaveSelector::replaceFromIndex(int index)
 {
-    linkedUpdater->stageWaveChange(oscIndex, waveFiles->getUnchecked(index));
+    auto file = waveFiles->getUnchecked(index);
+    textButton.setButtonText(file.getFileName());
+    //resized();
+    linkedUpdater->stageWaveChange(oscIndex, file);
 }
 void WaveSelector::resized()
 {

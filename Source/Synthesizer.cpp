@@ -93,7 +93,7 @@ void OctaneVoice::tickSample()
 {
     lastOutput = 0.0f;
     lastOscLevel = 0.0f;
-    oscLevelSum = 1.0f;
+    oscLevelSum = 0.5f;
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
         lfoOutputs[oscIndex]->setOutput(voiceIndex, lfos[oscIndex]->getOutput());

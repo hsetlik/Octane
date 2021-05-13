@@ -131,21 +131,30 @@ public:
 };
 
 //====================================================================================================================
-class WaveSelector : public juce::Component
+class WaveSelector :
+public juce::Component,
+public juce::Button::Listener,
+public juce::AsyncUpdater
 {
 public:
     WaveSelector(SynthParam* pParam, OctaneUpdater* updater, int index);
     void resized() override;
+    void buttonClicked(juce::Button* b) override;
     SynthParam* const positionParam;
     OctaneUpdater* const linkedUpdater;
     const int oscIndex;
     void replaceFromIndex(int index);
+    void handleAsyncUpdate() override;
 private:
     juce::File selectedFile;
     std::unique_ptr<WaveGraphOpenGL> display;
     juce::Array<juce::File>* const waveFiles;
+    bool needsToUpdate;
 public:
     OctaneButtons::Text textButton;
+    NextButton nextButton;
+    LastButton lastButton;
+    int selectedIndex;
     
 };
 //====================================================================================================================

@@ -203,11 +203,17 @@ oscIndex(index),
 selectedFile(updater->linkedSynth->fileForOsc(index)),
 display(std::make_unique<WaveGraphOpenGL>(updater->linkedSynth->paramGroup.oscGraphVectors[index], pParam)),
 waveFiles(&updater->linkedSynth->waveFiles),
-textButton(selectedFile.getFileName())
+needsToUpdate(false),
+textButton(selectedFile.getFileName()),
+selectedIndex(waveFiles->indexOf(selectedFile))
 {
     selectedFile = linkedUpdater->linkedSynth->fileForOsc(index);
     addAndMakeVisible(&*display);
     addAndMakeVisible(&textButton);
+    addAndMakeVisible(&lastButton);
+    addAndMakeVisible(&nextButton);
+    lastButton.addListener(this);
+    nextButton.addListener(this);
     textButton.setButtonText(selectedFile.getFileName());
     printf("Button says: %s\n", textButton.getButtonText().toRawUTF8());
     textButton.onClick = [&]
@@ -222,21 +228,70 @@ textButton(selectedFile.getFileName())
         menu.showMenuAsync(juce::PopupMenu::Options{}.withTargetComponent(&textButton));
     };
 }
+void WaveSelector::buttonClicked(juce::Button *b)
+{
+    if(b == &lastButton)
+    {
+        if(selectedIndex > 0)
+            replaceFromIndex(selectedIndex - 1);
+        else
+            replaceFromIndex(waveFiles->size() - 1);
+    }
+    if(b == &nextButton)
+    {
+        if(selectedIndex < waveFiles->size() - 1)
+            replaceFromIndex(selectedIndex + 1);
+        else
+            replaceFromIndex(0);
+    }
+}
 void WaveSelector::replaceFromIndex(int index)
 {
+    selectedIndex = index;
     auto file = waveFiles->getUnchecked(index);
     textButton.setButtonText(file.getFileName());
-    //resized();
     linkedUpdater->stageWaveChange(oscIndex, file);
+    needsToUpdate = true;
+    triggerAsyncUpdate();
+}
+void WaveSelector::handleAsyncUpdate()
+{
+    if(needsToUpdate)
+    {
+        linkedUpdater->linkedSynth->updateGraphData();
+        auto vec = linkedUpdater->linkedSynth->paramGroup.oscGraphVectors[oscIndex];
+        display.reset(new WaveGraphOpenGL(vec, positionParam));
+        addAndMakeVisible(&*display);
+        resized();
+        needsToUpdate = false;
+    }
 }
 void WaveSelector::resized()
 {
-    auto fBounds = getBounds().toFloat();
-    auto dX = fBounds.getHeight() / 8.0f;
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getHeight() / 9.0f;
     auto buttonBounds = fBounds.removeFromTop(dX);
     textButton.setBounds(buttonBounds.toType<int>());
     textButton.changeWidthToFitText();
     display->setBounds(fBounds.toType<int>());
+    juce::Rectangle<int> otherButtonBounds;
+    if(textButton.getWidth() <= (int)fBounds.getWidth() * 0.7f)
+    {
+        otherButtonBounds = juce::Rectangle<int>((int)fBounds.getWidth() * 0.7f,
+                                                 0,
+                                                 (int)fBounds.getWidth() * 0.3f,
+                                                 (int)buttonBounds.getHeight());
+        
+    }
+    else
+    {
+        otherButtonBounds = juce::Rectangle<int>(textButton.getWidth(),
+                                                 0,
+                                                 (int)fBounds.getWidth() - textButton.getWidth(),
+                                                 (int)buttonBounds.getHeight());
+    }
+    nextButton.setBounds(otherButtonBounds.removeFromRight(otherButtonBounds.getWidth() / 2).reduced(buttonBounds.getHeight() / 8));
+    lastButton.setBounds(otherButtonBounds.reduced(buttonBounds.getHeight() / 8));
 }
 //==============================================================================
 OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index) :

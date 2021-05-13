@@ -88,6 +88,26 @@ public:
     void setSymbol() override;
 };
 
+class NextButton : public SymbolButton
+{
+public:
+    NextButton() : SymbolButton("next_button")
+    {
+        setRounded(true, 8);
+    }
+    void setSymbol() override;
+};
+
+class LastButton : public SymbolButton
+{
+public:
+    LastButton() : SymbolButton("last_button")
+    {
+        setRounded(true, 8);
+    }
+    void setSymbol() override;
+};
+
 namespace OctaneButtons
 {
     class Text : public juce::TextButton

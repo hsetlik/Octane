@@ -93,6 +93,15 @@ public:
     int getNumWaves() {return waveFiles.size(); }
     void replaceLfos(int index);
     void replaceWaves(int index, juce::File newWave);
+    void updateGraphData()
+    {
+        int idx = 0;
+        for(auto& osc : paramGroup.oscGraphVectors)
+        {
+            osc = oVoices[0]->oscillators[idx]->getGraphData(128);
+            ++idx;
+        }
+    }
     SynthParameterGroup paramGroup;
     juce::File waveFolder;
     juce::Array<juce::File> waveFiles;

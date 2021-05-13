@@ -42,3 +42,27 @@ void MinusButton::setSymbol()
     symbol.lineTo(5 * dX, 5 * dY);
     symbol.closeSubPath();
 }
+
+void NextButton::setSymbol()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 16;
+    auto dY = fBounds.getHeight() / 8;
+    symbol.clear();
+    symbol.startNewSubPath(7 * dX, 2 * dY);
+    symbol.lineTo(11 * dX, 4 * dY);
+    symbol.lineTo(7 * dX, 6 * dY);
+    symbol.closeSubPath();
+}
+
+void LastButton::setSymbol()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto dX = fBounds.getWidth() / 16;
+    auto dY = fBounds.getHeight() / 8;
+    symbol.clear();
+    symbol.startNewSubPath(11 * dX, 2 * dY);
+    symbol.lineTo(11 * dX, 6 * dY);
+    symbol.lineTo(7 * dX, 4 * dY);
+    symbol.closeSubPath();
+}

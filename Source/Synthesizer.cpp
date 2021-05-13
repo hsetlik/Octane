@@ -197,6 +197,7 @@ wave(newWave)
 void OctaneWaveChange::apply()
 {
     linkedSynth->replaceWaves(index, wave);
+    linkedSynth->updateGraphData();
 }
 //===========================================================================
 OctaneUpdater::OctaneUpdater(OctaneSynth* synth) : linkedSynth(synth), blockIndex(0)

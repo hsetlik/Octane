@@ -195,16 +195,40 @@ void LFOPanel::paint(juce::Graphics &g)
 {
     
 }
+//=============================================================================
+WaveSelector::WaveSelector(SynthParam* pParam, OctaneUpdater* updater, int index) :
+positionParam(pParam),
+linkedUpdater(updater),
+oscIndex(index),
+selectedFile(updater->linkedSynth->fileForOsc(index)),
+display(std::make_unique<WaveGraphOpenGL>(updater->linkedSynth->paramGroup.oscGraphVectors[index], pParam)),
+textButton(selectedFile.getFileName())
+{
+    selectedFile = linkedUpdater->linkedSynth->fileForOsc(index);
+    addAndMakeVisible(&*display);
+    addAndMakeVisible(&textButton);
+    textButton.setButtonText(selectedFile.getFileName());
+    printf("Button says: %s\n", textButton.getButtonText().toRawUTF8());
+}
+void WaveSelector::resized()
+{
+    auto fBounds = getBounds().toFloat();
+    auto dX = fBounds.getHeight() / 8.0f;
+    auto buttonBounds = fBounds.removeFromTop(dX);
+    textButton.setBounds(buttonBounds.toType<int>());
+    textButton.changeWidthToFitText();
+    display->setBounds(fBounds.toType<int>());
+}
 //==============================================================================
-OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData, apvts* tree) :
+OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index) :
 levelComp(lParam),
 posComp(pParam),
-display(std::make_unique<WaveGraphOpenGL>(graphData, pParam)),
+display(pParam, updater, index),
 linkedTree(tree)
 {
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
-    addAndMakeVisible(*display);
+    addAndMakeVisible(&display);
     levelAttach.reset(new apvts::SliderAttachment(*linkedTree, levelComp.linkedParam->name, levelComp.mainSlider));
     posAttach.reset(new apvts::SliderAttachment(*linkedTree, posComp.linkedParam->name, posComp.mainSlider));
 }
@@ -217,7 +241,7 @@ void OscillatorPanel::resized()
     auto squareSide = (dX > dY) ? dY : dX;
     auto trim = dX / 2.5f;
     auto displayBounds = juce::Rectangle<float>(0.0f, dY, 5 * dX, 8 * dY);
-    display->setBounds(displayBounds.reduced(trim).toType<int>());
+    display.setBounds(displayBounds.reduced(trim).toType<int>());
     auto topBounds = juce::Rectangle<float>(5 * dX, dY, 5 * squareSide, 5 * squareSide);
     auto bottomBounds = juce::Rectangle<float>(5 * dX, 5 * dY, 5 * squareSide, 5 * squareSide);
     posComp.setBounds(topBounds.reduced(trim).toType<int>());
@@ -232,8 +256,9 @@ void OscillatorPanel::paint(juce::Graphics &g)
 SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index, apvts* tree, OctaneUpdater* updater) :
 oscPanel(allParams->oscLevels[index],
          allParams->oscPositions[index],
-         allParams->oscGraphVectors[index],
-         tree),
+         updater,
+         tree,
+         index),
 ampEnvPanel(allParams->aDelays[index],
          allParams->aAttacks[index],
          allParams->aHolds[index],

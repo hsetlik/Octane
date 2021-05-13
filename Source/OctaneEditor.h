@@ -135,16 +135,21 @@ class WaveSelector : public juce::Component
 {
 public:
     WaveSelector(SynthParam* pParam, OctaneUpdater* updater, int index);
+    void resized() override;
     SynthParam* const positionParam;
     OctaneUpdater* const linkedUpdater;
+    const int oscIndex;
 private:
+    juce::File selectedFile;
     std::unique_ptr<WaveGraphOpenGL> display;
+    OctaneButtons::Text textButton;
+    
 };
 //====================================================================================================================
 class OscillatorPanel : public juce::Component
 {
 public:
-    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, std::vector<std::vector<float>> graphData, apvts* tree);
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
@@ -152,7 +157,7 @@ private:
     ParamCompRotary posComp;
     std::unique_ptr<apvts::SliderAttachment> levelAttach;
     std::unique_ptr<apvts::SliderAttachment> posAttach;
-    std::unique_ptr<WaveGraphOpenGL> display;
+    WaveSelector display;
     apvts* const linkedTree;
 };
 

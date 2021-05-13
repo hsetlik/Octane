@@ -62,6 +62,7 @@ public:
     void replaceWave(int index, juce::File newWave);
     void tickBlock(); //update the things that need to be updated once per buffer
     void tickSample(); //update the things that need continuous modulation
+    std::vector<juce::File> getOscFiles();
     SynthParameterGroup* const params;
     const int voiceIndex;
     int oscIndex;
@@ -95,7 +96,9 @@ public:
     SynthParameterGroup paramGroup;
     juce::File waveFolder;
     juce::Array<juce::File> waveFiles;
+    juce::File fileForOsc(int index) {return activeFiles[index]; }
 private:
+    std::vector<juce::File> activeFiles;
     std::vector<OctaneVoice*> oVoices;
 };
 enum class ChangeType

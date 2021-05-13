@@ -64,6 +64,7 @@ public:
     doubleVec getGraphData(int resolution);
     void setSampleRate(double newRate);
     int numFrames;
+    juce::File getSource() {return srcFile; }
 private:
     juce::OwnedArray<WavetableFrame> frames;
     double sampleRate;
@@ -74,6 +75,7 @@ private:
     WavetableFrame* topFrame;
     WavetableFrame* bottomFrame;
     float topSample, bottomSample, skew;
+    const juce::File srcFile;
 };
 
 class OctaneOsc
@@ -105,6 +107,7 @@ public:
     float lastModEnv() {return modEnv.output; }
     DAHDSR ampEnv;
     DAHDSR modEnv;
+    juce::File getSource() {return pOsc->getSource(); }
 private:
     float position;
     float level;

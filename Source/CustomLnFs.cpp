@@ -154,3 +154,45 @@ void SynthSourceLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, i
     thumb.applyTransform(juce::AffineTransform::rotation(rotaryStartAngle + angle, centerX, centerY));
     g.strokePath(thumb, strokeType);
 };
+
+void DropdownLookAndFeel::drawButtonBackground(juce::Graphics &g, juce::Button &b, const juce::Colour &bColor, bool isHighlighted, bool isDown)
+{
+    b.resized();
+    auto fBounds = b.getLocalBounds().toFloat();
+    auto corner = fBounds.getHeight() / 6.0f;
+    g.setColour(UXPalette::lightGray);
+    g.fillRoundedRectangle(fBounds, corner);
+    auto triBounds = fBounds.removeFromRight(fBounds.getHeight()).reduced(2.0f * corner);
+    juce::Path triangle;
+    triangle.startNewSubPath(triBounds.getX(), triBounds.getY());
+    triangle.lineTo(triBounds.getRight(), triBounds.getY());
+    triangle.lineTo(triBounds.getX() + (triBounds.getWidth() / 2.0f), triBounds.getBottom());
+    triangle.closeSubPath();
+    g.setColour(juce::Colours::white);
+    g.fillPath(triangle);
+}
+
+void DropdownLookAndFeel::drawButtonText(juce::Graphics &g, juce::TextButton &b, bool isHighlighted, bool isDown)
+{
+    auto fBounds = b.getLocalBounds().toFloat();
+    auto textHeight = (int)fBounds.getHeight() * 0.8f;
+    auto font = getTextButtonFont(b, textHeight);
+    g.setColour(juce::Colours::white);
+    g.setFont(font);
+    auto iBounds = b.getLocalBounds();
+    auto iX = iBounds.getX();
+    auto iY = iBounds.getY();
+    auto iWidth = iBounds.getWidth();
+    auto dX = iWidth / 11;
+    auto textBox = juce::Rectangle<int>(iX + dX, iY, 8 * dX, iBounds.getHeight());
+    g.drawText(b.getButtonText(), textBox, juce::Justification::left);
+}
+
+int DropdownLookAndFeel::getTextButtonWidthToFitText(juce::TextButton &b, int height)
+{
+    auto font = getTextButtonFont(b, height);
+    auto str = b.getButtonText();
+    auto textWidth = font.getStringWidth(str);
+    auto dX = (float)textWidth / 8.0f;
+    return (int)(14 * dX);
+}

@@ -42,3 +42,15 @@ public:
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                            const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& s) override;
 };
+
+class DropdownLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    DropdownLookAndFeel()
+    {
+        
+    }
+    void drawButtonBackground(juce::Graphics& g, juce::Button& b, const juce::Colour& bColor, bool isHighlighted, bool isDown) override;
+    void drawButtonText(juce::Graphics& g, juce::TextButton& b, bool isHighlighted, bool isDown) override;
+    int getTextButtonWidthToFitText(juce::TextButton& b, int height) override;
+};

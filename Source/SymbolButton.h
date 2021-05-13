@@ -10,6 +10,7 @@
 
 #pragma once
 #include "RgbColor.h"
+#include "CustomLnFs.h"
 
 class SymbolButton : public juce::ShapeButton
 {
@@ -85,4 +86,27 @@ public:
         setRounded(true, 8);
     }
     void setSymbol() override;
+};
+
+namespace OctaneButtons
+{
+    class Text : public juce::TextButton
+    {
+    public:
+        Text(juce::String text=" ")
+        {
+            setButtonText(text);
+            setLookAndFeel(&lnf);
+        }
+        ~Text()
+        {
+            setLookAndFeel(nullptr);
+        }
+        void resized() override
+        {
+            setBounds(getBounds());
+        }
+    private:
+        DropdownLookAndFeel lnf;
+    };
 };

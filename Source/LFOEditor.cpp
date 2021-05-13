@@ -197,7 +197,7 @@ void LFOEditor::timerCallback()
     calculatePaths();
     repaint();
     ++frameIndex;
-    if(frameIndex == 15) //! only recalculate the array once every 15 frames or so (every 1/2 second) to save on CPU
+    if(frameIndex == REPAINT_FPS / 2) //! only redo the array twice a second
     {
         setArray();
         frameIndex = 0;

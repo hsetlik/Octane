@@ -111,6 +111,16 @@ void OctaneVoice::replaceWave(int index, juce::File newWave)
 {
     oscillators[index]->replace(newWave);
 }
+
+std::vector<juce::File> OctaneVoice::getOscFiles()
+{
+    std::vector<juce::File> out;
+    for(auto osc : oscillators)
+    {
+        out.push_back(osc->getSource());
+    }
+    return out;
+}
 //==============================================================================================================
 
 OctaneSynth::OctaneSynth(juce::AudioProcessorValueTreeState* tree) :
@@ -146,6 +156,7 @@ paramGroup(tree)
         osc = oVoices[0]->oscillators[idx]->getGraphData(128);
         ++idx;
     }
+    activeFiles = oVoices[0]->getOscFiles();
 }
 
 void OctaneSynth::replaceLfos(int index)
@@ -163,6 +174,7 @@ void OctaneSynth::replaceWaves(int index, juce::File newWave)
     {
         voice->replaceWave(index, newWave);
     }
+    activeFiles = oVoices[0]->getOscFiles();
 }
 //==========================================================================
 OctaneLFOChange::OctaneLFOChange(OctaneSynth* synth, int lfoIndex) :
@@ -193,6 +205,8 @@ OctaneUpdater::OctaneUpdater(OctaneSynth* synth) : linkedSynth(synth), blockInde
 }
 
 void OctaneUpdater::tick()
+//! this gets called in \c processBlock() to run the needed updated once every several buffers
+//! note that smaller buffer size means more frequent updates
 {
     ++blockIndex;
     if(blockIndex == BLOCKS_PER_UPDATE)

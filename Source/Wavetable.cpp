@@ -141,7 +141,7 @@ float WavetableFrame::getSample(float phase, double hz)
 
 //=================================================================================================
 
-WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0), phase(0.0f), phaseDelta(0.0f)
+WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0), phase(0.0f), phaseDelta(0.0f), srcFile(src)
 {
     auto manager = new juce::AudioFormatManager();
     manager->registerBasicFormats();

@@ -202,6 +202,7 @@ linkedUpdater(updater),
 oscIndex(index),
 selectedFile(updater->linkedSynth->fileForOsc(index)),
 display(std::make_unique<WaveGraphOpenGL>(updater->linkedSynth->paramGroup.oscGraphVectors[index], pParam)),
+waveFiles(&updater->linkedSynth->waveFiles),
 textButton(selectedFile.getFileName())
 {
     selectedFile = linkedUpdater->linkedSynth->fileForOsc(index);
@@ -209,6 +210,21 @@ textButton(selectedFile.getFileName())
     addAndMakeVisible(&textButton);
     textButton.setButtonText(selectedFile.getFileName());
     printf("Button says: %s\n", textButton.getButtonText().toRawUTF8());
+    textButton.onClick = [&]
+    {
+        juce::PopupMenu menu;
+        for(int i = 0; i < waveFiles->size(); ++i)
+        {
+            menu.addItem(waveFiles->getUnchecked(i).getFileName(), functionFor(i));
+            if(i % 10 == 0)
+                menu.addColumnBreak();
+        }
+        menu.showMenuAsync(juce::PopupMenu::Options{}.withTargetComponent(&textButton));
+    };
+}
+void WaveSelector::replaceFromIndex(int index)
+{
+    
 }
 void WaveSelector::resized()
 {
@@ -218,6 +234,15 @@ void WaveSelector::resized()
     textButton.setBounds(buttonBounds.toType<int>());
     textButton.changeWidthToFitText();
     display->setBounds(fBounds.toType<int>());
+}
+
+std::function<void()> WaveSelector::functionFor(int index)
+{
+    std::function<void()> func = [&]()
+    {
+        linkedUpdater->stageWaveChange(oscIndex, waveFiles->getUnchecked(index));
+    };
+    return func;
 }
 //==============================================================================
 OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index) :

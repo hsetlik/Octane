@@ -139,9 +139,13 @@ public:
     SynthParam* const positionParam;
     OctaneUpdater* const linkedUpdater;
     const int oscIndex;
+    void replaceFromIndex(int index);
+    std::function<void()> functionFor(int index);
 private:
     juce::File selectedFile;
     std::unique_ptr<WaveGraphOpenGL> display;
+    juce::Array<juce::File>* const waveFiles;
+public:
     OctaneButtons::Text textButton;
     
 };

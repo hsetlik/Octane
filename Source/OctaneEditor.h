@@ -140,7 +140,6 @@ public:
     OctaneUpdater* const linkedUpdater;
     const int oscIndex;
     void replaceFromIndex(int index);
-    std::function<void()> functionFor(int index);
 private:
     juce::File selectedFile;
     std::unique_ptr<WaveGraphOpenGL> display;

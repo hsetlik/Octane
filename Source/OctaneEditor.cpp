@@ -215,7 +215,7 @@ textButton(selectedFile.getFileName())
         juce::PopupMenu menu;
         for(int i = 0; i < waveFiles->size(); ++i)
         {
-            menu.addItem(waveFiles->getUnchecked(i).getFileName(), functionFor(i));
+            menu.addItem(waveFiles->getUnchecked(i).getFileName(), [this, i](){this->replaceFromIndex(i);});
             if(i % 10 == 0)
                 menu.addColumnBreak();
         }
@@ -224,7 +224,7 @@ textButton(selectedFile.getFileName())
 }
 void WaveSelector::replaceFromIndex(int index)
 {
-    
+    linkedUpdater->stageWaveChange(oscIndex, waveFiles->getUnchecked(index));
 }
 void WaveSelector::resized()
 {
@@ -234,15 +234,6 @@ void WaveSelector::resized()
     textButton.setBounds(buttonBounds.toType<int>());
     textButton.changeWidthToFitText();
     display->setBounds(fBounds.toType<int>());
-}
-
-std::function<void()> WaveSelector::functionFor(int index)
-{
-    std::function<void()> func = [&]()
-    {
-        linkedUpdater->stageWaveChange(oscIndex, waveFiles->getUnchecked(index));
-    };
-    return func;
 }
 //==============================================================================
 OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index) :

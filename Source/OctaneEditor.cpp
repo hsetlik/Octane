@@ -196,17 +196,19 @@ void LFOPanel::paint(juce::Graphics &g)
     
 }
 //====================================================================================================
-FilterPanel::FilterPanel(SynthParam* cutoff, SynthParam* resonance, OctaneUpdater* updater, apvts* tree) :
+FilterPanel::FilterPanel(SynthParam* cutoff, SynthParam* resonance, SynthParam* wetDry, OctaneUpdater* updater, apvts* tree) :
 cutoffParam(cutoff),
 resonanceParam(resonance),
 linkedUpdater(updater),
 linkedTree(tree),
 cutoffComp(cutoff),
-resonanceComp(resonance)
+resonanceComp(resonance),
+wetDryComp(wetDry)
 {
     addAndMakeVisible(&typeBox);
     addAndMakeVisible(&cutoffComp);
     addAndMakeVisible(&resonanceComp);
+    addAndMakeVisible(&wetDryComp);
     typeBox.addListener(this);
     int startIndex = 1;
     for(auto fType : OctaneFilter::FilterNames)
@@ -214,6 +216,7 @@ resonanceComp(resonance)
         typeBox.addItem(fType, startIndex);
         ++startIndex;
     }
+    typeBox.setSelectedId(1);
 }
 
 void FilterPanel::comboBoxChanged(juce::ComboBox *b)
@@ -226,14 +229,16 @@ void FilterPanel::resized()
     auto iBounds = getLocalBounds();
     auto bBounds = iBounds.removeFromTop(getHeight() / 8);
     typeBox.setBounds(bBounds.getX(), bBounds.getHeight() / 4, bBounds.getWidth() * 0.75f, bBounds.getHeight() * 0.75f);
-    auto dX = iBounds.getWidth() / 2;
+    auto dX = iBounds.getWidth() / 3;
     auto dY = iBounds.getHeight();
     auto squareSide = (dX > dY) ? dY : dX;
     auto cushion = squareSide / 6;
     auto cBounds = juce::Rectangle<int>(iBounds.getX(), iBounds.getY(), squareSide, squareSide);
     auto rBounds = juce::Rectangle<int>(iBounds.getX() + dX, iBounds.getY(), squareSide, squareSide);
+    auto wBounds = juce::Rectangle<int>(iBounds.getX() + (2 * dX), iBounds.getY(), squareSide, squareSide);
     cutoffComp.setBounds(cBounds.reduced(cushion));
     resonanceComp.setBounds(rBounds.reduced(cushion));
+    wetDryComp.setBounds(wBounds.reduced(cushion));
 }
 
 void FilterPanel::paint(juce::Graphics &g)
@@ -417,7 +422,7 @@ OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdat
 paramGroup(pGroup),
 linkedTree(tree),
 linkedUpdater(update),
-filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, update, tree)
+filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, &pGroup->filterWetDry, update, tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {

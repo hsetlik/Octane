@@ -135,7 +135,7 @@ public juce::Component,
 public juce::ComboBox::Listener
 {
 public:
-    FilterPanel(SynthParam* cutoff, SynthParam* resonance, OctaneUpdater* updater, apvts* tree);
+    FilterPanel(SynthParam* cutoff, SynthParam* resonance, SynthParam* wetDry, OctaneUpdater* updater, apvts* tree);
     SynthParam* const cutoffParam;
     SynthParam* const resonanceParam;
     OctaneUpdater* const linkedUpdater;
@@ -146,6 +146,7 @@ public:
 private:
     ParamCompRotary cutoffComp;
     ParamCompRotary resonanceComp;
+    ParamCompRotary wetDryComp;
     juce::ComboBox typeBox;
 };
 

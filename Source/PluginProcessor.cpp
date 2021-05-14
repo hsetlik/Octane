@@ -104,6 +104,7 @@ void OctaneAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     synth.setAllSampleRates(sampleRate);
+    synth.prepare(sampleRate, samplesPerBlock, getTotalNumOutputChannels());
 }
 
 void OctaneAudioProcessor::releaseResources()

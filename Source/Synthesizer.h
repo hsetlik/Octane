@@ -63,6 +63,7 @@ public:
     void replaceWave(int index, juce::File newWave);
     void tickBlock(); //update the things that need to be updated once per buffer
     void tickSample(); //update the things that need continuous modulation
+    void prepare(double rate, int samplesPerBlock, int numChannels) {filter.prepare(rate, samplesPerBlock, numChannels); }
     std::vector<juce::File> getOscFiles();
     SynthParameterGroup* const params;
     const int voiceIndex;
@@ -92,6 +93,14 @@ public:
         setCurrentPlaybackSampleRate(rate);
         for(auto v : oVoices)
             v->setAllSampleRate(rate);
+    }
+    void prepare(double rate, int samplesPerBlock, int numChannels)
+    {
+        for(auto v : oVoices)
+        {
+            v->prepare(rate, samplesPerBlock, numChannels);
+        }
+        
     }
     int getNumWaves() {return waveFiles.size(); }
     void replaceLfos(int index);

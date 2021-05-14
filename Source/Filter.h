@@ -17,6 +17,8 @@
 #define RESONANCE_MIN 0.1f
 #define RESONANCE_MAX 10.0f
 #define RESONANCE_DEFAULT 1.0f
+using JuceFilter = juce::dsp::IIR::Filter<float>;
+using Coeffs = juce::dsp::IIR::Coefficients<float>;
 enum FilterType
 {
    LoPass12,
@@ -56,26 +58,23 @@ class OctaneFilter
 {
 public:
     //! make sure this enum and the string vector stay in the same order
-    
     static std::vector<juce::String> FilterNames;
     //==============================================
     OctaneFilter(FilterType type = LoPass12);
     void setSampleRate(double newRate) {sampleRate = newRate;}
+    void prepare(double rate, int samplesPerBlock, int numChannels);
     float process(float input);
     void setCutoff(float freq);
     void setResonance(float level);
     void setWetDry(float wet);
     void calcVectors();
+    void setFilter();
 private:
-    IirCalc calc;
-    void setCoeffsFor(FilterType type);
     FilterType currentType;
     float wetLevel;
     float cutoff;
     float resonance;
     double sampleRate;
-    std::vector<float> aCoeffs;
-    std::vector<float> bCoeffs;
-    stk::Iir filter;
+    JuceFilter jFilter;
 };
 

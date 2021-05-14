@@ -16,20 +16,17 @@ currentType(type),
 wetLevel(1.0f),
 cutoff(CUTOFF_DEFAULT),
 resonance(RESONANCE_DEFAULT),
-sampleRate(44100.0f),
-aCoeffs(3, 1.0f),
-bCoeffs(3, 1.0f)
+sampleRate(44100.0f)
 {
-    setCoeffsFor(currentType);
-    calcVectors();
+    setFilter();
 }
 void OctaneFilter::setCutoff(float freq)
 {
-    //! check for change bc this will be called on each sample and we can save cpu by only calling \c calcVectors() when something has changed
+    //! check for change bc this will be called on each sample and we can save cpu by only calling \c setFilter() when something has changed
     if(freq != cutoff)
     {
         cutoff = freq;
-        calcVectors();
+        setFilter();
     }
 }
 void OctaneFilter::setResonance(float level)
@@ -37,53 +34,43 @@ void OctaneFilter::setResonance(float level)
     if(resonance != level)
     {
         resonance = level;
-        calcVectors();
+        setFilter();
     }
 }
 void OctaneFilter::setWetDry(float wet)
 {
     wetLevel = wet;
 }
-void OctaneFilter::setCoeffsFor(FilterType type)
-{
-    currentType = type;
-    switch(currentType)
-    {
-        case LoPass12:
-        {
-            aCoeffs.resize(3, 1.0f);
-            bCoeffs.resize(3, 1.0f);
-            break;
-        }
-        case LoPass24:
-        {
-            aCoeffs.resize(3, 1.0f);
-            bCoeffs.resize(3, 1.0f);
-            break;
-        }
-    }
-}
 
-void OctaneFilter::calcVectors()
+void OctaneFilter::prepare(double rate, int samplesPerBlock, int numChannels)
 {
-    switch(currentType)
-    {
-        case LoPass12:
-        {
-            calc.LoPass12(aCoeffs, bCoeffs, cutoff, sampleRate, resonance);
-            break;
-        }
-        case LoPass24:
-        {
-            calc.LoPass24(aCoeffs, bCoeffs, cutoff, sampleRate, resonance);
-            break;
-        }
-    }
-    filter.setDenominator(aCoeffs);
-    filter.setNumerator(bCoeffs);
+    sampleRate = rate;
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = numChannels;
+    jFilter.prepare(spec);
+    jFilter.reset();
 }
 
 float OctaneFilter::process(float input)
 {
-    return (wetLevel * filter.tick(input)) + ((1.0f - wetLevel) * input);
+    return (wetLevel * jFilter.processSample(input)) + ((1.0f - wetLevel) * input);
+}
+
+void OctaneFilter::setFilter()
+{
+    switch(currentType)
+    {
+        case LoPass12:
+        {
+            jFilter.coefficients = Coeffs::makeLowPass(sampleRate, cutoff, resonance);
+            break;
+        }
+        case LoPass24:
+        {
+            jFilter.coefficients = Coeffs::makeLowPass(sampleRate, cutoff, resonance);
+            break;
+        }
+    }
 }

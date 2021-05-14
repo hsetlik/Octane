@@ -10,7 +10,6 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "StkUtil.h"
 #define CUTOFF_MIN 20.0f
 #define CUTOFF_DEFAULT 900.0f
 #define CUTOFF_MAX 10000.0f

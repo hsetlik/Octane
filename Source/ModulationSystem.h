@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "DAHDSR.h"
 #include "LFO.h"
+#include "Filter.h"
 //macros to define what parameters should be created
 #define NUM_OSCILLATORS 4
 #define NUM_LFOS 4
@@ -215,6 +216,9 @@ public:
     paramVecCont oscAmpEnvs;
     paramVecCont oscModEnvs;
     paramVecCont lfoOutputs;
+    VoiceTargetParam filterCutoff;
+    VoiceTargetParam filterResonance;
+    VoiceTargetParam filterWetDry;
     apvts* const linkedTree;
     std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
     std::array<lfoArray, NUM_LFOS> lfoShapes;

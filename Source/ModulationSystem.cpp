@@ -64,6 +64,9 @@ void SynthParam::tickValue()
 //=======================================================================
 
 SynthParameterGroup::SynthParameterGroup(juce::AudioProcessorValueTreeState* tree) : //this constructor does the heavy lifting of creating parameters
+filterCutoff("FilterCutoff", CUTOFF_MIN, CUTOFF_MAX, CUTOFF_DEFAULT),
+filterResonance("FilterResonance", RESONANCE_MIN, RESONANCE_MAX, RESONANCE_DEFAULT),
+filterWetDry("FilterWetDry", 0.0f, 1.0f, 1.0f),
 linkedTree(tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)

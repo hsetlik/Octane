@@ -14,8 +14,9 @@
 #include "DAHDSR.h"
 #include "LFO.h"
 #include "ModulationSystem.h"
+#include "Filter.h"
 #define BLOCKS_PER_UPDATE 15
-
+//===========================================================================
 class OctaneSound : public juce::SynthesiserSound
 {
     bool appliesToNote(int /*midiNoteNumber*/) //just plays this sound for any midi note
@@ -27,7 +28,7 @@ class OctaneSound : public juce::SynthesiserSound
         return true;
     }
 };
-
+//===========================================================================
 class OctaneVoice : public juce::SynthesiserVoice
 {
 public:
@@ -74,12 +75,14 @@ public:
     std::vector<ContinuousVoiceParam*> lfoOutputs;
     juce::OwnedArray<OctaneOsc> oscillators;
     juce::OwnedArray<OctaneLFO> lfos;
+    OctaneFilter filter;
     float oscLevelSum;
     float lastOscLevel;
     float lastOutput;
     int sample;
     int blockIndex;
 };
+//===========================================================================
 class OctaneSynth : public juce::Synthesiser
 {
 public:
@@ -110,6 +113,7 @@ private:
     std::vector<juce::File> activeFiles;
     std::vector<OctaneVoice*> oVoices;
 };
+//===========================================================================
 enum class ChangeType
 {
     WaveChange,
@@ -143,7 +147,7 @@ private:
     const int index;
     juce::File wave;
 };
-
+//========================================================================
 class OctaneUpdater : public juce::AsyncUpdater
 {
 public:

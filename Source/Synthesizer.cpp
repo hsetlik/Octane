@@ -94,6 +94,9 @@ void OctaneVoice::tickSample()
     lastOutput = 0.0f;
     lastOscLevel = 0.0f;
     oscLevelSum = 0.5f;
+    filter.setCutoff(params->filterCutoff.getActual(voiceIndex));
+    filter.setResonance(params->filterResonance.getActual(voiceIndex));
+    filter.setWetDry(params->filterWetDry.getActual(voiceIndex));
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
         lfoOutputs[oscIndex]->setOutput(voiceIndex, lfos[oscIndex]->getOutput());
@@ -105,6 +108,7 @@ void OctaneVoice::tickSample()
         oscillators[oscIndex]->setLevel(lastOscLevel);
         lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
     }
+    lastOutput = filter.process(lastOutput);
 }
 
 void OctaneVoice::replaceWave(int index, juce::File newWave)

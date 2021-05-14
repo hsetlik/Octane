@@ -129,6 +129,25 @@ public:
     std::unique_ptr<apvts::SliderAttachment> rateAttach;
     const int lfoIndex;
 };
+//====================================================================================================================
+class FilterPanel :
+public juce::Component,
+public juce::ComboBox::Listener
+{
+public:
+    FilterPanel(SynthParam* cutoff, SynthParam* resonance, OctaneUpdater* updater, apvts* tree);
+    SynthParam* const cutoffParam;
+    SynthParam* const resonanceParam;
+    OctaneUpdater* const linkedUpdater;
+    apvts* const linkedTree;
+    void comboBoxChanged(juce::ComboBox* b) override;
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+private:
+    ParamCompRotary cutoffComp;
+    ParamCompRotary resonanceComp;
+    juce::ComboBox typeBox;
+};
 
 //====================================================================================================================
 class WaveSelector :

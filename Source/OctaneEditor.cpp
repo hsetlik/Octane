@@ -195,7 +195,36 @@ void LFOPanel::paint(juce::Graphics &g)
 {
     
 }
-//=============================================================================
+//====================================================================================================
+FilterPanel::FilterPanel(SynthParam* cutoff, SynthParam* resonance, OctaneUpdater* updater, apvts* tree) :
+cutoffParam(cutoff),
+resonanceParam(resonance),
+linkedUpdater(updater),
+linkedTree(tree),
+cutoffComp(cutoff),
+resonanceComp(resonance)
+{
+    addAndMakeVisible(&typeBox);
+    addAndMakeVisible(&cutoffComp);
+    addAndMakeVisible(&resonanceComp);
+    typeBox.addListener(this);
+}
+
+void FilterPanel::comboBoxChanged(juce::ComboBox *b)
+{
+    
+}
+
+void FilterPanel::resized()
+{
+    
+}
+
+void FilterPanel::paint(juce::Graphics &g)
+{
+    
+}
+//====================================================================================================
 WaveSelector::WaveSelector(SynthParam* pParam, OctaneUpdater* updater, int index) :
 positionParam(pParam),
 linkedUpdater(updater),

@@ -183,7 +183,7 @@ private:
     std::array<float, NUM_VOICES> voiceOffsets;
 };
 
-class SynthParameterGroup //this class should be instantiated once and each voice should update via a pointer to it
+class SynthParameterGroup //! this class should be instantiated once and each voice should update via a pointer to it
 {
 public:
     SynthParameterGroup(juce::AudioProcessorValueTreeState* t);

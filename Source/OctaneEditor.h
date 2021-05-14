@@ -221,6 +221,7 @@ private:
     OctaneUpdater* const linkedUpdater;
     juce::OwnedArray<SoundSourcePanel> oscPanels;
     juce::OwnedArray<LFOPanel> lfoPanels;
+    FilterPanel filterPanel;
     
 };
 

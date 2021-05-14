@@ -178,17 +178,17 @@ void LFOPanel::resized()
     auto fBounds = getLocalBounds().toFloat();
     auto dX = fBounds.getWidth() / 6.0f;
     auto dY = fBounds.getHeight() / 6.0f;
-    auto retrigBounds = juce::Rectangle<float>(4 * dX, dY, dX, dY);
-    rButton.setBounds(retrigBounds.reduced(dX / 3.0f).toType<int>());
     auto squareSide = (dX > dY) ? dY : dX;
-    auto rateBounds = juce::Rectangle<int>(0, 0, 2 * squareSide, 2 * squareSide);
-    auto sourceBounds = juce::Rectangle<int>(2 * squareSide, squareSide / 3, squareSide, squareSide);
-    auto editorBounds = juce::Rectangle<int>(dX / 2, 2 * squareSide, 3.5 * squareSide, 3 * squareSide);
+    auto rateBounds = juce::Rectangle<int>(0, 0, 3 * squareSide, 3 * squareSide);
+    auto sourceBounds = juce::Rectangle<int>(3 * squareSide, squareSide / 2, squareSide, squareSide);
+    auto editorBounds = juce::Rectangle<int>(dX / 2, 3 * squareSide, 3.5f * squareSide, 3 * squareSide);
     auto meterBounds = juce::Rectangle<int>(5 * dX, 2 * dY, dX / 2, 3 * dY);
-    rateComp.setBounds(rateBounds.reduced((int)dX / 3));
+    auto retrigBounds = juce::Rectangle<int>(5 * dX, dY / 2, dX / 2, dY / 2);
+    rateComp.setBounds(rateBounds.reduced(getWidth() / 15));
     outputComp.setBounds(sourceBounds);
     meter.setBounds(meterBounds);
     editor.setBounds(editorBounds);
+    rButton.setBounds(retrigBounds);
 }
 
 void LFOPanel::paint(juce::Graphics &g)
@@ -208,6 +208,12 @@ resonanceComp(resonance)
     addAndMakeVisible(&cutoffComp);
     addAndMakeVisible(&resonanceComp);
     typeBox.addListener(this);
+    int startIndex = 1;
+    for(auto fType : OctaneFilter::FilterNames)
+    {
+        typeBox.addItem(fType, startIndex);
+        ++startIndex;
+    }
 }
 
 void FilterPanel::comboBoxChanged(juce::ComboBox *b)
@@ -217,7 +223,17 @@ void FilterPanel::comboBoxChanged(juce::ComboBox *b)
 
 void FilterPanel::resized()
 {
-    
+    auto iBounds = getLocalBounds();
+    auto bBounds = iBounds.removeFromTop(getHeight() / 8);
+    typeBox.setBounds(bBounds.getX(), bBounds.getHeight() / 4, bBounds.getWidth() * 0.75f, bBounds.getHeight() * 0.75f);
+    auto dX = iBounds.getWidth() / 2;
+    auto dY = iBounds.getHeight();
+    auto squareSide = (dX > dY) ? dY : dX;
+    auto cushion = squareSide / 6;
+    auto cBounds = juce::Rectangle<int>(iBounds.getX(), iBounds.getY(), squareSide, squareSide);
+    auto rBounds = juce::Rectangle<int>(iBounds.getX() + dX, iBounds.getY(), squareSide, squareSide);
+    cutoffComp.setBounds(cBounds.reduced(cushion));
+    resonanceComp.setBounds(rBounds.reduced(cushion));
 }
 
 void FilterPanel::paint(juce::Graphics &g)
@@ -400,7 +416,8 @@ void SoundSourcePanel::resized()
 OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
 paramGroup(pGroup),
 linkedTree(tree),
-linkedUpdater(update)
+linkedUpdater(update),
+filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, update, tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
@@ -418,6 +435,7 @@ linkedUpdater(update)
         auto panel = lfoPanels.getLast();
         addAndMakeVisible(panel);
     }
+    addAndMakeVisible(&filterPanel);
 }
 
 void OctaneEditor::resized()
@@ -437,11 +455,12 @@ void OctaneEditor::resized()
         osc->setBounds(oscBoundRects[idx]);
         ++idx;
     }
-    auto lHeight = iBounds.getHeight() / NUM_LFOS;
+    auto lHeight = iBounds.getHeight() / (NUM_LFOS + 1);
     for(idx = 0; idx < NUM_LFOS; ++idx)
     {
         lfoPanels[idx]->setBounds(4 * dX, lHeight * idx, dX, lHeight);
     }
+    filterPanel.setBounds(4 * dX, lHeight * NUM_LFOS, dX, lHeight);
 }
 
 void OctaneEditor::paint(juce::Graphics &g)

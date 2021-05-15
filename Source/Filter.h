@@ -17,42 +17,37 @@
 #define RESONANCE_MIN 0.1f
 #define RESONANCE_MAX 10.0f
 #define RESONANCE_DEFAULT 1.0f
+#define CHEB_1_ORDER 8.0f
 using JuceFilter = juce::dsp::IIR::Filter<float>;
 using Coeffs = juce::dsp::IIR::Coefficients<float>;
 enum FilterType
 {
    LoPass12,
-   LoPass24
+   LoPass24,
+   Chebyshev1
 };
-class IirCalc //! note: all these functions require the vectors to already be sized correctly
-{
+class IirCalc
+{ //!  this works in place ot the Coeffecient class static methods
 public:
     IirCalc() : K(0.0f), norm(0.0f)
     {
     }
-    void LoPass12(std::vector<float>& a, std::vector<float>& b, float cutoff, double sampleRate, float Q)
+    void LoPass12(JuceFilter& filter, double sampleRate, float cutoff, float resonance)
     {
-        b[0] = 1.0f;
-        b[1] = exp(-2.0f * juce::MathConstants<float>::pi * (cutoff / sampleRate));
-        a[0] = 1.0f - b[1];
-        b[1] *= -1.0f;
-        a[1] = 0.0f;
-        a[2] = 0.0f;
-        b[2] = 0.0f;
+        
     }
-    void LoPass24(std::vector<float>& a, std::vector<float>& b, float cutoff, double sampleRate, float Q)
+    void LoPass24(JuceFilter& filter, double sampleRate, float cutoff, float resonance)
     {
-        b[0] = 1.0f;
-        K = tan(juce::MathConstants<float>::pi * cutoff / sampleRate);
-        norm = 1.0f / (1.0f + K / Q + (K * K));
-        a[0] = K * K * norm;
-        a[1] = 2.0f * a[0];
-        a[2] = a[0];
-        b[1] = 2.0f * (K * K - 1.0f) * norm;
-        b[2] = (1.0f - K / Q + K * K) * norm;
+        
+    }
+    void Chebyshev1(JuceFilter& filter, double sampleRate, float cutoff, float resonance)
+    {
+        
     }
 private:
     float K, norm;
+    std::array<float, 4> a;
+    std::array<float, 4> b;
 };
 class OctaneFilter
 {
@@ -61,6 +56,7 @@ public:
     static std::vector<juce::String> FilterNames;
     //==============================================
     OctaneFilter(FilterType type = LoPass12);
+    ~OctaneFilter();
     void setSampleRate(double newRate) {sampleRate = newRate;}
     void prepare(double rate, int samplesPerBlock, int numChannels);
     float process(float input);

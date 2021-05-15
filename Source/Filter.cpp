@@ -9,7 +9,7 @@
 */
 
 #include "Filter.h"
-std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24"};
+std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24", "Chebyshev1"};
 
 OctaneFilter::OctaneFilter(FilterType type) :
 currentType(type),
@@ -29,6 +29,13 @@ void OctaneFilter::setCutoff(float freq)
         setFilter();
     }
 }
+OctaneFilter::~OctaneFilter()
+{
+    printf("NEW FILTER\n");
+    for(auto val : jFilter.coefficients->coefficients)
+        printf("Value: %f\n", val);
+}
+
 void OctaneFilter::setResonance(float level)
 {
     if(resonance != level)

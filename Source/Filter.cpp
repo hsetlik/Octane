@@ -79,5 +79,10 @@ void OctaneFilter::setFilter()
             jFilter.coefficients = Coeffs::makeLowPass(sampleRate, cutoff, resonance);
             break;
         }
+        case Chebyshev1:
+        {
+            jFilter.coefficients = Coeffs::makeLowPass(sampleRate, cutoff, resonance);
+            break;
+        }
     }
 }

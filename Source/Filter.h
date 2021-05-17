@@ -10,7 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "1.9.0/include/Iir.h"
+#include "/Users/hayden/Desktop/Programming/JUCEProjects/Octane/Builds/MacOSX/1.9.0/include/Iir.h"
 #define CUTOFF_MIN 20.0f
 #define CUTOFF_DEFAULT 900.0f
 #define CUTOFF_MAX 10000.0f
@@ -129,7 +129,6 @@ private:
     float cutoff;
     float resonance;
     double sampleRate;
-    JuceFilter jFilter;
     Filter sFilter;
 };
 

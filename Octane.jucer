@@ -3,50 +3,9 @@
 <JUCERPROJECT id="b6HRUz" name="Octane" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="Setlik" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              headerPath="/Users/hayden/Desktop/Programming/JUCEProjects/Octane/Source/1.9.0/include/Iir.h">
+              headerPath="/Users/hayden/Desktop/Programming/JUCEProjects/Octane/Builds/MacOSX/1.9.0/include">
   <MAINGROUP id="BlyAuj" name="Octane">
     <GROUP id="{928B63EB-1631-FD93-F26F-D2D356867D80}" name="Source">
-      <GROUP id="{0FC72DDB-AB48-0F62-413C-3DACA7A8C7BE}" name="1.9.0">
-        <GROUP id="{15D1E51E-AF40-CC0D-7ABD-E9178A7DD735}" name="include">
-          <GROUP id="{65034637-552B-B396-B491-13321B55D63C}" name="iir">
-            <FILE id="jvx9Oz" name="Biquad.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Biquad.h"/>
-            <FILE id="ZPKUgn" name="Butterworth.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Butterworth.h"/>
-            <FILE id="kaxguE" name="Cascade.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Cascade.h"/>
-            <FILE id="gB6oEu" name="ChebyshevI.h" compile="0" resource="0" file="Source/1.9.0/include/iir/ChebyshevI.h"/>
-            <FILE id="PUzsRn" name="ChebyshevII.h" compile="0" resource="0" file="Source/1.9.0/include/iir/ChebyshevII.h"/>
-            <FILE id="BdylqG" name="Common.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Common.h"/>
-            <FILE id="xAVN8D" name="Custom.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Custom.h"/>
-            <FILE id="hlGDq3" name="Layout.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Layout.h"/>
-            <FILE id="hIKvUI" name="MathSupplement.h" compile="0" resource="0"
-                  file="Source/1.9.0/include/iir/MathSupplement.h"/>
-            <FILE id="xUYufs" name="PoleFilter.h" compile="0" resource="0" file="Source/1.9.0/include/iir/PoleFilter.h"/>
-            <FILE id="uc7S1s" name="RBJ.h" compile="0" resource="0" file="Source/1.9.0/include/iir/RBJ.h"/>
-            <FILE id="LwkxqN" name="State.h" compile="0" resource="0" file="Source/1.9.0/include/iir/State.h"/>
-            <FILE id="kUCOSJ" name="Types.h" compile="0" resource="0" file="Source/1.9.0/include/iir/Types.h"/>
-          </GROUP>
-          <FILE id="lIMupz" name="Iir.h" compile="0" resource="0" file="Source/1.9.0/include/Iir.h"/>
-        </GROUP>
-        <GROUP id="{35511BF3-4A1B-86B6-30DE-89D68A66A2F0}" name="lib">
-          <GROUP id="{11E19C6D-F91B-0E21-3CE1-0316E962BCFA}" name="cmake">
-            <GROUP id="{1B6DFBB5-17C7-8724-CE20-0BB775E63CA8}" name="iir">
-              <FILE id="TteJsI" name="iir-config-release.cmake" compile="0" resource="1"
-                    file="Source/1.9.0/lib/cmake/iir/iir-config-release.cmake"/>
-              <FILE id="rrji5H" name="iir-config.cmake" compile="0" resource="1"
-                    file="Source/1.9.0/lib/cmake/iir/iir-config.cmake"/>
-            </GROUP>
-          </GROUP>
-          <FILE id="gWSuoX" name="libiir.1.9.0.dylib" compile="0" resource="1"
-                file="Source/1.9.0/lib/libiir.1.9.0.dylib"/>
-          <FILE id="Xx1fk5" name="libiir.1.dylib" compile="0" resource="1" file="Source/1.9.0/lib/libiir.1.dylib"/>
-          <FILE id="NZvrk1" name="libiir.dylib" compile="0" resource="1" file="Source/1.9.0/lib/libiir.dylib"/>
-          <FILE id="heWdzj" name="libiir_static.a" compile="0" resource="1" file="Source/1.9.0/lib/libiir_static.a"/>
-        </GROUP>
-        <FILE id="JdQICA" name="AUTHORS" compile="0" resource="1" file="Source/1.9.0/AUTHORS"/>
-        <FILE id="HAfXDd" name="COPYING" compile="0" resource="1" file="Source/1.9.0/COPYING"/>
-        <FILE id="vtr5is" name="INSTALL_RECEIPT.json" compile="0" resource="1"
-              file="Source/1.9.0/INSTALL_RECEIPT.json"/>
-        <FILE id="PxkIUT" name="README.md" compile="0" resource="1" file="Source/1.9.0/README.md"/>
-      </GROUP>
       <GROUP id="{D2E3887E-D864-E9D9-1C91-552CD2919081}" name="Resources">
         <GROUP id="{5A420FB1-98DD-CC34-4237-09840207F402}" name="OpenGLShaderPrograms">
           <FILE id="RdJxWP" name="BasicFragment.glsl" compile="0" resource="1"
@@ -121,7 +80,8 @@
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="iir" extraCompilerFlags="-I${PROJECT_DIR}/1.9.0/include"
+               extraLinkerFlags="-L${PROJECT_DIR}/1.9.0/lib">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Octane"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Octane"/>

@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "1.9.0/include/Iir.h"
 #define CUTOFF_MIN 20.0f
 #define CUTOFF_DEFAULT 900.0f
 #define CUTOFF_MAX 10000.0f
@@ -22,51 +23,65 @@
 using JuceFilter = juce::dsp::IIR::Filter<float>;
 using Coeffs = juce::dsp::IIR::Coefficients<float>;
 using OrderArr = std::array<float, DEFAULT_ORDER>;
+using complex = std::complex<float>;
 enum FilterType
 {
    LoPass12,
    LoPass24,
    Chebyshev1
 };
-struct FilterArray
-{ //! stores the previous input/output samples of the filter
-public:
-    FilterArray()
-    {
-        std::fill(data.begin(), data.end(), 0.0f);
-    }
-    float& operator [](int index)
-    {
-        return data[index];
-    }
-    void pushFront(float value)
-    {
-        for(index = DEFAULT_ORDER - 1; index > 0; --index)
-        {
-            data[index] = data[index - 1];
-        }
-        data[0] = value;
-    }
-private:
-    int index;
-    OrderArr data;
-};
+
 class FilterCore
-{ //! the processing guts of an IIR filter. just holds arrays for coefficients and past i/o and calculates the difference equation for each sample passed in
+{
 public:
-    FilterCore(FilterType type=LoPass12) : currentType(type), sampleRate(44100.0f)
-    {
-    }
-    void setSampleRate(double rate) {sampleRate = rate; }
-    float process(float input);
-    OrderArr aCoeffs;
-    OrderArr bCoeffs;
+    FilterCore() :
+    cutoff(CUTOFF_DEFAULT),
+    resonance(RESONANCE_DEFAULT),
+    sampleRate(44100.0f)
+    {setup();}
+    virtual ~FilterCore() {}
+    void setSampleRate(double rate) {sampleRate = rate; setup();}
+    virtual float process(float input) {return 0.0f;}
+    virtual void setCutoff(float value) {cutoff = value; setup(); } //! override the setCutoff() and setResonance() functions only as necessary
+    virtual void setResonance(float q) {resonance = q; setup(); }
+    virtual void setup() {}
+protected:
+    float cutoff, resonance;
+    double sampleRate;
+};
+class Low12Filter : public FilterCore
+{
+public:
+    void setup() override {filter.setup(sampleRate, cutoff, resonance); }
+    float process(float input) override {return filter.filter(input); }
+private:
+    Iir::RBJ::LowPass filter;
+};
+
+class ChebI : public FilterCore
+{
+public:
+    void setup() override {filter.setup(sampleRate, cutoff, resonance); }
+    float process(float input) override {return filter.filter(input); }
+private:
+    Iir::ChebyshevI::LowPass<DEFAULT_ORDER> filter;
+};
+
+class Filter
+{
+public:
+    Filter(FilterType type = LoPass12);
+    void setType(FilterType type);
+    void prepare(double rate, int samplesPerBlock, int numChannels) {core->setSampleRate(rate); }
+    void setSampleRate(double rate) {core->setSampleRate(rate); }
+    void setCutoff(float c) {core->setCutoff(c);}
+    void setResonance(float q) {core->setResonance(q);}
+    float process(float input) {return core->process(input); }
 private:
     FilterType currentType;
-    double sampleRate;
-    FilterArray inputs;
-    FilterArray outputs;
+    std::unique_ptr<FilterCore> core;
 };
+
 
 class IirCalc
 { //!  this works in place ot the Coeffecient class static methods
@@ -115,5 +130,6 @@ private:
     float resonance;
     double sampleRate;
     JuceFilter jFilter;
+    Filter sFilter;
 };
 

@@ -10,6 +10,38 @@
 
 #include "Filter.h"
 std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24", "Chebyshev1"};
+Filter::Filter(FilterType type) : currentType(type), core(std::make_unique<Low12Filter>())
+{
+    
+};
+
+void Filter::setType(FilterType type)
+{
+    if(currentType != type)
+    {
+        currentType = type;
+        switch(currentType)
+        {
+            case LoPass12:
+            {
+                core.reset(new Low12Filter());
+                break;
+            }
+            case LoPass24:
+            {
+                core.reset(new ChebI());
+                break;
+            }
+            case Chebyshev1:
+            {
+                core.reset(new ChebI());
+                break;
+            }
+        }
+    }
+}
+
+
 
 OctaneFilter::OctaneFilter(FilterType type) :
 currentType(type),

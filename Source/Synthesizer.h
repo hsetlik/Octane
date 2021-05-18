@@ -60,6 +60,10 @@ public:
     //===============================================
     void renderNextBlock (juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples) override;
     //===============================================
+    void setFilterType(int type)
+    {
+        filter.setType((FilterType)type);
+    }
     void replaceWave(int index, juce::File newWave);
     void tickBlock(); //update the things that need to be updated once per buffer
     void tickSample(); //update the things that need continuous modulation
@@ -105,6 +109,11 @@ public:
     int getNumWaves() {return waveFiles.size(); }
     void replaceLfos(int index);
     void replaceWaves(int index, juce::File newWave);
+    void setFilterType(int index)
+    {
+        for(auto v : oVoices)
+            v->setFilterType(index);
+    }
     void updateGraphData()
     {
         int idx = 0;

@@ -121,6 +121,7 @@ public:
     void setCutoff(float freq);
     void setResonance(float level);
     void setWetDry(float wet);
+    void setType(FilterType type) {sFilter.setType(type);}
     void calcVectors();
     void setFilter();
 private:

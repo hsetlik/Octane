@@ -221,7 +221,8 @@ wetDryComp(wetDry)
 
 void FilterPanel::comboBoxChanged(juce::ComboBox *b)
 {
-    
+    auto idx = b->getSelectedItemIndex();
+    linkedUpdater->linkedSynth->setFilterType(idx);
 }
 
 void FilterPanel::resized()

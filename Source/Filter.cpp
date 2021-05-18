@@ -58,7 +58,8 @@ void OctaneFilter::setCutoff(float freq)
     if(freq != cutoff)
     {
         cutoff = freq;
-        sFilter.setCutoff(cutoff);
+        lFilter.setCutoff(cutoff);
+        rFilter.setCutoff(cutoff);
     }
 }
 OctaneFilter::~OctaneFilter()
@@ -71,7 +72,8 @@ void OctaneFilter::setResonance(float level)
     if(resonance != level)
     {
         resonance = level;
-        sFilter.setResonance(resonance);
+        lFilter.setResonance(resonance);
+        rFilter.setResonance(resonance);
     }
 }
 void OctaneFilter::setWetDry(float wet)
@@ -82,12 +84,18 @@ void OctaneFilter::setWetDry(float wet)
 void OctaneFilter::prepare(double rate, int samplesPerBlock, int numChannels)
 {
     sampleRate = rate;
-    sFilter.setSampleRate(rate);
+    lFilter.setSampleRate(rate);
+    rFilter.setSampleRate(rate);
 }
 
-float OctaneFilter::process(float input)
+float OctaneFilter::processL(float input)
 {
-    return (wetLevel * sFilter.process(input)) + ((1.0f - wetLevel) * input);
+    return (wetLevel * lFilter.process(input)) + ((1.0f - wetLevel) * input);
+}
+
+float OctaneFilter::processR(float input)
+{
+    return (wetLevel * rFilter.process(input)) + ((1.0f - wetLevel) * input);
 }
 
 void OctaneFilter::setFilter()

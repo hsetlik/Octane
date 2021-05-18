@@ -61,10 +61,8 @@ void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int st
     for(sample = startSample; sample < (startSample + numSamples); ++sample)
     {
         tickSample();
-        for(auto chan = 0; chan < outputBuffer.getNumChannels(); ++chan)
-        {
-            outputBuffer.addSample(chan, sample, lastOutput * 0.4f);
-        }
+        outputBuffer.addSample(0, sample, lastOutL * 0.5f);
+        outputBuffer.addSample(1, sample, lastOutR * 0.5f);
     }
 }
 
@@ -92,6 +90,8 @@ void OctaneVoice::tickBlock()
 void OctaneVoice::tickSample()
 {
     lastOutput = 0.0f;
+    lastOutL = 0.0f;
+    lastOutR = 0.0f;
     lastOscLevel = 0.0f;
     oscLevelSum = 0.5f;
     filter.setCutoff(params->filterCutoff.getActual(voiceIndex));
@@ -104,11 +104,15 @@ void OctaneVoice::tickSample()
         modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
         oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual(voiceIndex));
         lastOscLevel = params->oscLevels[oscIndex]->getActual(voiceIndex);
+        oscPanValues[oscIndex] = params->oscPans[oscIndex]->getActual(voiceIndex);
         oscLevelSum += lastOscLevel;
         oscillators[oscIndex]->setLevel(lastOscLevel);
         lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
+        lastOutL += (1.0f - oscPanValues[oscIndex]) * lastOutput;
+        lastOutR += oscPanValues[oscIndex] * lastOutput;
     }
-    lastOutput = filter.process(lastOutput);
+    lastOutR = filter.processR(lastOutR);
+    lastOutL = filter.processL(lastOutL);
 }
 
 void OctaneVoice::replaceWave(int index, juce::File newWave)

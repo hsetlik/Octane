@@ -117,11 +117,12 @@ public:
     ~OctaneFilter();
     void setSampleRate(double newRate) {sampleRate = newRate;}
     void prepare(double rate, int samplesPerBlock, int numChannels);
-    float process(float input);
+    float processL(float input);
+    float processR(float input);
     void setCutoff(float freq);
     void setResonance(float level);
     void setWetDry(float wet);
-    void setType(FilterType type) {sFilter.setType(type);}
+    void setType(FilterType type) {lFilter.setType(type); rFilter.setType(type);}
     void calcVectors();
     void setFilter();
 private:
@@ -130,6 +131,7 @@ private:
     float cutoff;
     float resonance;
     double sampleRate;
-    Filter sFilter;
+    Filter lFilter;
+    Filter rFilter;
 };
 

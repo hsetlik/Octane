@@ -345,17 +345,20 @@ void WaveSelector::resized()
     lastButton.setBounds(otherButtonBounds.reduced(buttonBounds.getHeight() / 8));
 }
 //==============================================================================
-OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index) :
+OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthParam* panParam, OctaneUpdater* updater, apvts* tree, int index) :
 levelComp(lParam),
 posComp(pParam),
+panComp(panParam),
 display(pParam, updater, index),
 linkedTree(tree)
 {
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
+    addAndMakeVisible(&panComp);
     addAndMakeVisible(&display);
     levelAttach.reset(new apvts::SliderAttachment(*linkedTree, levelComp.linkedParam->name, levelComp.mainSlider));
     posAttach.reset(new apvts::SliderAttachment(*linkedTree, posComp.linkedParam->name, posComp.mainSlider));
+    panAttach.reset(new apvts::SliderAttachment(*linkedTree, panComp.linkedParam->name, panComp.mainSlider));
 }
 
 void OscillatorPanel::resized()
@@ -368,9 +371,11 @@ void OscillatorPanel::resized()
     auto displayBounds = juce::Rectangle<float>(0.0f, dY, 5 * dX, 8 * dY);
     display.setBounds(displayBounds.reduced(trim).toType<int>());
     auto topBounds = juce::Rectangle<float>(5 * dX, dY, 5 * squareSide, 5 * squareSide);
+    auto topRightBounds = juce::Rectangle<float>(5 * dX + 5 * squareSide, dY, 5 * squareSide, 5 * squareSide);
     auto bottomBounds = juce::Rectangle<float>(5 * dX, 5 * dY, 5 * squareSide, 5 * squareSide);
     posComp.setBounds(topBounds.reduced(trim).toType<int>());
     levelComp.setBounds(bottomBounds.reduced(trim).toType<int>());
+    panComp.setBounds(topRightBounds.reduced(trim).toType<int>());
 }
 
 void OscillatorPanel::paint(juce::Graphics &g)
@@ -381,6 +386,7 @@ void OscillatorPanel::paint(juce::Graphics &g)
 SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index, apvts* tree, OctaneUpdater* updater) :
 oscPanel(allParams->oscLevels[index],
          allParams->oscPositions[index],
+         allParams->oscPans[index],
          updater,
          tree,
          index),

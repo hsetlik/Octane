@@ -76,6 +76,8 @@ linkedTree(tree)
         oscPositions.add(new VoiceTargetParam(posName, 0.0f, 1.0f, 0.0f));
         auto levelName = "OscillatorLevel" + iStr;
         oscLevels.add(new VoiceTargetParam(levelName, 0.0f, 1.0f, 1.0f));
+        auto panName = "OscillatorPan" + iStr;
+        oscPans.add(new VoiceTargetParam(panName, 0.0f, 1.0f, 0.5f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;
@@ -161,6 +163,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthParameterGroup::createL
         
         auto posId = "OscillatorPos" + iStr;
         auto levelId = "OscillatorLevel" + iStr;
+        auto panId = "OscillatorPan" + iStr;
         
         layout.add(std::make_unique<floatParam>(mDelay, mDelay, delayRange, DELAY_DEFAULT));
         layout.add(std::make_unique<floatParam>(aDelay, aDelay, delayRange, DELAY_DEFAULT));
@@ -177,6 +180,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SynthParameterGroup::createL
         
         layout.add(std::make_unique<floatParam>(posId, posId, posRange, 0.0f));
         layout.add(std::make_unique<floatParam>(levelId, levelId, levelRange, 1.0f));
+        layout.add(std::make_unique<floatParam>(panId, panId, levelRange, 0.5f));
     }
     for(int i = 0; i < NUM_LFOS; ++i)
     {

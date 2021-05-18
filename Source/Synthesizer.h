@@ -81,6 +81,8 @@ public:
     juce::OwnedArray<OctaneOsc> oscillators;
     juce::OwnedArray<OctaneLFO> lfos;
     OctaneFilter filter;
+    std::array<float, NUM_OSCILLATORS> oscPanValues;
+    float lastOutL, lastOutR;
     float oscLevelSum;
     float lastOscLevel;
     float lastOutput;

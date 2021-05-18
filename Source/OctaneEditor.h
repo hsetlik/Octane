@@ -181,14 +181,16 @@ public:
 class OscillatorPanel : public juce::Component
 {
 public:
-    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, OctaneUpdater* updater, apvts* tree, int index);
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthParam* panParam, OctaneUpdater* updater, apvts* tree, int index);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
+    ParamCompRotary panComp;
     std::unique_ptr<apvts::SliderAttachment> levelAttach;
     std::unique_ptr<apvts::SliderAttachment> posAttach;
+    std::unique_ptr<apvts::SliderAttachment> panAttach;
     WaveSelector display;
     apvts* const linkedTree;
 };

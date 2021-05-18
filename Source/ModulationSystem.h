@@ -211,6 +211,7 @@ public:
     paramVecGTarget aReleases;
     paramVecTarget oscPositions;
     paramVecTarget oscLevels;
+    paramVecTarget oscPans;
     paramVecGTarget lfoRates;
     paramVecGTarget lfoRetriggers;
     paramVecCont oscAmpEnvs;

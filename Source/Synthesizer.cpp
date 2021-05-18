@@ -83,7 +83,7 @@ void OctaneVoice::tickBlock()
         oscillators[oscIndex]->ampEnv.setRelease(params->aReleases[oscIndex]->getActual());
         oscillators[oscIndex]->modEnv.setRelease(params->mReleases[oscIndex]->getActual());
         lfos[oscIndex]->setRateHz(params->lfoRates[oscIndex]->getActual());
-        lfos[oscIndex]->setTrigger((params->lfoRetriggers[oscIndex]->getActual() > 0.0f) ? true : false);
+        lfos[oscIndex]->setTrigger((params->lfoRetriggers[oscIndex]->getActual() > 0.0f));
     }
 }
 
@@ -212,9 +212,8 @@ OctaneUpdater::OctaneUpdater(OctaneSynth* synth) : linkedSynth(synth), blockInde
 {
     
 }
-
 void OctaneUpdater::tick()
-//! this gets called in \c processBlock() to run the needed updated once every several buffers
+//! this gets called in \c processBlock() to run the needed updates once every several buffers
 //! note that smaller buffer size means more frequent updates
 {
     ++blockIndex;

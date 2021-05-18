@@ -28,7 +28,8 @@ enum FilterType
 {
    LoPass12,
    LoPass24,
-   Chebyshev1
+   Chebyshev1,
+   Chebyshev2
 };
 
 class FilterCore
@@ -63,8 +64,18 @@ class ChebI : public FilterCore
 public:
     void setup() override {filter.setup(sampleRate, cutoff, resonance); }
     float process(float input) override {return filter.filter(input); }
+    void setResonance(float q) override {resonance = q * 1.5f; setup();}
 private:
     Iir::ChebyshevI::LowPass<DEFAULT_ORDER> filter;
+};
+class ChebII : public FilterCore
+{
+public:
+    void setup() override {filter.setup(sampleRate, cutoff, resonance); }
+    float process(float input) override {return filter.filter(input); }
+    void setResonance(float q) override { resonance = (RESONANCE_MAX - q) * 1.5f; setup();}
+private:
+    Iir::ChebyshevII::LowPass<DEFAULT_ORDER> filter;
 };
 
 class Filter
@@ -123,8 +134,7 @@ public:
     void setResonance(float level);
     void setWetDry(float wet);
     void setType(FilterType type) {lFilter.setType(type); rFilter.setType(type);}
-    void calcVectors();
-    void setFilter();
+    
 private:
     FilterType currentType;
     float wetLevel;

@@ -9,7 +9,7 @@
 */
 
 #include "Filter.h"
-std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24", "Chebyshev1"};
+std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24", "Chebyshev1", "Chebyshev2"};
 Filter::Filter(FilterType type) : currentType(type), core(std::make_unique<Low12Filter>())
 {
     
@@ -37,6 +37,12 @@ void Filter::setType(FilterType type)
                 core.reset(new ChebI());
                 break;
             }
+            case Chebyshev2:
+            {
+                core.reset(new ChebII());
+                break;
+            }
+                
         }
     }
 }
@@ -50,7 +56,7 @@ cutoff(CUTOFF_DEFAULT),
 resonance(RESONANCE_DEFAULT),
 sampleRate(44100.0f)
 {
-    setFilter();
+    
 }
 void OctaneFilter::setCutoff(float freq)
 {
@@ -96,9 +102,4 @@ float OctaneFilter::processL(float input)
 float OctaneFilter::processR(float input)
 {
     return (wetLevel * rFilter.process(input)) + ((1.0f - wetLevel) * input);
-}
-
-void OctaneFilter::setFilter()
-{
-
 }

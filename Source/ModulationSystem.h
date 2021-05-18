@@ -213,6 +213,7 @@ public:
     using paramVecCont = juce::OwnedArray<ContinuousVoiceParam>;
     using paramVecTarget = juce::OwnedArray<VoiceTargetParam>;
     using paramVecPtr = juce::OwnedArray<GlobalTargetParam>*;
+    using paramPowerVec = juce::OwnedArray<MacroSourceParam>;
     using apvts = juce::AudioProcessorValueTreeState;
     using floatParam = juce::AudioParameterFloat;
     using fRange = juce::NormalisableRange<float>;
@@ -238,6 +239,8 @@ public:
     paramVecCont oscAmpEnvs;
     paramVecCont oscModEnvs;
     paramVecCont lfoOutputs;
+    paramPowerVec oscPowers;
+    paramPowerVec lfoPowers;
     VoiceTargetParam filterCutoff;
     VoiceTargetParam filterResonance;
     VoiceTargetParam filterWetDry;

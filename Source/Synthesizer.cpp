@@ -114,17 +114,23 @@ void OctaneVoice::tickSample()
     filter.setWetDry(params->filterWetDry.getActual(voiceIndex));
     for(oscIndex = 0; oscIndex < NUM_OSCILLATORS; ++oscIndex)
     {
-        lfoOutputs[oscIndex]->setOutput(voiceIndex, lfos[oscIndex]->getOutput());
-        ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
-        modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
-        oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual(voiceIndex));
-        lastOscLevel = params->oscLevels[oscIndex]->getActual(voiceIndex);
-        oscPanValues[oscIndex] = params->oscPans[oscIndex]->getActual(voiceIndex);
-        oscLevelSum += lastOscLevel;
-        oscillators[oscIndex]->setLevel(lastOscLevel);
-        lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
-        lastOutL += (1.0f - oscPanValues[oscIndex]) * lastOutput;
-        lastOutR += oscPanValues[oscIndex] * lastOutput;
+        if(params->lfoPowers[oscIndex]->getActual(voiceIndex) > 0.0f)
+        {
+            lfoOutputs[oscIndex]->setOutput(voiceIndex, lfos[oscIndex]->getOutput());
+            ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
+            modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
+        }
+        if(params->oscPowers[oscIndex]->getActual(voiceIndex) > 0.0f)
+        {
+            oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual(voiceIndex));
+            lastOscLevel = params->oscLevels[oscIndex]->getActual(voiceIndex);
+            oscPanValues[oscIndex] = params->oscPans[oscIndex]->getActual(voiceIndex);
+            oscLevelSum += lastOscLevel;
+            oscillators[oscIndex]->setLevel(lastOscLevel);
+            lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
+            lastOutL += (1.0f - oscPanValues[oscIndex]) * lastOutput;
+            lastOutR += oscPanValues[oscIndex] * lastOutput;
+        }
     }
     lastOutR = filter.processR(lastOutR);
     lastOutL = filter.processL(lastOutL);

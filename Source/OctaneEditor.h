@@ -72,7 +72,30 @@ public:
     std::unique_ptr<apvts::SliderAttachment> sustainAttach;
     std::unique_ptr<apvts::SliderAttachment> releaseAttach;
 };
-
+//====================================================================================================================
+class ParamPowerButton : public juce::Component, public juce::Button::Listener
+{
+public:
+    ParamPowerButton(SynthParam* p) : linkedParam(p)
+    {
+        addAndMakeVisible(&button);
+        button.addListener(this);
+    }
+    SynthParam* const linkedParam;
+    void buttonClicked(juce::Button* b) override
+    {
+        if(b->getToggleState())
+            linkedParam->setBase(1.0f);
+        else
+            linkedParam->setBase(0.0f);
+    }
+    void resized() override
+    {
+        button.setBounds(getLocalBounds());
+    }
+private:
+    PowerButtonCore button;
+};
 //====================================================================================================================
 class LFOPanel : public juce::Component, public juce::Button::Listener
 {
@@ -147,6 +170,7 @@ private:
     ParamCompRotary cutoffComp;
     ParamCompRotary resonanceComp;
     ParamCompRotary wetDryComp;
+    
     juce::ComboBox typeBox;
 };
 
@@ -181,13 +205,14 @@ public:
 class OscillatorPanel : public juce::Component
 {
 public:
-    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthParam* panParam, OctaneUpdater* updater, apvts* tree, int index);
+    OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthParam* panParam, SynthParam* powerParam, OctaneUpdater* updater, apvts* tree, int index);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
     ParamCompRotary panComp;
+    ParamPowerButton powerComp;
     std::unique_ptr<apvts::SliderAttachment> levelAttach;
     std::unique_ptr<apvts::SliderAttachment> posAttach;
     std::unique_ptr<apvts::SliderAttachment> panAttach;

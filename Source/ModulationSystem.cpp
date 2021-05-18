@@ -81,6 +81,8 @@ linkedTree(tree)
         oscLevels.add(new VoiceTargetParam(levelName, 0.0f, 1.0f, 1.0f));
         auto panName = "OscillatorPan" + iStr;
         oscPans.add(new VoiceTargetParam(panName, 0.0f, 1.0f, 0.5f));
+        auto powerName = "OscillatorPower" + iStr;
+        oscPowers.add(new MacroSourceParam(powerName, 0.0f, 1.0f, 1.0f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;
@@ -124,6 +126,8 @@ linkedTree(tree)
         auto retrigId = "LfoRetrig" + iStr;
         lfoRates.add(new GlobalTargetParam(rateId, RATE_MIN, RATE_MAX, RATE_DEFAULT));
         lfoRetriggers.add(new GlobalTargetParam(retrigId, 0.0f, 1.0f, 0.0f));
+        auto powerId = "LfoPower" + iStr;
+        lfoPowers.add(new MacroSourceParam(powerId, 0.0f, 1.0f, 1.0f));
     }
 }
 

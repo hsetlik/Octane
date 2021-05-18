@@ -13,11 +13,13 @@
 #include "DAHDSR.h"
 #include "LFO.h"
 #include "Filter.h"
-//macros to define what parameters should be created
+//! macros to define what parameters should be created
 #define NUM_OSCILLATORS 4
 #define NUM_LFOS 4
 #define NUM_VOICES 6
+//! constants for scaling
 #define PITCHWHEEL_RANGE 16384
+#define MIDI_NOTES 128
 
 class SynthParam;
 
@@ -240,6 +242,8 @@ public:
     VoiceTargetParam filterResonance;
     VoiceTargetParam filterWetDry;
     MacroSourceParam pitchWheelValue;
+    MacroSourceParam modWheelValue;
+    ContinuousVoiceParam keyTrackValue;
     apvts* const linkedTree;
     std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
     std::array<lfoArray, NUM_LFOS> lfoShapes;

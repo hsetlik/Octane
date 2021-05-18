@@ -208,7 +208,19 @@ private:
     apvts* const linkedTree;
     OctaneUpdater* const linkedUpdater;
 };
-
+//================================================================================
+class MacroPanel : public juce::Component
+{
+public:
+    MacroPanel(SynthParam* pitch, SynthParam* mod, SynthParam* key);
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+private:
+    ParamCompSource pitchComp;
+    ParamCompSource modComp;
+    ParamCompSource keyComp;
+    
+};
 //================================================================================
 
 class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
@@ -225,6 +237,7 @@ private:
     juce::OwnedArray<SoundSourcePanel> oscPanels;
     juce::OwnedArray<LFOPanel> lfoPanels;
     FilterPanel filterPanel;
+    MacroPanel macroPanel;
     
 };
 

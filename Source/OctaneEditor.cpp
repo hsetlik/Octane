@@ -424,12 +424,49 @@ void SoundSourcePanel::resized()
     modEnvPanel.setBounds(modBounds);
 }
 //==============================================================================
+MacroPanel::MacroPanel(SynthParam* pitch, SynthParam* mod, SynthParam* key) :
+pitchComp(pitch),
+modComp(mod),
+keyComp(key)
+{
+    addAndMakeVisible(&pitchComp);
+    addAndMakeVisible(&modComp);
+    addAndMakeVisible(&keyComp);
+}
 
+void MacroPanel::resized()
+{
+    auto iBounds = getLocalBounds();
+    auto dX = iBounds.getWidth() / 3;
+    auto dY = iBounds.getHeight();
+    auto cushion = dX / 12;
+    auto squareSide = (dX > dY) ? dY : dX;
+    auto pBounds = juce::Rectangle<int>(0, dY / 2, squareSide, squareSide);
+    auto mBounds = juce::Rectangle<int>(dX, dY / 2, squareSide, squareSide);
+    auto kBounds = juce::Rectangle<int>(2 * dX, dY / 2, squareSide, squareSide);
+    pitchComp.setBounds(pBounds.reduced(cushion));
+    modComp.setBounds(mBounds.reduced(cushion));
+    keyComp.setBounds(kBounds.reduced(cushion));
+}
+
+void MacroPanel::paint(juce::Graphics &g)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto keyBox = fBounds.removeFromTop(fBounds.getHeight() / 2);
+    auto pitchBox = keyBox.removeFromLeft(fBounds.getWidth() / 3);
+    auto modBox = keyBox.removeFromLeft(fBounds.getWidth() / 3);
+    g.setColour(UXPalette::darkGray);
+    g.drawFittedText("Pitch Wheel", pitchBox.toType<int>(), juce::Justification::left, 2, 0.6f);
+    g.drawFittedText("Mod Wheel", modBox.toType<int>(), juce::Justification::left, 2, 0.6f);
+    g.drawFittedText("Key Track", keyBox.toType<int>(), juce::Justification::left, 2, 0.6f);
+}
+//==============================================================================
 OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
 paramGroup(pGroup),
 linkedTree(tree),
 linkedUpdater(update),
-filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, &pGroup->filterWetDry, update, tree)
+filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, &pGroup->filterWetDry, update, tree),
+macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackValue)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
@@ -448,6 +485,7 @@ filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, &pGroup->filterWetD
         addAndMakeVisible(panel);
     }
     addAndMakeVisible(&filterPanel);
+    addAndMakeVisible(&macroPanel);
 }
 
 void OctaneEditor::resized()
@@ -468,8 +506,9 @@ void OctaneEditor::resized()
     oscPanels[1]->setBounds(fBounds.removeFromTop(fBounds.getHeight() / 2).toType<int>());
     oscPanels[2]->setBounds(leftfBounds.toType<int>());
     oscPanels[3]->setBounds(fBounds.toType<int>());
-    
-    filterPanel.setBounds(bottomBounds.removeFromLeft(bottomBounds.getWidth() / 3).toType<int>());
+    auto dX = bottomBounds.getWidth() / 3;
+    filterPanel.setBounds(bottomBounds.removeFromLeft(dX).toType<int>());
+    macroPanel.setBounds(bottomBounds.removeFromRight(dX / 2).toType<int>());
 }
 
 void OctaneEditor::paint(juce::Graphics &g)

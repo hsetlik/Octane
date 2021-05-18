@@ -67,6 +67,7 @@ SynthParameterGroup::SynthParameterGroup(juce::AudioProcessorValueTreeState* tre
 filterCutoff("FilterCutoff", CUTOFF_MIN, CUTOFF_MAX, CUTOFF_DEFAULT),
 filterResonance("FilterResonance", RESONANCE_MIN, RESONANCE_MAX, RESONANCE_DEFAULT),
 filterWetDry("FilterWetDry", 0.0f, 1.0f, 1.0f),
+pitchWheelValue("PitchWheel", -1.0f, 1.0f, 0.0f),
 linkedTree(tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)

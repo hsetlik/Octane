@@ -43,7 +43,7 @@ public:
                     float velocity,
                     juce::SynthesiserSound *sound,
                     int currentPitchWheelPosition) override;
-    void pitchWheelMoved(int newPitchWheelVal) override {} 
+    void pitchWheelMoved(int newPitchWheelVal) override;
     void controllerMoved(int controllerNumber, int controllerValue) override {}
     void setAllSampleRate(double rate)
     {

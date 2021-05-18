@@ -55,6 +55,12 @@ void OctaneVoice::stopNote(float velocity, bool allowTailOff)
         clearCurrentNote();
 }
 
+void OctaneVoice::pitchWheelMoved(int newPitchWheelVal)
+{
+    auto scaledVal = (float)newPitchWheelVal / (float)(2 * PITCHWHEEL_RANGE); //! remap to the range 0-2
+    params->pitchWheelValue.setBase(scaledVal - 1.0f); //! remap to -1 - 1 range
+}
+
 void OctaneVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
     tickBlock();

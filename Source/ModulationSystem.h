@@ -17,6 +17,7 @@
 #define NUM_OSCILLATORS 4
 #define NUM_LFOS 4
 #define NUM_VOICES 6
+#define PITCHWHEEL_RANGE 16384
 
 class SynthParam;
 
@@ -184,6 +185,24 @@ private:
     std::array<float, NUM_VOICES> voiceOffsets;
 };
 
+class MacroSourceParam : public SynthParam //! for things like pitch wheel, MIDI cc, etc
+{
+public:
+    MacroSourceParam(juce::String n, float lo=0.0f, float hi=1.0f, float normal=0.0f) :
+    SynthParam(n, lo, hi, normal)
+    {
+        
+    }
+    float getActual(int voiceIndex) override
+    {
+        return currentBaseValue;
+    }
+    void setBase(float value) override
+    {
+        currentBaseValue = value;
+    }
+};
+
 class SynthParameterGroup //! this class should be instantiated once and each voice should update via a pointer to it
 {
 public:
@@ -220,6 +239,7 @@ public:
     VoiceTargetParam filterCutoff;
     VoiceTargetParam filterResonance;
     VoiceTargetParam filterWetDry;
+    MacroSourceParam pitchWheelValue;
     apvts* const linkedTree;
     std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
     std::array<lfoArray, NUM_LFOS> lfoShapes;

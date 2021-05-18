@@ -452,27 +452,24 @@ filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, &pGroup->filterWetD
 
 void OctaneEditor::resized()
 {
-    auto iBounds = getLocalBounds();
-    auto dX = iBounds.getWidth() / 5;
-    auto halfX = (4 * dX) / 2;
-    auto halfY = getLocalBounds().getHeight() / 2;
-    oscBoundRects.clear();
-    oscBoundRects.push_back(juce::Rectangle<int>(0, 0, halfX, halfY));
-    oscBoundRects.push_back(juce::Rectangle<int>(halfX, 0, halfX, halfY));
-    oscBoundRects.push_back(juce::Rectangle<int>(0, halfY, halfX, halfY));
-    oscBoundRects.push_back(juce::Rectangle<int>(halfX, halfY, halfX, halfY));
-    int idx = 0;
-    for(auto osc : oscPanels)
+    auto fBounds = getLocalBounds().toFloat();
+    auto bottomBounds = fBounds.removeFromBottom(fBounds.getHeight() / 6);
+    auto lfoBounds = fBounds.removeFromRight(fBounds.getWidth() / 5);
+    auto lfoHeight = lfoBounds.getHeight() / NUM_LFOS;
+    for(int i = 0; i < NUM_LFOS; ++i)
     {
-        osc->setBounds(oscBoundRects[idx]);
-        ++idx;
+        if(i < NUM_LFOS - 1)
+            lfoPanels[i]->setBounds(lfoBounds.removeFromTop(lfoHeight).toType<int>());
+        else
+            lfoPanels[i]->setBounds(lfoBounds.toType<int>());
     }
-    auto lHeight = iBounds.getHeight() / (NUM_LFOS + 1);
-    for(idx = 0; idx < NUM_LFOS; ++idx)
-    {
-        lfoPanels[idx]->setBounds(4 * dX, lHeight * idx, dX, lHeight);
-    }
-    filterPanel.setBounds(4 * dX, lHeight * NUM_LFOS, dX, lHeight);
+    auto leftfBounds = fBounds.removeFromLeft(fBounds.getWidth() / 2);
+    oscPanels[0]->setBounds(leftfBounds.removeFromTop(fBounds.getHeight() / 2).toType<int>());
+    oscPanels[1]->setBounds(fBounds.removeFromTop(fBounds.getHeight() / 2).toType<int>());
+    oscPanels[2]->setBounds(leftfBounds.toType<int>());
+    oscPanels[3]->setBounds(fBounds.toType<int>());
+    
+    filterPanel.setBounds(bottomBounds.removeFromLeft(bottomBounds.getWidth() / 3).toType<int>());
 }
 
 void OctaneEditor::paint(juce::Graphics &g)

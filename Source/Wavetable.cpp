@@ -154,6 +154,12 @@ unisonMode(false),
 unisonVoices(0),
 unisonLevel(0.0f)
 {
+    uPhasesLower.fill(0.0f);
+    uDeltasLower.fill(0.0f);
+    uOutputsLower.fill(0.0f);
+    uPhasesUpper.fill(0.0f);
+    uDeltasUpper.fill(0.0f);
+    uOutputsUpper.fill(0.0f);
     auto manager = new juce::AudioFormatManager();
     manager->registerBasicFormats();
     auto reader = manager->createReaderFor(src);
@@ -201,8 +207,8 @@ float WavetableOscCore::getSample(double hz, float position)
     if(lastHz != hz)
     {
         lastHz = hz;
-        stepUpHz = lastHz * SEMITONE_RATIO;
-        stepDownHz = lastHz / SEMITONE_RATIO;
+        stepUpHz = lastHz * pow(SEMITONE_RATIO, 2);
+        stepDownHz = lastHz / pow(SEMITONE_RATIO, 2);
     }
     if(position > 1.0f)
         position = 1.0f;
@@ -218,7 +224,7 @@ float WavetableOscCore::getSample(double hz, float position)
     mainSample = bottomSample + ((topSample - bottomSample) * skew);
     if(!unisonMode)
         return mainSample;
-    return unisonSample(mainSample);
+    return unisonSample(mainSample, position);
 }
 
 //============================================================================================
@@ -229,6 +235,7 @@ level(1.0f),
 pOsc(std::make_unique<WavetableOscCore>(src)),
 unisonVoices(0),
 unisonSpread(0.0f),
+unisonLevel(0.0f),
 unisonMode(false)
 {
    
@@ -242,6 +249,7 @@ void OctaneOsc::replace(juce::File src)
         setUnisonMode(unisonMode);
         setUnisonVoices(unisonVoices);
         setUnisonSpread(unisonSpread);
+        setUnisonLevel(unisonLevel);
     }
 }
 

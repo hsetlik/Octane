@@ -90,6 +90,8 @@ linkedTree(tree)
         oscUnisonSpreads.add(new GlobalTargetParam(uSpreadName, 0.0f, 1.0f, 0.5f));
         auto uVoicesName = "OscillatorUnisonVoices" + iStr;
         oscUnisonVoices.add(new GlobalTargetParam(uVoicesName, 0.0f, (float)UNISON_MAX, 1.0f));
+        auto uLevelName = "OscillatorUnisonLevel" + iStr;
+        oscUnisonLevels.add(new GlobalTargetParam(uLevelName, 0.0f, 1.0f, 0.0f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;

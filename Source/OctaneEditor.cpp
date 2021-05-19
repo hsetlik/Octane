@@ -384,6 +384,31 @@ void WaveSelector::resized()
     lastButton.setBounds(otherButtonBounds.reduced(buttonBounds.getHeight() / 8));
 }
 //==============================================================================
+UnisonPanel::UnisonPanel(SynthParam* mode, SynthParam* voices, SynthParam* spread, SynthParam* level) :
+modeButton(mode),
+voiceComp(voices),
+spreadComp(spread),
+levelComp(level)
+{
+    addAndMakeVisible(&modeButton);
+    addAndMakeVisible(&voiceComp);
+    addAndMakeVisible(&spreadComp);
+    addAndMakeVisible(&levelComp);
+    modeButton.button.triggerClick();
+}
+void UnisonPanel::resized()
+{ //! make sure this panel's aspect is 2.4:1 at all times
+    auto iBounds = getLocalBounds();
+    auto buttonWidth = iBounds.getHeight() / 5;
+    auto topBounds = iBounds.removeFromTop(buttonWidth);
+    modeButton.setBounds(topBounds.removeFromRight(buttonWidth));
+    auto dX = iBounds.getWidth() / 3;
+    auto cushion = dX / 10;
+    voiceComp.setBounds(iBounds.removeFromLeft(dX).reduced(cushion));
+    spreadComp.setBounds(iBounds.removeFromLeft(dX).reduced(cushion));
+    levelComp.setBounds(iBounds.reduced(cushion));
+}
+//==============================================================================
 OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthParam* panParam, SynthParam* powerParam, OctaneUpdater* updater, apvts* tree, int index) :
 levelComp(lParam),
 posComp(pParam),
@@ -435,6 +460,10 @@ oscPanel(allParams->oscLevels[index],
          updater,
          tree,
          index),
+uPanel(allParams->oscUnisonModes[index],
+       allParams->oscUnisonVoices[index],
+       allParams->oscUnisonSpreads[index],
+       allParams->oscUnisonLevels[index]),
 ampEnvPanel(allParams->aDelays[index],
          allParams->aAttacks[index],
          allParams->aHolds[index],
@@ -457,6 +486,7 @@ linkedTree(tree),
 linkedUpdater(updater)
 {
     addAndMakeVisible(&oscPanel);
+    addAndMakeVisible(&uPanel);
     addAndMakeVisible(&ampEnvPanel);
     addAndMakeVisible(&modEnvPanel);
 }
@@ -474,6 +504,10 @@ void SoundSourcePanel::resized()
 {
     auto fBounds = getLocalBounds().toFloat();
     oscPanel.setBounds(0, 0, fBounds.getWidth(), fBounds.getHeight() / 2);
+    int uWidth = (int)(fBounds.getWidth() * 0.32f);
+    auto uHeight = (int)uWidth / 2.4f;
+    uPanel.setBounds(ComponentUtil::inBottomRightCorner(oscPanel, uWidth, (int)uHeight / 8, uHeight));
+    uPanel.toFront(true);
     auto ampBounds = juce::Rectangle<int>(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
     ampEnvPanel.setBounds(ampBounds);
     auto modBounds = juce::Rectangle<int>(fBounds.getWidth() / 2, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);

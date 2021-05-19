@@ -98,6 +98,10 @@ void OctaneVoice::tickBlock()
         oscillators[oscIndex]->modEnv.setSustain(params->mSustains[oscIndex]->getActual());
         oscillators[oscIndex]->ampEnv.setRelease(params->aReleases[oscIndex]->getActual());
         oscillators[oscIndex]->modEnv.setRelease(params->mReleases[oscIndex]->getActual());
+        oscillators[oscIndex]->setUnisonMode((params->oscUnisonModes[oscIndex]->getActual(0) > 0.0f));
+        oscillators[oscIndex]->setUnisonSpread(params->oscUnisonSpreads[oscIndex]->getActual());
+        oscillators[oscIndex]->setUnisonVoices((int)params->oscUnisonVoices[oscIndex]->getActual());
+        oscillators[oscIndex]->setUnisonLevel(params->oscUnisonLevels[oscIndex]->getActual());
         lfos[oscIndex]->setRateHz(params->lfoRates[oscIndex]->getActual());
         lfos[oscIndex]->setTrigger((params->lfoRetriggers[oscIndex]->getActual() > 0.0f));
     }

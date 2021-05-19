@@ -238,6 +238,7 @@ public:
     paramPowerVec oscUnisonModes;
     paramVecGTarget oscUnisonVoices;
     paramVecGTarget oscUnisonSpreads;
+    paramVecGTarget oscUnisonLevels;
     paramVecGTarget lfoRates;
     paramVecGTarget lfoRetriggers;
     paramVecCont oscAmpEnvs;

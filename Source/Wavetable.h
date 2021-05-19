@@ -70,7 +70,6 @@ public:
 private:
     juce::OwnedArray<WavetableFrame> frames;
     double sampleRate;
-    float position;
     float phase;
     float phaseDelta;
     int topIndex, bottomIndex;
@@ -89,17 +88,21 @@ private:
     float unisonLevel;
     int uIdx;
     std::array<float, UNISON_MAX> uPhasesUpper;
-    std::vector<float> uDeltasUpper;
-    std::vector<float> uOutputsUpper;
-    std::vector<float> uPhasesLower;
-    std::vector<float> uDeltasLower;
-    std::vector<float> uOutputsLower;
+    std::array<float, UNISON_MAX> uDeltasUpper;
+    std::array<float, UNISON_MAX> uOutputsUpper;
+    std::array<float, UNISON_MAX> uPhasesLower;
+    std::array<float, UNISON_MAX> uDeltasLower;
+    std::array<float, UNISON_MAX> uOutputsLower;
 public:
     
     void setUnisonVoices(int voices)
     {
         unisonVoices = voices;
         setUnisonDeltas();
+    }
+    void setUnisonLevel(float level)
+    {
+        unisonLevel = level;
     }
     void setUnisonSpread(float value)
     {
@@ -121,7 +124,7 @@ public:
             ++idx;
         }
     }
-    float unisonUpper(int idx)
+    float unisonUpper(int idx, float position)
     {
         bottomIndex = floor(position * (numFrames - 1));
         topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
@@ -134,7 +137,7 @@ public:
         uOutputsUpper[idx] = ((bottomSample + ((topSample - bottomSample) * skew)) * unisonLevel) / (float)unisonVoices;
         return uOutputsUpper[idx];
     }
-    float unisonLower(int idx)
+    float unisonLower(int idx, float position)
     {
         bottomIndex = floor(position * (numFrames - 1));
         topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
@@ -155,13 +158,13 @@ public:
             setUnisonVoices(1);
         }
     }
-    float unisonSample(float input)
+    float unisonSample(float input, float position)
     {
         input *= (1.0f - unisonLevel);
         for(uIdx = 0; uIdx < unisonVoices; ++uIdx)
         {
-            input += unisonLower(uIdx);
-            input += unisonUpper(uIdx);
+            input += unisonLower(uIdx, position);
+            input += unisonUpper(uIdx, position);
         }
         return input;
     }
@@ -204,6 +207,7 @@ private:
     std::unique_ptr<WavetableOscCore> pOsc;
     int unisonVoices;
     float unisonSpread;
+    float unisonLevel;
     bool unisonMode;
 public:
     void setUnisonVoices(int numVoices)
@@ -220,5 +224,10 @@ public:
     {
         unisonSpread = spread;
         pOsc->setUnisonSpread(unisonSpread);
+    }
+    void setUnisonLevel(float level)
+    {
+        unisonLevel = level;
+        pOsc->setUnisonLevel(unisonLevel);
     }
 };

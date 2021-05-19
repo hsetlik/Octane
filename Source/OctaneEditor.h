@@ -109,6 +109,18 @@ public:
     PowerButtonCore button;
 };
 //====================================================================================================================
+class UnisonPanel : public juce::Component
+{
+public:
+    UnisonPanel(SynthParam* mode, SynthParam* voices, SynthParam* spread, SynthParam* level);
+    void resized() override;
+private:
+    ParamPowerButton modeButton;
+    ParamCompRotary voiceComp;
+    ParamCompRotary spreadComp;
+    ParamCompRotary levelComp;
+};
+//====================================================================================================================
 class LFOPanel : public juce::Component, public juce::Button::Listener
 {
 public:
@@ -259,6 +271,7 @@ public:
     void togglePower() {oscPanel.togglePower();}
 private:
     OscillatorPanel oscPanel;
+    UnisonPanel uPanel;
     EnvelopePanel ampEnvPanel;
     EnvelopePanel modEnvPanel;
     apvts* const linkedTree;

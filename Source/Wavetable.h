@@ -17,7 +17,7 @@
 #define TABLESIZE 2048
 #define FFT_ORDER 11
 #define TABLES_PER_FRAME 10
-#define UNISON_MAX 4 //! limit to 4 unison voices above and 4 below
+
 #define SEMITONE_RATIO 1.05946309436f
 struct Wavetable
 {

@@ -97,4 +97,13 @@ public:
         auto height = iBounds.getHeight();
         return juce::Rectangle<int>(x, y, width, height);
     }
+    static juce::Rectangle<int> inTopRightCorner(juce::Component& parent, int width, int offset=0, int height=0)
+    {
+        if(height == 0)
+            height = width;
+        auto iBounds = parent.getBounds();
+        auto x = iBounds.getRight() - width;
+        auto y = iBounds.getY();
+        return juce::Rectangle<int>(x - offset, y + offset, width, height);
+    }
 };

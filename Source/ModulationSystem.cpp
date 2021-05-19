@@ -84,6 +84,12 @@ linkedTree(tree)
         oscPans.add(new VoiceTargetParam(panName, 0.0f, 1.0f, 0.5f));
         auto powerName = "OscillatorPower" + iStr;
         oscPowers.add(new MacroSourceParam(powerName, 0.0f, 1.0f, 1.0f));
+        auto uModeName = "OscillatorUnisonMode" + iStr;
+        oscUnisonModes.add(new MacroSourceParam(uModeName, 0.0f, 1.0f, 0.0f));
+        auto uSpreadName = "OscillatorUnisonSpread" + iStr;
+        oscUnisonSpreads.add(new GlobalTargetParam(uSpreadName, 0.0f, 1.0f, 0.5f));
+        auto uVoicesName = "OscillatorUnisonVoices" + iStr;
+        oscUnisonVoices.add(new GlobalTargetParam(uVoicesName, 0.0f, (float)UNISON_MAX, 1.0f));
         //each oscillator gets an amp envelope and a mod envelope
         auto mDelay = "ModEnvDelay" + iStr;
         auto aDelay = "AmpEnvDelay" + iStr;

@@ -414,11 +414,12 @@ void OscillatorPanel::resized()
     auto topBounds = juce::Rectangle<float>(5 * dX, dY, 5 * squareSide, 5 * squareSide);
     auto topRightBounds = juce::Rectangle<float>(5 * dX + 5 * squareSide, dY, 5 * squareSide, 5 * squareSide);
     auto bottomBounds = juce::Rectangle<float>(5 * dX, 5 * dY, 5 * squareSide, 5 * squareSide);
-    auto bottomRightBounds = juce::Rectangle<float>(5 * dX + 5 * squareSide, 5 * dY, 5 * squareSide, 5 * squareSide);
+    //auto bottomRightBounds = juce::Rectangle<float>(5 * dX + 5 * squareSide, 5 * dY, 5 * squareSide, 5 * squareSide);
     posComp.setBounds(topBounds.reduced(trim).toType<int>());
     levelComp.setBounds(bottomBounds.reduced(trim).toType<int>());
     panComp.setBounds(topRightBounds.reduced(trim).toType<int>());
-    powerComp.setBounds(bottomRightBounds.reduced(trim).toType<int>());
+    auto buttonWidth = getWidth() / 15;
+    powerComp.setBounds(ComponentUtil::inTopRightCorner(*this, buttonWidth, buttonWidth / 2, buttonWidth));
 }
 
 void OscillatorPanel::paint(juce::Graphics &g)

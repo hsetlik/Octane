@@ -20,6 +20,7 @@
 //! constants for scaling
 #define PITCHWHEEL_RANGE 16384
 #define MIDI_NOTES 128
+#define UNISON_MAX 4 //! limit to 4 unison voices above and 4 below
 
 class SynthParam;
 
@@ -234,6 +235,9 @@ public:
     paramVecTarget oscPositions;
     paramVecTarget oscLevels;
     paramVecTarget oscPans;
+    paramPowerVec oscUnisonModes;
+    paramVecGTarget oscUnisonVoices;
+    paramVecGTarget oscUnisonSpreads;
     paramVecGTarget lfoRates;
     paramVecGTarget lfoRetriggers;
     paramVecCont oscAmpEnvs;

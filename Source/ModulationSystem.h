@@ -247,6 +247,7 @@ public:
     MacroSourceParam pitchWheelValue;
     MacroSourceParam modWheelValue;
     ContinuousVoiceParam keyTrackValue;
+    MacroSourceParam lastTriggeredVoice;
     apvts* const linkedTree;
     std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
     std::array<lfoArray, NUM_LFOS> lfoShapes;

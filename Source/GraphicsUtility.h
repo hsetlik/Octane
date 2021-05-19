@@ -85,3 +85,16 @@ public:
     }
     
 };
+
+class ComponentUtil
+{
+public:
+    static juce::Rectangle<int> offRightOf(juce::Component& parent, int width)
+    {
+        auto iBounds = parent.getBounds();
+        auto x = iBounds.getRight();
+        auto y = iBounds.getY();
+        auto height = iBounds.getHeight();
+        return juce::Rectangle<int>(x, y, width, height);
+    }
+};

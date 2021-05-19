@@ -39,6 +39,7 @@ OctaneVoice::~OctaneVoice()
 void OctaneVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
     params->keyTrackValue.setOutput(voiceIndex, (float)(midiNoteNumber / MIDI_NOTES));
+    params->lastTriggeredVoice.setBase((float)voiceIndex);
     for(auto o : oscillators)
         o->triggerOn();
     for(auto l : lfos)
@@ -108,7 +109,7 @@ void OctaneVoice::tickSample()
     lastOutL = 0.0f;
     lastOutR = 0.0f;
     lastOscLevel = 0.0f;
-    oscLevelSum = 0.5f;
+    oscLevelSum = 1.0f;
     filter.setCutoff(params->filterCutoff.getActual(voiceIndex));
     filter.setResonance(params->filterResonance.getActual(voiceIndex));
     filter.setWetDry(params->filterWetDry.getActual(voiceIndex));
@@ -127,11 +128,18 @@ void OctaneVoice::tickSample()
             oscPanValues[oscIndex] = params->oscPans[oscIndex]->getActual(voiceIndex);
             oscLevelSum += lastOscLevel;
             oscillators[oscIndex]->setLevel(lastOscLevel);
-            lastOutput += (oscillators[oscIndex]->getSample(fundamental) / oscLevelSum);
+            lastOutput += oscillators[oscIndex]->getSample(fundamental);
             lastOutL += (1.0f - oscPanValues[oscIndex]) * lastOutput;
             lastOutR += oscPanValues[oscIndex] * lastOutput;
         }
     }
+    /*
+    if(oscLevelSum > 1.0f)
+    {
+        lastOutR /= oscLevelSum;
+        lastOutL /= oscLevelSum;
+    }
+     */
     lastOutR = filter.processR(lastOutR);
     lastOutL = filter.processL(lastOutL);
 }

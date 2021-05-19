@@ -44,6 +44,17 @@ public:
         float exp;
         float difference;
     };
+    class EnvLevelMeter : public juce::AnimatedAppComponent
+    {
+    public:
+        EnvLevelMeter(SynthParam* output, SynthParam* lastVoice);
+        SynthParam* const levelParam;
+        SynthParam* const lastVoiceParam;
+        void update() override;
+        void paint(juce::Graphics& g) override;
+        int lastVoice;
+        float level;
+    };
     EnvelopePanel(SynthParam* delay,
                   SynthParam* attack,
                   SynthParam* hold,
@@ -51,6 +62,7 @@ public:
                   SynthParam* sustain,
                   SynthParam* release,
                   SynthParam* src,
+                  SynthParam* lastVoice,
                   apvts* tree);
     void resized() override;
     void paint(juce::Graphics& g) override;
@@ -62,7 +74,7 @@ public:
     ParamCompVertical releaseComp;
     
     ParamCompSource srcComp;
-    
+    EnvLevelMeter meter;
     EnvelopeGraph graph;
     apvts* const linkedTree;
     std::unique_ptr<apvts::SliderAttachment> delayAttach;
@@ -103,15 +115,25 @@ public:
     class LevelMeter : public juce::AnimatedAppComponent
     {
     public:
-        LevelMeter(SynthParam* output) : outputParam(output), level(0.0f)
+        LevelMeter(SynthParam* output, SynthParam* retrig, SynthParam* lastVoice) :
+        outputParam(output),
+        retrigParam(retrig),
+        lastVoiceParam(lastVoice),
+        level(0.0f)
         {
             setFramesPerSecond(REPAINT_FPS);
         }
         SynthParam* const outputParam;
+        SynthParam* const retrigParam;
+        SynthParam* const lastVoiceParam;
         void update() override
         {
-            level = outputParam->getAdjusted(0);
-            //printf("%s level is : %f\n", outputParam->name.toRawUTF8(), level);
+            if(retrigParam->getActual() < 1.0f)
+                level = outputParam->getAdjusted(0);
+            else
+            {
+                level = outputParam->getAdjusted((int)lastVoiceParam->getActual());
+            }
             repaint();
         }
         void paint(juce::Graphics& g) override
@@ -133,7 +155,7 @@ public:
         RetrigButton();
         void paintButton(juce::Graphics& g, bool mouseOver, bool isMouseDown) override;
     };
-    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, SynthParam* power, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index);
+    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, SynthParam* power, SynthParam* lastVoice, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index);
     void buttonClicked(juce::Button* b) override
     {
         float newValue = (b->getToggleState()) ? 1.0f : 0.0f;

@@ -11,17 +11,26 @@
 #include "LFO.h"
 
 OctaneLFO::OctaneLFO() :
+phaseAtMin(420.0f),
 sampleRate(44100.0f),
 phase(0.0f),
 phaseDelta(0.0f),
 triggerMode(false),
 lastOutput(0.0f)
 {
-    auto dPhase = juce::MathConstants<float>::twoPi / (float)LFO_POINTS;
+    auto dY = 2.0f / (float)LFO_POINTS;
+    float value = 0.0f;
     for(int i = 0; i < LFO_POINTS; ++i)
     {
-        points[i] = (std::sin(i * dPhase) / 2.0f) + 0.5f;
-        //printf("Value %d: %f\n", i, points[i]);
+        if(i < LFO_POINTS / 2)
+        {
+            value += dY;
+        }
+        else
+        {
+            value -= dY;
+        }
+        points[i] = value;
     }
     setRateHz(1.0f);
 }

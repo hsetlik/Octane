@@ -74,6 +74,25 @@ class OctaneLFO
 {
 public:
     OctaneLFO();
+    ~OctaneLFO()
+    {
+        /*
+        float minLevel = 1000.0f;
+        int minIdx = 0;
+        int i = 0;
+        for(auto val : points)
+        {
+            if(val < minLevel)
+            {
+                minLevel = val;
+                minIdx = i;
+            }
+            ++i;
+        }
+        phaseAtMin = (float)minIdx / LFO_POINTS;
+        printf("Min value %f at phase %f\n", minLevel, phaseAtMin);
+         */
+    }
     void resetFromFunction(lfoFunc newFunc) {points = newFunc(); }
     void resetFromArray(lfoArray& newValues) {points = newValues; }
     void setPoint(int idx, float value) {points[idx] = value; }
@@ -87,6 +106,7 @@ public:
     void tick();
     float getOutput();
 private:
+    float phaseAtMin;
     double sampleRate;
     float phase;
     float phaseDelta;

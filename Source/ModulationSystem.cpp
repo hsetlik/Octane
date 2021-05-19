@@ -70,6 +70,7 @@ filterWetDry("FilterWetDry", 0.0f, 1.0f, 1.0f),
 pitchWheelValue("PitchWheel", -1.0f, 1.0f, 0.0f),
 modWheelValue("ModWheel", 0.0f, 1.0f, 0.0f),
 keyTrackValue("KeyTrack", 0.0f, 1.0f, 0.0f),
+lastTriggeredVoice("LastVoice", 0.0f, (float)NUM_VOICES + 1, 0.0f),
 linkedTree(tree)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)

@@ -77,6 +77,7 @@ EnvelopePanel::EnvelopePanel(SynthParam* delay,
                              SynthParam* sustain,
                              SynthParam* release,
                              SynthParam* src,
+                             SynthParam* lastVoice,
                              apvts* tree) :
 delayComp(delay),
 attackComp(attack),
@@ -85,6 +86,7 @@ decayComp(decay),
 sustainComp(sustain),
 releaseComp(release),
 srcComp(src),
+meter(src, lastVoice),
 graph(this),
 linkedTree(tree)
 {
@@ -96,6 +98,7 @@ linkedTree(tree)
     addAndMakeVisible(&releaseComp);
     addAndMakeVisible(&graph);
     addAndMakeVisible(&srcComp);
+    addAndMakeVisible(&meter);
     
     delayAttach.reset(new apvts::SliderAttachment(*linkedTree, delayComp.linkedParam->name, delayComp.mainSlider));
     attackAttach.reset(new apvts::SliderAttachment(*linkedTree, attackComp.linkedParam->name, attackComp.mainSlider));
@@ -112,7 +115,8 @@ void EnvelopePanel::resized()
     auto halfHeight = fBounds.getHeight() / 2.0f;
     auto gBounds = juce::Rectangle<int>(0, 0, 6 * dX, halfHeight).reduced(dX / 3);
     graph.setBounds(gBounds);
-    
+    auto meterBox = ComponentUtil::offRightOf(graph, graph.getHeight() / 6);
+    meter.setBounds(meterBox);
     
     delayComp.setBounds(0, halfHeight, dX, halfHeight);
     attackComp.setBounds(dX, halfHeight, dX, halfHeight);
@@ -129,6 +133,31 @@ void EnvelopePanel::resized()
 void EnvelopePanel::paint(juce::Graphics &g)
 {
     
+}
+//=========================================================================
+EnvelopePanel::EnvLevelMeter::EnvLevelMeter(SynthParam* output, SynthParam* lastVoice) :
+levelParam(output),
+lastVoiceParam(lastVoice),
+lastVoice(0),
+level(0.0f)
+{
+    setFramesPerSecond(REPAINT_FPS);
+}
+void EnvelopePanel::EnvLevelMeter::update()
+{
+    lastVoice = (int)lastVoiceParam->getActual();
+    level = levelParam->getAdjusted(lastVoice);
+    repaint();
+}
+void EnvelopePanel::EnvLevelMeter::paint(juce::Graphics &g)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto height = fBounds.getHeight();
+    auto meterTop = height - (height * level);
+    g.setColour(UXPalette::lightGray);
+    g.fillRect(fBounds);
+    g.setColour(UXPalette::highlight);
+    g.fillRect(0.0f, meterTop, fBounds.getWidth(), height * level);
 }
 //=========================================================================
 LFOPanel::RetrigButton::RetrigButton() : juce::ShapeButton("retrigButton",  juce::Colours::black, juce::Colours::black, juce::Colours::black)
@@ -151,11 +180,11 @@ void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool
 
 //=========================================================================
 
-LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, SynthParam* power, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index) :
+LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, SynthParam* power, SynthParam* lastVoice, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index) :
 rateComp(rate),
 outputComp(src),
 editor(array, updater, index),
-meter(src),
+meter(src, retrig, lastVoice),
 pButton(power),
 retrigParam(retrig),
 linkedArray(array),
@@ -412,6 +441,7 @@ ampEnvPanel(allParams->aDelays[index],
          allParams->aSustains[index],
          allParams->aReleases[index],
          allParams->oscAmpEnvs[index],
+         &allParams->lastTriggeredVoice,
             tree),
 modEnvPanel(allParams->mDelays[index],
          allParams->mAttacks[index],
@@ -420,6 +450,7 @@ modEnvPanel(allParams->mDelays[index],
          allParams->mSustains[index],
          allParams->mReleases[index],
          allParams->oscModEnvs[index],
+         &allParams->lastTriggeredVoice,
             tree),
 linkedTree(tree),
 linkedUpdater(updater)
@@ -507,7 +538,8 @@ macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackVa
         auto pOut = paramGroup->lfoOutputs[i];
         auto pArray = &paramGroup->lfoShapes[i];
         auto pPower = paramGroup->lfoPowers[i];
-        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pPower, pArray, tree, linkedUpdater, i));
+        auto pLastVoice = &paramGroup->lastTriggeredVoice;
+        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pPower, pLastVoice, pArray, tree, linkedUpdater, i));
         auto panel = lfoPanels.getLast();
         addAndMakeVisible(panel);
         if(i > 0)

@@ -151,11 +151,12 @@ void LFOPanel::RetrigButton::paintButton(juce::Graphics &g, bool mouseOver, bool
 
 //=========================================================================
 
-LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index) :
+LFOPanel::LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, SynthParam* power, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index) :
 rateComp(rate),
 outputComp(src),
 editor(array, updater, index),
 meter(src),
+pButton(power),
 retrigParam(retrig),
 linkedArray(array),
 linkedTree(tree),
@@ -167,6 +168,7 @@ lfoIndex(index)
     addAndMakeVisible(&rateComp);
     addAndMakeVisible(&outputComp);
     addAndMakeVisible(&meter);
+    addAndMakeVisible(&pButton);
     addAndMakeVisible(&editor);
     
     rateAttach.reset(new apvts::SliderAttachment(*linkedTree, rateComp.linkedParam->name, rateComp.mainSlider));
@@ -184,11 +186,13 @@ void LFOPanel::resized()
     auto editorBounds = juce::Rectangle<int>(dX / 2, 3 * squareSide, 3.5f * squareSide, 3 * squareSide);
     auto meterBounds = juce::Rectangle<int>(5 * dX, 2 * dY, dX / 2, 3 * dY);
     auto retrigBounds = juce::Rectangle<int>(5 * dX, dY / 2, dX / 2, dY / 2);
+    auto powerBounds = juce::Rectangle<int>(4 * dX, dY / 2, squareSide / 2, squareSide / 2);
     rateComp.setBounds(rateBounds.reduced(getWidth() / 15));
     outputComp.setBounds(sourceBounds);
     meter.setBounds(meterBounds);
     editor.setBounds(editorBounds);
     rButton.setBounds(retrigBounds);
+    pButton.setBounds(powerBounds);
 }
 
 void LFOPanel::paint(juce::Graphics &g)
@@ -478,6 +482,8 @@ macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackVa
         oscPanels.add(new SoundSourcePanel(paramGroup, i, tree, linkedUpdater));
         auto panel = oscPanels.getLast();
         addAndMakeVisible(panel);
+        if(i > 0)
+            panel->togglePower();
     }
     for(int i = 0; i < NUM_LFOS; ++i)
     {
@@ -485,9 +491,12 @@ macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackVa
         auto pRetrig = paramGroup->lfoRetriggers[i];
         auto pOut = paramGroup->lfoOutputs[i];
         auto pArray = &paramGroup->lfoShapes[i];
-        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pArray, tree, linkedUpdater, i));
+        auto pPower = paramGroup->lfoPowers[i];
+        lfoPanels.add(new LFOPanel(pRate, pRetrig, pOut, pPower, pArray, tree, linkedUpdater, i));
         auto panel = lfoPanels.getLast();
         addAndMakeVisible(panel);
+        if(i > 0)
+            panel->togglePower();
     }
     addAndMakeVisible(&filterPanel);
     addAndMakeVisible(&macroPanel);

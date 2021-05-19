@@ -93,7 +93,6 @@ public:
     {
         button.setBounds(getLocalBounds());
     }
-private:
     PowerButtonCore button;
 };
 //====================================================================================================================
@@ -133,12 +132,13 @@ public:
         RetrigButton();
         void paintButton(juce::Graphics& g, bool mouseOver, bool isMouseDown) override;
     };
-    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index);
+    LFOPanel(SynthParam* rate, SynthParam* retrig, SynthParam* src, SynthParam* power, lfoArray* array, apvts* tree, OctaneUpdater* updater, int index);
     void buttonClicked(juce::Button* b) override
     {
         float newValue = (b->getToggleState()) ? 1.0f : 0.0f;
         retrigParam->setBase(newValue);
     }
+    void togglePower() {pButton.button.triggerClick();}
     void resized() override;
     void paint(juce::Graphics& g) override;
     ParamCompRotary rateComp;
@@ -146,6 +146,7 @@ public:
     LFOEditorPanel editor;
     RetrigButton rButton;
     LevelMeter meter;
+    ParamPowerButton pButton;
     SynthParam* const retrigParam;
     lfoArray* const linkedArray;
     apvts* const linkedTree;
@@ -208,6 +209,7 @@ public:
     OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthParam* panParam, SynthParam* powerParam, OctaneUpdater* updater, apvts* tree, int index);
     void resized() override;
     void paint(juce::Graphics& g) override;
+    void togglePower() {powerComp.button.triggerClick();}
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
@@ -226,6 +228,7 @@ class SoundSourcePanel : public juce::Component
 public:
     SoundSourcePanel(SynthParameterGroup* paramGrp, int index, apvts* tree, OctaneUpdater* updater);
     void resized() override;
+    void togglePower() {oscPanel.togglePower();}
 private:
     OscillatorPanel oscPanel;
     EnvelopePanel ampEnvPanel;

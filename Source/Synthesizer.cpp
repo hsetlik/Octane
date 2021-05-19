@@ -117,11 +117,11 @@ void OctaneVoice::tickSample()
         if(params->lfoPowers[oscIndex]->getActual(voiceIndex) > 0.0f)
         {
             lfoOutputs[oscIndex]->setOutput(voiceIndex, lfos[oscIndex]->getOutput());
-            ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
-            modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
         }
         if(params->oscPowers[oscIndex]->getActual(voiceIndex) > 0.0f)
         {
+            ampOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastAmpEnv());
+            modOutputs[oscIndex]->setOutput(voiceIndex, oscillators[oscIndex]->lastModEnv());
             oscillators[oscIndex]->setPosition(params->oscPositions[oscIndex]->getActual(voiceIndex));
             lastOscLevel = params->oscLevels[oscIndex]->getActual(voiceIndex);
             oscPanValues[oscIndex] = params->oscPans[oscIndex]->getActual(voiceIndex);

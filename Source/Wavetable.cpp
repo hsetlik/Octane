@@ -187,6 +187,8 @@ doubleVec WavetableOscCore::getGraphData(int resolution)
 }
 float WavetableOscCore::getSample(double hz, float position)
 {
+    if(position > 1.0f)
+        position = 1.0f;
     bottomIndex = floor(position * (numFrames - 1));
     topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
     skew = (position * (numFrames - 1)) - bottomIndex;

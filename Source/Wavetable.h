@@ -17,6 +17,8 @@
 #define TABLESIZE 2048
 #define FFT_ORDER 11
 #define TABLES_PER_FRAME 10
+#define UNISON_MAX 4 //! limit to 4 unison voices above and 4 below
+#define SEMITONE_RATIO 1.05946309436f
 struct Wavetable
 {
     Wavetable(int size)
@@ -76,6 +78,94 @@ private:
     WavetableFrame* bottomFrame;
     float topSample, bottomSample, skew;
     const juce::File srcFile;
+    //===unison stuff================
+    double lastHz;
+    double stepUpHz;
+    double stepDownHz;
+    float mainSample;
+    bool unisonMode;
+    int unisonVoices;
+    float unisonSpread;
+    float unisonLevel;
+    int uIdx;
+    std::array<float, UNISON_MAX> uPhasesUpper;
+    std::vector<float> uDeltasUpper;
+    std::vector<float> uOutputsUpper;
+    std::vector<float> uPhasesLower;
+    std::vector<float> uDeltasLower;
+    std::vector<float> uOutputsLower;
+public:
+    
+    void setUnisonVoices(int voices)
+    {
+        unisonVoices = voices;
+        setUnisonDeltas();
+    }
+    void setUnisonSpread(float value)
+    {
+        unisonSpread = value;
+        setUnisonDeltas();
+    }
+    void setUnisonDeltas()
+    {
+        auto uSpread = ((stepUpHz * unisonSpread) - lastHz) / unisonVoices;
+        int idx = 0;
+        for(idx = 0; idx < unisonVoices; ++idx)
+        {
+            uDeltasUpper[idx] = (lastHz + (uSpread * idx)) / sampleRate;
+        }
+        auto lSpread = (lastHz - (stepDownHz * unisonSpread)) / unisonVoices;
+        for(idx = 0; idx < unisonVoices; ++idx)
+        {
+            uDeltasLower[idx] = (lastHz - (lSpread * idx)) / sampleRate;
+            ++idx;
+        }
+    }
+    float unisonUpper(int idx)
+    {
+        bottomIndex = floor(position * (numFrames - 1));
+        topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
+        skew = (position * (numFrames - 1)) - bottomIndex;
+        uPhasesUpper[idx] += uDeltasUpper[idx];
+        if(uPhasesUpper[idx] > 1.0f)
+            uPhasesUpper[idx] -= 1.0f;
+        topSample = frames[topIndex]->getSample(uPhasesUpper[idx], uDeltasUpper[idx] * sampleRate);
+        bottomSample = frames[bottomIndex]->getSample(uPhasesUpper[idx], uDeltasUpper[idx] * sampleRate);
+        uOutputsUpper[idx] = ((bottomSample + ((topSample - bottomSample) * skew)) * unisonLevel) / (float)unisonVoices;
+        return uOutputsUpper[idx];
+    }
+    float unisonLower(int idx)
+    {
+        bottomIndex = floor(position * (numFrames - 1));
+        topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
+        skew = (position * (numFrames - 1)) - bottomIndex;
+        uPhasesLower[idx] += uDeltasLower[idx];
+        if(uPhasesLower[idx] > 1.0f)
+            uPhasesLower[idx] -= 1.0f;
+        topSample = frames[topIndex]->getSample(uPhasesLower[idx], uDeltasLower[idx] * sampleRate);
+        bottomSample = frames[bottomIndex]->getSample(uPhasesLower[idx], uDeltasLower[idx] * sampleRate);
+        uOutputsLower[idx] = ((bottomSample + ((topSample - bottomSample) * skew)) * unisonLevel) / (float)unisonVoices;
+        return uOutputsLower[idx];
+    }
+    void setUnisonMode(bool shouldHaveUnison)
+    {
+        unisonMode = shouldHaveUnison;
+        if(unisonMode && unisonVoices == 0)
+        {
+            setUnisonVoices(1);
+        }
+    }
+    float unisonSample(float input)
+    {
+        input *= (1.0f - unisonLevel);
+        for(uIdx = 0; uIdx < unisonVoices; ++uIdx)
+        {
+            input += unisonLower(uIdx);
+            input += unisonUpper(uIdx);
+        }
+        return input;
+    }
+    
 };
 
 class OctaneOsc

@@ -141,7 +141,18 @@ float WavetableFrame::getSample(float phase, double hz)
 
 //=================================================================================================
 
-WavetableOscCore::WavetableOscCore(juce::File src) : numFrames(0), sampleRate(44100.0f), phase(0.0f), phaseDelta(0.0f), srcFile(src)
+WavetableOscCore::WavetableOscCore(juce::File src) :
+numFrames(0),
+sampleRate(44100.0f),
+phase(0.0f),
+phaseDelta(0.0f),
+srcFile(src),
+lastHz(0.0f),
+stepUpHz(0.0f),
+stepDownHz(0.0f),
+unisonMode(false),
+unisonVoices(0),
+unisonLevel(0.0f)
 {
     auto manager = new juce::AudioFormatManager();
     manager->registerBasicFormats();
@@ -187,6 +198,12 @@ doubleVec WavetableOscCore::getGraphData(int resolution)
 }
 float WavetableOscCore::getSample(double hz, float position)
 {
+    if(lastHz != hz)
+    {
+        lastHz = hz;
+        stepUpHz = lastHz * SEMITONE_RATIO;
+        stepDownHz = lastHz / SEMITONE_RATIO;
+    }
     if(position > 1.0f)
         position = 1.0f;
     bottomIndex = floor(position * (numFrames - 1));
@@ -198,7 +215,10 @@ float WavetableOscCore::getSample(double hz, float position)
         phase -= 1.0f;
     topSample = frames[topIndex]->getSample(phase, hz);
     bottomSample = frames[bottomIndex]->getSample(phase, hz);
-    return bottomSample + ((topSample - bottomSample) * skew);
+    mainSample = bottomSample + ((topSample - bottomSample) * skew);
+    if(!unisonMode)
+        return mainSample;
+    return unisonSample(mainSample);
 }
 
 //============================================================================================

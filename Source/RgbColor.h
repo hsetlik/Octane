@@ -238,4 +238,5 @@ static std::vector<juce::Colour> modTargetShades = Color::shadesBetweenVec(grayS
 static juce::Colour thumbYellow = Color::RGBColor(255, 236, 95);
 static juce::Colour thumbBlue = Color::RGBColor(32, 139, 181);
 static juce::Colour lightGray = Color::RGBColor(125, 126, 129);
+static juce::Colour lighterGray = lightGray.brighter(0.3f);
 };

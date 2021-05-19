@@ -50,7 +50,7 @@ void ModSystemLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int
     auto thumbY = (1.0f - fPos) * ((fBounds.getHeight() - slider.getTextBoxHeight()) - thumbHeight - 5);
     thumbY += 5;
     //draw the background
-    g.setColour(UXPalette::darkGray);
+    g.setColour(UXPalette::darkBkgnd);
     g.fillRoundedRectangle(x + xOffsetBkgnd,
                            5,
                            bkgndWidth,
@@ -109,7 +109,7 @@ void DepthSliderLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, i
     
     thumbY += 5;
     //draw the background
-    g.setColour(UXPalette::darkGray);
+    g.setColour(UXPalette::darkBkgnd);
     g.fillRoundedRectangle(x + xOffsetBkgnd,
                            5,
                            bkgndWidth,

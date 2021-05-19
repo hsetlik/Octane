@@ -171,6 +171,8 @@ lfoIndex(index)
     addAndMakeVisible(&pButton);
     addAndMakeVisible(&editor);
     
+    //setRepaintsOnMouseActivity(true);
+    
     rateAttach.reset(new apvts::SliderAttachment(*linkedTree, rateComp.linkedParam->name, rateComp.mainSlider));
     
 }
@@ -197,7 +199,11 @@ void LFOPanel::resized()
 
 void LFOPanel::paint(juce::Graphics &g)
 {
-    
+    if(pButton.button.getToggleState())
+        g.setColour(UXPalette::lighterGray);
+    else
+        g.setColour(UXPalette::darkGray);
+    g.fillRect(getLocalBounds().toFloat());
 }
 //====================================================================================================
 FilterPanel::FilterPanel(SynthParam* cutoff, SynthParam* resonance, SynthParam* wetDry, OctaneUpdater* updater, apvts* tree) :
@@ -388,7 +394,7 @@ void OscillatorPanel::resized()
 
 void OscillatorPanel::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colours::white);
+    getParentComponent()->repaint();
 }
 //===============================================================================
 SoundSourcePanel::SoundSourcePanel(SynthParameterGroup* allParams, int index, apvts* tree, OctaneUpdater* updater) :
@@ -421,6 +427,15 @@ linkedUpdater(updater)
     addAndMakeVisible(&oscPanel);
     addAndMakeVisible(&ampEnvPanel);
     addAndMakeVisible(&modEnvPanel);
+}
+
+void SoundSourcePanel::paint(juce::Graphics &g)
+{
+    if(oscPanel.powerState())
+        g.setColour(UXPalette::lighterGray);
+    else
+        g.setColour(UXPalette::darkGray);
+    g.fillRect(getLocalBounds().toFloat());
 }
 
 void SoundSourcePanel::resized()

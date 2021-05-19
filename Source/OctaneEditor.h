@@ -88,6 +88,7 @@ public:
             linkedParam->setBase(1.0f);
         else
             linkedParam->setBase(0.0f);
+        getParentComponent()->repaint();
     }
     void resized() override
     {
@@ -210,6 +211,10 @@ public:
     void resized() override;
     void paint(juce::Graphics& g) override;
     void togglePower() {powerComp.button.triggerClick();}
+    bool powerState()
+    {
+        return powerComp.button.getToggleState();
+    }
 private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
@@ -228,6 +233,7 @@ class SoundSourcePanel : public juce::Component
 public:
     SoundSourcePanel(SynthParameterGroup* paramGrp, int index, apvts* tree, OctaneUpdater* updater);
     void resized() override;
+    void paint(juce::Graphics &g) override;
     void togglePower() {oscPanel.togglePower();}
 private:
     OscillatorPanel oscPanel;

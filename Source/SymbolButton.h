@@ -134,7 +134,8 @@ public:
     {
         g.setColour(UXPalette::lightGray);
         g.fillEllipse(getLocalBounds().toFloat());
-        auto stroke = juce::PathStrokeType(2.0f);
+        auto width = getLocalBounds().toFloat().getWidth() / 15.0f;
+        auto stroke = juce::PathStrokeType(width, juce::PathStrokeType::mitered, juce::PathStrokeType::rounded);
         g.setColour(UXPalette::darkGray);
         if(getToggleState())
             g.setColour(UXPalette::highlight);

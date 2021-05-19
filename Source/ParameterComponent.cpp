@@ -385,5 +385,5 @@ void ParamCompVertical::resized()
 
 void ParamCompVertical::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colours::white);
+    //g.fillAll(juce::Colours::white);
 }

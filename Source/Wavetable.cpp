@@ -226,7 +226,10 @@ float WavetableOscCore::getSample(double hz, float position)
 OctaneOsc::OctaneOsc(juce::File src) :
 position(0.0f),
 level(1.0f),
-pOsc(std::make_unique<WavetableOscCore>(src))
+pOsc(std::make_unique<WavetableOscCore>(src)),
+unisonVoices(0),
+unisonSpread(0.0f),
+unisonMode(false)
 {
    
 }
@@ -234,6 +237,12 @@ pOsc(std::make_unique<WavetableOscCore>(src))
 void OctaneOsc::replace(juce::File src)
 {
     pOsc.reset(new WavetableOscCore(src));
+    if(unisonMode) //! so that unison settings are maintained when the osc core is replaced
+    {
+        setUnisonMode(unisonMode);
+        setUnisonVoices(unisonVoices);
+        setUnisonSpread(unisonSpread);
+    }
 }
 
 void OctaneOsc::setSampleRate(double rate)

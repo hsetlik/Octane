@@ -202,4 +202,23 @@ private:
     float position;
     float level;
     std::unique_ptr<WavetableOscCore> pOsc;
+    int unisonVoices;
+    float unisonSpread;
+    bool unisonMode;
+public:
+    void setUnisonVoices(int numVoices)
+    {
+        unisonVoices = numVoices;
+        pOsc->setUnisonVoices(unisonVoices);
+    }
+    void setUnisonMode(bool mode)
+    {
+        unisonMode = mode;
+        pOsc->setUnisonMode(unisonMode);
+    }
+    void setUnisonSpread(float spread)
+    {
+        unisonSpread = spread;
+        pOsc->setUnisonSpread(unisonSpread);
+    }
 };

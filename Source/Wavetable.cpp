@@ -244,7 +244,7 @@ unisonMode(false)
 void OctaneOsc::replace(juce::File src)
 {
     pOsc.reset(new WavetableOscCore(src));
-    if(unisonMode) //! so that unison settings are maintained when the osc core is replaced
+    if(unisonMode) //! so that unison settings are maintained when the osc core gets replaced
     {
         setUnisonMode(unisonMode);
         setUnisonVoices(unisonVoices);

@@ -9,7 +9,7 @@
 */
 
 #include "Filter.h"
-std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24", "Chebyshev1", "Chebyshev2"};
+std::vector<juce::String> OctaneFilter::FilterNames{"LoPass12", "LoPass24", "HiPass12", "Chebyshev1", "Chebyshev2"};
 Filter::Filter(FilterType type) : currentType(type), core(std::make_unique<Low12Filter>())
 {
     
@@ -30,6 +30,11 @@ void Filter::setType(FilterType type)
             case LoPass24:
             {
                 core.reset(new ChebI());
+                break;
+            }
+            case HiPass12:
+            {
+                core.reset(new Hi12Filter());
                 break;
             }
             case Chebyshev1:

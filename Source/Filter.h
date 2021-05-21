@@ -10,7 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "/Users/hayden/Desktop/Programming/JUCEProjects/Octane/Builds/MacOSX/1.9.0/include/Iir.h"
+#include "/Users/hayden/Desktop/Programming/JUCEProjects/Octane/Builds/MacOSX/1.9.0/include/Iir.h" //! For christ! with the file paths...
 #define CUTOFF_MIN 20.0f
 #define CUTOFF_DEFAULT 900.0f
 #define CUTOFF_MAX 10000.0f
@@ -28,6 +28,7 @@ enum FilterType
 {
    LoPass12,
    LoPass24,
+   HiPass12,
    Chebyshev1,
    Chebyshev2
 };
@@ -43,7 +44,8 @@ public:
     virtual ~FilterCore() {}
     void setSampleRate(double rate) {sampleRate = rate; setup();}
     virtual float process(float input) {return 0.0f;}
-    virtual void setCutoff(float value) {cutoff = value; setup(); } //! override the setCutoff() and setResonance() functions only as necessary
+    virtual void setCutoff(float value) {cutoff = value; setup(); }
+    //! override the setCutoff() and setResonance() functions only as necessary (i.e. for filters types like Chebyshev that need ripple in dB rather than a Q value)
     virtual void setResonance(float q) {resonance = q; setup(); }
     virtual void setup() {}
 protected:
@@ -57,6 +59,15 @@ public:
     float process(float input) override {return filter.filter(input); }
 private:
     Iir::RBJ::LowPass filter;
+};
+
+class Hi12Filter : public FilterCore
+{
+public:
+    void setup() override{filter.setup(sampleRate, cutoff, resonance); }
+    float process(float input) override {return filter.filter(input); }
+private:
+    Iir::RBJ::HighPass filter;
 };
 
 class ChebI : public FilterCore
@@ -91,31 +102,6 @@ public:
 private:
     FilterType currentType;
     std::unique_ptr<FilterCore> core;
-};
-
-
-class IirCalc
-{ //!  this works in place ot the Coeffecient class static methods
-public:
-    IirCalc() : K(0.0f), norm(0.0f)
-    {
-    }
-    void LoPass12(JuceFilter& filter, double sampleRate, float cutoff, float resonance)
-    {
-        
-    }
-    void LoPass24(JuceFilter& filter, double sampleRate, float cutoff, float resonance)
-    {
-        
-    }
-    void Chebyshev1(JuceFilter& filter, double sampleRate, float cutoff, float resonance)
-    {
-        
-    }
-private:
-    float K, norm;
-    std::array<float, 4> a;
-    std::array<float, 4> b;
 };
 
 class OctaneFilter

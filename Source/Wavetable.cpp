@@ -224,7 +224,7 @@ float WavetableOscCore::getSample(double hz, float position)
     mainSample = bottomSample + ((topSample - bottomSample) * skew);
     if(!unisonMode)
         return mainSample;
-    return unisonSample(mainSample, position);
+    return unisonSample(topIndex, bottomIndex, mainSample, position);
 }
 
 //============================================================================================

@@ -58,8 +58,6 @@ private:
 
 class WavetableOscCore
 {
-    /**TODO: figure out a compute-light way to do unison
-   (maybe a vector of phase/phaseDelta variables that resizes to the number of unison voices?)**/
 public:
     WavetableOscCore(juce::File src);
     float getSample(double hz, float position);
@@ -124,29 +122,25 @@ public:
             ++idx;
         }
     }
-    float unisonUpper(int idx, float position)
+    float unisonUpper(int tIndex, int bIndex, int idx, float position)
     {
-        bottomIndex = floor(position * (numFrames - 1));
-        topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
-        skew = (position * (numFrames - 1)) - bottomIndex;
+        skew = (position * (numFrames - 1)) - bIndex;
         uPhasesUpper[idx] += uDeltasUpper[idx];
         if(uPhasesUpper[idx] > 1.0f)
             uPhasesUpper[idx] -= 1.0f;
-        topSample = frames[topIndex]->getSample(uPhasesUpper[idx], uDeltasUpper[idx] * sampleRate);
-        bottomSample = frames[bottomIndex]->getSample(uPhasesUpper[idx], uDeltasUpper[idx] * sampleRate);
+        topSample = frames[tIndex]->getSample(uPhasesUpper[idx], uDeltasUpper[idx] * sampleRate);
+        bottomSample = frames[bIndex]->getSample(uPhasesUpper[idx], uDeltasUpper[idx] * sampleRate);
         uOutputsUpper[idx] = ((bottomSample + ((topSample - bottomSample) * skew)) * unisonLevel) / (float)unisonVoices;
         return uOutputsUpper[idx];
     }
-    float unisonLower(int idx, float position)
+    float unisonLower(int tIndex, int bIndex, int idx, float position)
     {
-        bottomIndex = floor(position * (numFrames - 1));
-        topIndex = (bottomIndex >= numFrames - 1) ? 0 : bottomIndex + 1;
-        skew = (position * (numFrames - 1)) - bottomIndex;
+        skew = (position * (numFrames - 1)) - bIndex;
         uPhasesLower[idx] += uDeltasLower[idx];
         if(uPhasesLower[idx] > 1.0f)
             uPhasesLower[idx] -= 1.0f;
-        topSample = frames[topIndex]->getSample(uPhasesLower[idx], uDeltasLower[idx] * sampleRate);
-        bottomSample = frames[bottomIndex]->getSample(uPhasesLower[idx], uDeltasLower[idx] * sampleRate);
+        topSample = frames[tIndex]->getSample(uPhasesLower[idx], uDeltasLower[idx] * sampleRate);
+        bottomSample = frames[bIndex]->getSample(uPhasesLower[idx], uDeltasLower[idx] * sampleRate);
         uOutputsLower[idx] = ((bottomSample + ((topSample - bottomSample) * skew)) * unisonLevel) / (float)unisonVoices;
         return uOutputsLower[idx];
     }
@@ -158,13 +152,13 @@ public:
             setUnisonVoices(1);
         }
     }
-    float unisonSample(float input, float position)
+    float unisonSample(int tIndex, int bIndex, float input, float position)
     {
         input *= (1.0f - unisonLevel);
         for(uIdx = 0; uIdx < unisonVoices; ++uIdx)
         {
-            input += unisonLower(uIdx, position);
-            input += unisonUpper(uIdx, position);
+            input += unisonLower(tIndex, bIndex, uIdx, position);
+            input += unisonUpper(tIndex, bIndex, uIdx, position);
         }
         return input;
     }

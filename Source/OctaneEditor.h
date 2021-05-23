@@ -256,6 +256,9 @@ private:
     ParamCompRotary levelComp;
     ParamCompRotary posComp;
     ParamCompRotary panComp;
+    ParamLabel levelLabel;
+    ParamLabel posLabel;
+    ParamLabel panLabel;
     ParamPowerButton powerComp;
     std::unique_ptr<apvts::SliderAttachment> levelAttach;
     std::unique_ptr<apvts::SliderAttachment> posAttach;

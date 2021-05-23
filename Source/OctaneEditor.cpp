@@ -419,6 +419,9 @@ OscillatorPanel::OscillatorPanel(SynthParam* lParam, SynthParam* pParam, SynthPa
 levelComp(lParam),
 posComp(pParam),
 panComp(panParam),
+levelLabel(&levelComp),
+posLabel(&posComp),
+panLabel(&panComp),
 powerComp(powerParam),
 display(pParam, updater, index),
 linkedTree(tree)
@@ -426,6 +429,9 @@ linkedTree(tree)
     addAndMakeVisible(&levelComp);
     addAndMakeVisible(&posComp);
     addAndMakeVisible(&panComp);
+    addAndMakeVisible(&levelLabel);
+    addAndMakeVisible(&posLabel);
+    addAndMakeVisible(&panLabel);
     addAndMakeVisible(&powerComp);
     addAndMakeVisible(&display);
     levelAttach.reset(new apvts::SliderAttachment(*linkedTree, levelComp.linkedParam->name, levelComp.mainSlider));
@@ -512,7 +518,8 @@ void SoundSourcePanel::resized()
     oscPanel.setBounds(0, 0, fBounds.getWidth(), fBounds.getHeight() / 2);
     int uWidth = (int)(fBounds.getWidth() * 0.32f);
     auto uHeight = (int)uWidth / 2.4f;
-    uPanel.setBounds(ComponentUtil::inBottomRightCorner(oscPanel, uWidth, (int)uHeight / 5, uHeight));
+    auto uBounds = ComponentUtil::inBottomRightCorner(oscPanel, uWidth, (int)uHeight / 5, uHeight);
+    uPanel.setBounds(uBounds.withY(uBounds.getY() - (uBounds.getHeight() / 2)));
     uPanel.toFront(true);
     auto ampBounds = juce::Rectangle<int>(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
     ampEnvPanel.setBounds(ampBounds);

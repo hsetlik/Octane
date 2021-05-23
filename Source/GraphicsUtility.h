@@ -115,4 +115,24 @@ public:
         auto y = iBounds.getBottom() - height;
         return juce::Rectangle<int>(x - offset, y + offset, width, height);
     }
+    static juce::Rectangle<int> boxAbove(juce::Component& parent, int heightFraction)
+    {
+        int x, y, width, height;
+        auto iBounds = parent.getBounds();
+        height = iBounds.getHeight() / heightFraction;
+        width = iBounds.getWidth();
+        x = iBounds.getX();
+        y = iBounds.getY() - height;
+        return juce::Rectangle<int>(x, y, width, height);
+    }
+    static juce::Rectangle<int> boxBelow(juce::Component& parent, int heightFraction)
+    {
+        int x, y, width, height;
+        auto iBounds = parent.getBounds();
+        height = iBounds.getHeight() / heightFraction;
+        width = iBounds.getWidth();
+        x = iBounds.getX();
+        y = iBounds.getBottom();
+        return juce::Rectangle<int>(x, y, width, height);
+    }
 };

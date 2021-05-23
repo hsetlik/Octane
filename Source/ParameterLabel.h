@@ -11,17 +11,23 @@
 #pragma once
 #include "ParameterComponent.h"
 
-class ParamLabel : public juce::Label
+enum LabelJustification
+{
+    AboveCenter,
+    BelowCenter
+};
+class ParamLabel : public juce::Component, public juce::ComponentListener
 {
 public:
-    ParamLabel(ParamComponent* comp) : linkedComp(comp)
+    ParamLabel(ParamComponent* comp, LabelJustification just=AboveCenter) :
+    linkedComp(comp),
+    justif(just),
+    labelWidth(0),
+    fontSize(1.0f)
     {
-        setEditable(false);
-        attachToComponent(linkedComp, false);
-        setMinimumHorizontalScale(0.3f);
+        linkedComp->addComponentListener(this);
         //! determine the label text from the param name
         auto rawName = linkedComp->linkedParam->name;
-        juce::String labelText;
         if(rawName.contains("Oscillator"))
             labelText = rawName.trimCharactersAtStart("Oscillator");
         else if(rawName.contains("Lfo"))
@@ -29,8 +35,15 @@ public:
         if(labelText.contains("Unison"))
             labelText = labelText.trimCharactersAtStart("Unison");
         labelText = labelText.dropLastCharacters(1);
-        setText(labelText, juce::dontSendNotification);
     }
     ParamComponent* const linkedComp;
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+    void componentMovedOrResized(juce::Component& comp, bool moved, bool resized) override;
+private:
+    LabelJustification justif;
+    juce::String labelText;
+    int labelWidth;
+    float fontSize;
     
 };

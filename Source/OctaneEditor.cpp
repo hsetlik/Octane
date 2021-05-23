@@ -388,12 +388,18 @@ UnisonPanel::UnisonPanel(SynthParam* mode, SynthParam* voices, SynthParam* sprea
 modeButton(mode),
 voiceComp(voices),
 spreadComp(spread),
-levelComp(level)
+levelComp(level),
+voiceLabel(&voiceComp),
+spreadLabel(&spreadComp),
+levelLabel(&levelComp)
 {
     addAndMakeVisible(&modeButton);
     addAndMakeVisible(&voiceComp);
     addAndMakeVisible(&spreadComp);
     addAndMakeVisible(&levelComp);
+    addAndMakeVisible(&voiceLabel);
+    addAndMakeVisible(&spreadLabel);
+    addAndMakeVisible(&levelLabel);
     modeButton.button.triggerClick();
 }
 void UnisonPanel::resized()
@@ -506,7 +512,7 @@ void SoundSourcePanel::resized()
     oscPanel.setBounds(0, 0, fBounds.getWidth(), fBounds.getHeight() / 2);
     int uWidth = (int)(fBounds.getWidth() * 0.32f);
     auto uHeight = (int)uWidth / 2.4f;
-    uPanel.setBounds(ComponentUtil::inBottomRightCorner(oscPanel, uWidth, (int)uHeight / 8, uHeight));
+    uPanel.setBounds(ComponentUtil::inBottomRightCorner(oscPanel, uWidth, (int)uHeight / 5, uHeight));
     uPanel.toFront(true);
     auto ampBounds = juce::Rectangle<int>(0, fBounds.getHeight() / 2, fBounds.getWidth() / 2, fBounds.getHeight() / 2);
     ampEnvPanel.setBounds(ampBounds);

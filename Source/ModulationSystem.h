@@ -20,7 +20,7 @@
 //! constants for scaling
 #define PITCHWHEEL_RANGE 16384
 #define MIDI_NOTES 128
-#define UNISON_MAX 4 //! limit to 4 unison voices above and 4 below
+#define UNISON_MAX 6 //! limit to 6 unison voices above and 6 below
 
 class SynthParam;
 

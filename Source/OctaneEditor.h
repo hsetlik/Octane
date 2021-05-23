@@ -13,7 +13,7 @@
 #include "DAHDSR.h"
 #include "WaveDisplay.h"
 #include "LFOEditor.h"
-
+#include "ParameterLabel.h"
 using apvts = juce::AudioProcessorValueTreeState;
 
 class EnvelopePanel : public juce::Component
@@ -119,6 +119,9 @@ private:
     ParamCompRotary voiceComp;
     ParamCompRotary spreadComp;
     ParamCompRotary levelComp;
+    ParamLabel voiceLabel;
+    ParamLabel spreadLabel;
+    ParamLabel levelLabel;
 };
 //====================================================================================================================
 class LFOPanel : public juce::Component, public juce::Button::Listener

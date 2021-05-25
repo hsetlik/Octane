@@ -26,7 +26,8 @@ OctaneAudioProcessor::OctaneAudioProcessor()
                        ),
 synth(&tree),
 updater(&synth),
-tree(*this, nullptr, "AllParameters", synth.paramGroup.createLayout())
+tree(*this, nullptr, "AllParameters", synth.paramGroup.createLayout()),
+linkedEditor(nullptr)
 #endif
 {
     

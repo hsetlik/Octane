@@ -569,7 +569,8 @@ paramGroup(pGroup),
 linkedTree(tree),
 linkedUpdater(update),
 filterPanel(&pGroup->filterCutoff, &pGroup->filterResonance, &pGroup->filterWetDry, update, tree),
-macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackValue)
+macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackValue),
+browser(update)
 {
     for(int i = 0; i < NUM_OSCILLATORS; ++i)
     {
@@ -595,6 +596,7 @@ macroPanel(&pGroup->pitchWheelValue, &pGroup->modWheelValue, &pGroup->keyTrackVa
     }
     addAndMakeVisible(&filterPanel);
     addAndMakeVisible(&macroPanel);
+    addAndMakeVisible(&browser);
 }
 
 void OctaneEditor::resized()
@@ -618,6 +620,7 @@ void OctaneEditor::resized()
     auto dX = bottomBounds.getWidth() / 3;
     filterPanel.setBounds(bottomBounds.removeFromLeft(dX).toType<int>());
     macroPanel.setBounds(bottomBounds.removeFromRight(dX / 2).toType<int>());
+    browser.setBounds(bottomBounds.toType<int>());
 }
 
 void OctaneEditor::paint(juce::Graphics &g)

@@ -17,6 +17,7 @@ editor(&audioProcessor.synth.paramGroup,
        &audioProcessor.updater)
 {
     addAndMakeVisible(&editor);
+    audioProcessor.linkedEditor = &editor;
     setSize (1200, 900);
 }
 

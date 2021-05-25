@@ -70,6 +70,9 @@
               file="Source/ParameterLabel.h"/>
         <FILE id="NcghUy" name="ParamSlider.cpp" compile="1" resource="0" file="Source/ParamSlider.cpp"/>
         <FILE id="pjD9VN" name="ParamSlider.h" compile="0" resource="0" file="Source/ParamSlider.h"/>
+        <FILE id="CvNerE" name="PatchBrowser.cpp" compile="1" resource="0"
+              file="Source/PatchBrowser.cpp"/>
+        <FILE id="DczPAc" name="PatchBrowser.h" compile="0" resource="0" file="Source/PatchBrowser.h"/>
         <FILE id="N7L9pF" name="RgbColor.h" compile="0" resource="0" file="Source/RgbColor.h"/>
         <FILE id="U443Zz" name="SymbolButton.cpp" compile="1" resource="0"
               file="Source/SymbolButton.cpp"/>

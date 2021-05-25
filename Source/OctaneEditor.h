@@ -14,6 +14,7 @@
 #include "WaveDisplay.h"
 #include "LFOEditor.h"
 #include "ParameterLabel.h"
+#include "PatchBrowser.h"
 using apvts = juce::AudioProcessorValueTreeState;
 
 class EnvelopePanel : public juce::Component
@@ -313,6 +314,7 @@ private:
     juce::OwnedArray<LFOPanel> lfoPanels;
     FilterPanel filterPanel;
     MacroPanel macroPanel;
+    OctaneBrowser browser;
     
 };
 

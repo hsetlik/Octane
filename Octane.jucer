@@ -37,6 +37,8 @@
         <FILE id="meZe9Q" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
         <FILE id="KOMi4S" name="LFO.cpp" compile="1" resource="0" file="Source/LFO.cpp"/>
         <FILE id="iCCKAw" name="LFO.h" compile="0" resource="0" file="Source/LFO.h"/>
+        <FILE id="kxmqWT" name="Effect.cpp" compile="1" resource="0" file="Source/Effect.cpp"/>
+        <FILE id="tNSFbM" name="Effect.h" compile="0" resource="0" file="Source/Effect.h"/>
         <FILE id="ZOtTgc" name="StkUtil.cpp" compile="1" resource="0" file="Source/StkUtil.cpp"/>
         <FILE id="atUhBQ" name="StkUtil.h" compile="0" resource="0" file="Source/StkUtil.h"/>
         <FILE id="Rk0cga" name="StlUtil.cpp" compile="1" resource="0" file="Source/StlUtil.cpp"/>

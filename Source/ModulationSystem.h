@@ -155,17 +155,6 @@ public:
         {
             voiceOffsets[i] = 0.0f;
         }
-        //=============================
-        /*
-        printf("Parameter %s initial values\n", name.toRawUTF8());
-        printf("Normal is %f\n", normal);
-        for(int i = 0; i < NUM_VOICES; ++i)
-        {
-            printf("Output #%d: %f\n", i, voiceOutputs[i]);
-            printf("Offest #%d: %f\n", i, voiceOffsets[i]);
-        }
-        printf("\n");
-         */
     }
     void tickModulation(int voice)
     {

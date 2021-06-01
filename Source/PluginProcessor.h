@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "DAHDSR.h"
 #include "Synthesizer.h"
-#include "MainEditor.h"
+#include "SynthEditor.h"
 //==============================================================================
 /**
 */
@@ -58,7 +58,7 @@ public:
     OctaneSynth synth;
     OctaneUpdater updater;
     juce::AudioProcessorValueTreeState tree;
-    MainEditor* linkedEditor;
+    OctaneEditor* linkedEditor;
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OctaneAudioProcessor)

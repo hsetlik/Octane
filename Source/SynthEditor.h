@@ -298,11 +298,10 @@ private:
     
 };
 //================================================================================
-
-class MainEditor : public juce::Component, public juce::DragAndDropContainer
+class SynthEditor : public juce::Component, public juce::DragAndDropContainer
 {
 public:
-    MainEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
+    SynthEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
@@ -316,15 +315,28 @@ private:
     MacroPanel macroPanel;
     OctaneBrowser browser;
 };
-
-class FullEditor : public juce::Component
+//================================================================================
+class EffectEditor : public juce::Component
 {
 public:
-    FullEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
+    EffectEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
     void resized() override;
-    
+    void paint(juce::Graphics& g) override;
+};
+//================================================================================
+class OctaneEditor :
+public juce::Component,
+public juce::Button::Listener
+{
+public:
+    OctaneEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
+    void resized() override;
+    void buttonClicked(juce::Button* b) override;
 private:
-    MainEditor eMain;
+    SynthEditor eMain;
+    OctaneButtons::Text synthButton;
+    OctaneButtons::Text effectButton;
+    juce::Component* currentWindow;
 };
 
 

@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "MainEditor.h"
+#include "SynthEditor.h"
 
 EnvelopePanel::EnvelopeGraph::EnvelopeGraph(EnvelopePanel* panel) :
 linkedPanel(panel),
@@ -564,7 +564,7 @@ void MacroPanel::paint(juce::Graphics &g)
     g.drawFittedText("Key Track", keyBox.toType<int>(), juce::Justification::left, 2, 0.6f);
 }
 //==============================================================================
-MainEditor::MainEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
+SynthEditor::SynthEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
 paramGroup(pGroup),
 linkedTree(tree),
 linkedUpdater(update),
@@ -599,7 +599,7 @@ browser(update)
     addAndMakeVisible(&browser);
 }
 
-void MainEditor::resized()
+void SynthEditor::resized()
 {
     auto fBounds = getLocalBounds().toFloat();
     auto bottomBounds = fBounds.removeFromBottom(fBounds.getHeight() / 6);
@@ -623,7 +623,40 @@ void MainEditor::resized()
     browser.setBounds(bottomBounds.toType<int>());
 }
 
-void MainEditor::paint(juce::Graphics &g)
+void SynthEditor::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::white);
+}
+//==================================================
+OctaneEditor::OctaneEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update) :
+eMain(allParams, tree, update),
+synthButton("Synth"),
+effectButton("Effects"),
+currentWindow(&eMain)
+{
+    addAndMakeVisible(&eMain);
+    addAndMakeVisible(&synthButton);
+    addAndMakeVisible(&effectButton);
+    synthButton.addListener(this);
+    effectButton.addListener(this);
+    int radio = 1;
+    synthButton.setClickingTogglesState(true);
+    effectButton.setClickingTogglesState(true);
+    synthButton.setRadioGroupId(radio);
+    effectButton.setRadioGroupId(radio);
+    synthButton.setToggleState(true, juce::dontSendNotification);
+}
+void OctaneEditor::buttonClicked(juce::Button *b)
+{
+    
+}
+void OctaneEditor::resized()
+{
+    auto bounds = getLocalBounds();
+    auto tabHeight = bounds.getHeight() / 12;
+    auto topBounds = bounds.removeFromTop(tabHeight);
+    eMain.setBounds(bounds);
+    auto buttonWidth = topBounds.getWidth() / 4;
+    synthButton.setBounds(topBounds.removeFromLeft(buttonWidth));
+    effectButton.setBounds(topBounds.removeFromLeft(buttonWidth));
 }

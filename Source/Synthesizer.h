@@ -15,6 +15,7 @@
 #include "LFO.h"
 #include "ModulationSystem.h"
 #include "Filter.h"
+#include "Effect.h"
 #define BLOCKS_PER_UPDATE 15
 //===========================================================================
 class OctaneSound : public juce::SynthesiserSound

@@ -9,3 +9,13 @@
 */
 
 #include "Effect.h"
+
+float OctaneEffectProcessor::process(float input)
+{
+    lastSample = input;
+    for(auto effect : allEffects)
+    {
+        lastSample = effect->process(lastSample);
+    }
+    return lastSample;
+}

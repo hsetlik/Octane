@@ -198,3 +198,35 @@ int DropdownLookAndFeel::getTextButtonWidthToFitText(juce::TextButton &b, int he
 }
 //===========================================================================================================
 
+juce::Font OctaneLookAndFeel::getTextButtonFont(juce::TextButton &b, int height)
+{
+    return buttonFont.withHeight((float)height);
+}
+
+int OctaneLookAndFeel::getTextButtonWidthToFitText(juce::TextButton &b, int height)
+{
+    auto font = getTextButtonFont(b, height);
+    auto str = b.getButtonText();
+    auto textWidth = font.getStringWidth(str);
+    auto dX = (float)textWidth / 8.0f;
+    return (int)(10 * dX);
+}
+void OctaneLookAndFeel::drawButtonBackground(juce::Graphics &g, juce::Button &b, const juce::Colour &bColor, bool isHighlighted, bool isDown)
+{
+    auto fBounds = b.getLocalBounds().toFloat();
+    auto corner = fBounds.getHeight() / 6.0f;
+    g.setColour(UXPalette::darkBkgnd);
+    g.fillRoundedRectangle(fBounds, corner);
+}
+void OctaneLookAndFeel::drawButtonText(juce::Graphics &g, juce::TextButton &b, bool isHighlighted, bool isDown)
+{
+    auto fBounds = b.getLocalBounds().toFloat();
+    auto textHeight = (int)fBounds.getHeight() * 0.8f;
+    auto font = getTextButtonFont(b, textHeight);
+    auto color = (b.getToggleState()) ? UXPalette::highlight : UXPalette::lightGray;
+    g.setColour(color);
+    g.setFont(font);
+    auto cushion = (int)fBounds.getHeight() * 0.2f;
+    auto textBox = fBounds.reduced((float)cushion);
+    g.drawText(b.getButtonText(), textBox, juce::Justification::left);
+}

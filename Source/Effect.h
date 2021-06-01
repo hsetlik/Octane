@@ -25,7 +25,7 @@ public:
 protected:
     float wetLevel;
 };
-
+//================================================================================
 class Overdrive : public Effect
 {
 public:
@@ -74,4 +74,14 @@ private:
     int level;
     int numLevels;
     float output;
+};
+//================================================================================
+class OctaneEffectProcessor
+{
+public:
+    OctaneEffectProcessor() : lastSample(0.0f) {}
+    float process(float input);
+    juce::OwnedArray<Effect> allEffects;
+private:
+    float lastSample;
 };

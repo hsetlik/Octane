@@ -26,6 +26,6 @@ public:
 
 private:
     OctaneAudioProcessor& audioProcessor;
-    MainEditor editor;
+    OctaneEditor editor;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OctaneAudioProcessorEditor)
 };

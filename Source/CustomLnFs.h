@@ -60,8 +60,13 @@ class OctaneLookAndFeel : public juce::LookAndFeel_V4
 public:
     OctaneLookAndFeel()
     {
+        auto typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::BebasNeueRegular_otf, BinaryData::BebasNeueRegular_otfSize);
+        buttonFont = juce::Font(typeface);
     }
     void drawButtonBackground(juce::Graphics& g, juce::Button& b, const juce::Colour& bColor, bool isHighlighted, bool isDown) override;
     void drawButtonText(juce::Graphics& g, juce::TextButton& b, bool isHighlighted, bool isDown) override;
     int getTextButtonWidthToFitText(juce::TextButton& b, int height) override;
+    juce::Font getTextButtonFont(juce::TextButton& b, int height) override;
+private:
+    juce::Font buttonFont;
 };

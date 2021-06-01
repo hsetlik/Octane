@@ -630,11 +630,13 @@ void SynthEditor::paint(juce::Graphics &g)
 //==================================================
 OctaneEditor::OctaneEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update) :
 eMain(allParams, tree, update),
+eEffect(allParams, tree, update),
 synthButton("Synth"),
 effectButton("Effects"),
 currentWindow(&eMain)
 {
     addAndMakeVisible(&eMain);
+    addAndMakeVisible(&eEffect);
     addAndMakeVisible(&synthButton);
     addAndMakeVisible(&effectButton);
     synthButton.addListener(this);
@@ -645,18 +647,71 @@ currentWindow(&eMain)
     synthButton.setRadioGroupId(radio);
     effectButton.setRadioGroupId(radio);
     synthButton.setToggleState(true, juce::dontSendNotification);
+    eMain.toFront(true);
 }
 void OctaneEditor::buttonClicked(juce::Button *b)
 {
-    
+    if(b == &synthButton && currentWindow != &eMain)
+    {
+        setToFront(&eMain);
+    }
+    else if(b == &effectButton && currentWindow != &eEffect)
+    {
+        setToFront(&eEffect);
+    }
+    resized();
 }
 void OctaneEditor::resized()
 {
     auto bounds = getLocalBounds();
     auto tabHeight = bounds.getHeight() / 12;
     auto topBounds = bounds.removeFromTop(tabHeight);
-    eMain.setBounds(bounds);
+    if(currentWindow != nullptr)
+        currentWindow->setBounds(bounds);
     auto buttonWidth = topBounds.getWidth() / 4;
     synthButton.setBounds(topBounds.removeFromLeft(buttonWidth));
     effectButton.setBounds(topBounds.removeFromLeft(buttonWidth));
+}
+
+//================================================================================
+EffectEditor::EffectAdder::EffectAdder(EffectEditor* ed) : linkedEditor(ed),
+trueClip("True Clip"),
+bitCrush("Bit Crusher")
+{
+    addAndMakeVisible(&trueClip);
+    addAndMakeVisible(&bitCrush);
+    trueClip.addListener(this);
+    bitCrush.addListener(this);
+}
+void EffectEditor::EffectAdder::buttonClicked(juce::Button *b)
+{
+    
+}
+void EffectEditor::EffectAdder::resized()
+{
+    auto bounds = getLocalBounds();
+    auto buttonHeight = bounds.getHeight() / 10;
+    trueClip.setBounds(bounds.removeFromTop(buttonHeight));
+    bitCrush.setBounds(bounds.removeFromTop(buttonHeight));
+}
+//================================================================================
+EffectEditor::EffectEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update) :
+linkedParams(allParams),
+linkedTree(tree),
+linkedUpdater(update),
+adder(this)
+{
+    addAndMakeVisible(&adder);
+}
+
+void EffectEditor::resized()
+{
+    auto bounds = getLocalBounds();
+    auto adderWidth = bounds.getWidth() / 4;
+    adder.setBounds(bounds.removeFromLeft(adderWidth));
+}
+
+void EffectEditor::paint(juce::Graphics &g)
+{
+    g.fillAll(UXPalette::darkGray);
 }

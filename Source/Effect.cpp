@@ -9,13 +9,15 @@
 */
 
 #include "Effect.h"
+std::vector<juce::String> Effect::effectStrings{"TrueClip", "BitCrusher"};
+
 
 float OctaneEffectProcessor::process(float input)
 {
     lastSample = input;
     for(auto effect : allEffects)
     {
-        lastSample = effect->process(lastSample);
+        lastSample = effect->processWetDry(lastSample);
     }
     return lastSample;
 }

@@ -242,6 +242,10 @@ public:
     MacroSourceParam modWheelValue;
     ContinuousVoiceParam keyTrackValue;
     MacroSourceParam lastTriggeredVoice;
+    paramVecGTarget effectWetDrys;
+    paramVecGTarget effect1Params;
+    paramVecGTarget effect2Params;
+    paramVecGTarget effect3Params;
     apvts* const linkedTree;
     std::array<std::vector<std::vector<float>>, NUM_OSCILLATORS> oscGraphVectors;
     std::array<lfoArray, NUM_LFOS> lfoShapes;

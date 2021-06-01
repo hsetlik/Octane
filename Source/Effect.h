@@ -11,10 +11,15 @@
 #pragma once
 #include <JuceHeader.h>
 #define BITCRUSH_LEVELS 256 //! the finest resolution for the bitcrusher (8 bits = 256 possible values)
+enum EffectType
+{
+    TrueClip,
+    BitCrusher
+};
 class Effect
 { //! abstract base class for all effect processors
 public:
-    Effect() : wetLevel(1.0f) {}
+    Effect(EffectType _type) : type(_type), wetLevel(1.0f) {}
     virtual ~Effect() {}
     virtual float process(float input) {return 0.0f;}
     virtual void setWetDry(float wet) {wetLevel = wet;}
@@ -22,14 +27,17 @@ public:
     {
         return (process(input) * wetLevel) + (input * (1.0f - wetLevel));
     }
+    const EffectType type;
+    static std::vector<juce::String> effectStrings;
 protected:
     float wetLevel;
 };
+
 //================================================================================
 class Overdrive : public Effect
 {
 public:
-    Overdrive() : drive(0.0f) {}
+    Overdrive(EffectType type) : Effect(type), drive(0.0f) {}
     virtual ~Overdrive() {}
     virtual void setDrive(float value) {drive = value;}
 protected:
@@ -39,6 +47,7 @@ protected:
 class TrueClip : public Overdrive
 { //! most straightforward clipping. limits inputs to the drive value and then scales -1 - 1
 public:
+    TrueClip() : Overdrive(EffectType::TrueClip) {}
     float process(float input) override
     {
         output = input;
@@ -55,7 +64,7 @@ private:
 class BitCrusher : public Overdrive
 { //! simple bit crusher. not truly an overdrive but whatever
 public:
-    BitCrusher() : numLevels(BITCRUSH_LEVELS)
+    BitCrusher() : Overdrive(EffectType::BitCrusher), numLevels(BITCRUSH_LEVELS)
     {
         
     }

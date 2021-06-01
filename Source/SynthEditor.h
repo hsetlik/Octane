@@ -316,12 +316,38 @@ private:
     OctaneBrowser browser;
 };
 //================================================================================
+class EffectPanel : public juce::Component
+{
+public:
+    EffectPanel(SynthParameterGroup* allParams) : linkedParams(allParams) {} //! every EffectPanel will have to add & remove its parameters on the parameterGroup
+    virtual ~EffectPanel() {}
+    SynthParameterGroup* const linkedParams;
+};
+//================================================================================
+
+//================================================================================
 class EffectEditor : public juce::Component
 {
 public:
+    class EffectAdder : public juce::Component, public juce::Button::Listener
+    {
+    public:
+        EffectAdder(EffectEditor* ed);
+        const EffectEditor* linkedEditor;
+        void buttonClicked(juce::Button* b) override;
+        void resized() override;
+    private:
+        OctaneButtons::Text trueClip;
+        OctaneButtons::Text bitCrush;
+    };
     EffectEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
+    SynthParameterGroup* const linkedParams;
+    apvts* const linkedTree;
+    OctaneUpdater* const linkedUpdater;
+    EffectAdder adder;
     void resized() override;
     void paint(juce::Graphics& g) override;
+    juce::OwnedArray<EffectPanel> effectPanels;
 };
 //================================================================================
 class OctaneEditor :
@@ -332,8 +358,16 @@ public:
     OctaneEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
     void resized() override;
     void buttonClicked(juce::Button* b) override;
+    void setToFront(juce::Component* nCurrent)
+    {
+        currentWindow->setVisible(false);
+        currentWindow = nCurrent;
+        currentWindow->setVisible(true);
+        resized();
+    }
 private:
     SynthEditor eMain;
+    EffectEditor eEffect;
     OctaneButtons::Text synthButton;
     OctaneButtons::Text effectButton;
     juce::Component* currentWindow;

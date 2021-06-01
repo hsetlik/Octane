@@ -151,15 +151,15 @@ private:
 
 namespace OctaneButtons
 {
-    class Text : public juce::TextButton
+    class DropdownText : public juce::TextButton
     {
     public:
-        Text(juce::String text=" ")
+        DropdownText(juce::String text=" ")
         {
             setButtonText(text);
             setLookAndFeel(&lnf);
         }
-        ~Text()
+        ~DropdownText()
         {
             setLookAndFeel(nullptr);
         }
@@ -170,4 +170,5 @@ namespace OctaneButtons
     private:
         DropdownLookAndFeel lnf;
     };
+    
 };

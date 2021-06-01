@@ -26,7 +26,7 @@ private:
     OctaneUpdater* const linkedUpdater;
     juce::Array<juce::File> patchFiles;
     juce::File patchFolder;
-    OctaneButtons::Text dropButton;
+    OctaneButtons::DropdownText dropButton;
     
     
 };

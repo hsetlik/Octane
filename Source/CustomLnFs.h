@@ -54,3 +54,14 @@ public:
     void drawButtonText(juce::Graphics& g, juce::TextButton& b, bool isHighlighted, bool isDown) override;
     int getTextButtonWidthToFitText(juce::TextButton& b, int height) override;
 };
+
+class OctaneLookAndFeel : public juce::LookAndFeel_V4
+{
+public:
+    OctaneLookAndFeel()
+    {
+    }
+    void drawButtonBackground(juce::Graphics& g, juce::Button& b, const juce::Colour& bColor, bool isHighlighted, bool isDown) override;
+    void drawButtonText(juce::Graphics& g, juce::TextButton& b, bool isHighlighted, bool isDown) override;
+    int getTextButtonWidthToFitText(juce::TextButton& b, int height) override;
+};

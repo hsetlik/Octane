@@ -235,7 +235,7 @@ private:
     juce::Array<juce::File>* const waveFiles;
     bool needsToUpdate;
 public:
-    OctaneButtons::Text textButton;
+    OctaneButtons::DropdownText textButton;
     NextButton nextButton;
     LastButton lastButton;
     int selectedIndex;
@@ -299,10 +299,10 @@ private:
 };
 //================================================================================
 
-class OctaneEditor : public juce::Component, public juce::DragAndDropContainer
+class MainEditor : public juce::Component, public juce::DragAndDropContainer
 {
 public:
-    OctaneEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
+    MainEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
     void resized() override;
     void paint(juce::Graphics& g) override;
 private:
@@ -315,7 +315,16 @@ private:
     FilterPanel filterPanel;
     MacroPanel macroPanel;
     OctaneBrowser browser;
+};
+
+class FullEditor : public juce::Component
+{
+public:
+    FullEditor(SynthParameterGroup* allParams, apvts* tree, OctaneUpdater* update);
+    void resized() override;
     
+private:
+    MainEditor eMain;
 };
 
 

@@ -196,3 +196,5 @@ int DropdownLookAndFeel::getTextButtonWidthToFitText(juce::TextButton &b, int he
     auto dX = (float)textWidth / 8.0f;
     return (int)(14 * dX);
 }
+//===========================================================================================================
+

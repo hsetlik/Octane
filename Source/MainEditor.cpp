@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "OctaneEditor.h"
+#include "MainEditor.h"
 
 EnvelopePanel::EnvelopeGraph::EnvelopeGraph(EnvelopePanel* panel) :
 linkedPanel(panel),
@@ -564,7 +564,7 @@ void MacroPanel::paint(juce::Graphics &g)
     g.drawFittedText("Key Track", keyBox.toType<int>(), juce::Justification::left, 2, 0.6f);
 }
 //==============================================================================
-OctaneEditor::OctaneEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
+MainEditor::MainEditor(SynthParameterGroup* pGroup, apvts* tree, OctaneUpdater* update) :
 paramGroup(pGroup),
 linkedTree(tree),
 linkedUpdater(update),
@@ -599,7 +599,7 @@ browser(update)
     addAndMakeVisible(&browser);
 }
 
-void OctaneEditor::resized()
+void MainEditor::resized()
 {
     auto fBounds = getLocalBounds().toFloat();
     auto bottomBounds = fBounds.removeFromBottom(fBounds.getHeight() / 6);
@@ -623,7 +623,7 @@ void OctaneEditor::resized()
     browser.setBounds(bottomBounds.toType<int>());
 }
 
-void OctaneEditor::paint(juce::Graphics &g)
+void MainEditor::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::white);
 }

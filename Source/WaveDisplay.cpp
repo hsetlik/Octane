@@ -162,6 +162,7 @@ juce::Matrix3D<GLfloat> WaveGraphOpenGL::calculateViewMatrix() const
 }
 
 //===================================== Component stuff ============================
+
 void WaveGraphOpenGL::resized()
 {
     

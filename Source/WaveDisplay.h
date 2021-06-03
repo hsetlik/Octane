@@ -50,5 +50,5 @@ private:
     GLuint VAO, VBO;
     std::vector<juce::Vector3D<GLfloat>> vertices;
     
-    
+    bool visible;
 };

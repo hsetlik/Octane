@@ -14,7 +14,8 @@
 enum EffectType
 {
     TrueClip,
-    BitCrusher
+    BitCrusher,
+    ExpOverdrive
 };
 class Effect
 { //! abstract base class for all effect processors
@@ -83,6 +84,32 @@ private:
     int level;
     int numLevels;
     float output;
+};
+
+class ExpOverdrive : public Overdrive
+{
+public:
+    ExpOverdrive() : Overdrive(EffectType::ExpOverdrive), exponent(1.0f)
+    {
+    }
+    void setDrive(float value) override
+    {
+        drive = value;
+        exponent = 1.0f - drive;
+    }
+    float exp(float input) {return pow(input, exponent);}
+    float process(float input) override
+    {
+        if(input > 0.0f)
+            return exp(input);
+        else
+        {
+            return -exp(-input);
+        }
+    }
+private:
+    float output;
+    float exponent;
 };
 //================================================================================
 class OctaneEffectProcessor

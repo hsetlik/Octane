@@ -61,8 +61,6 @@
               file="Source/GraphicsUtility.h"/>
         <FILE id="VghlvT" name="LFOEditor.cpp" compile="1" resource="0" file="Source/LFOEditor.cpp"/>
         <FILE id="Pvouka" name="LFOEditor.h" compile="0" resource="0" file="Source/LFOEditor.h"/>
-        <FILE id="bhvX6z" name="MainEditor.cpp" compile="1" resource="0" file="Source/MainEditor.cpp"/>
-        <FILE id="xxdiOc" name="MainEditor.h" compile="0" resource="0" file="Source/MainEditor.h"/>
         <FILE id="rQKSb0" name="ParameterComponent.cpp" compile="1" resource="0"
               file="Source/ParameterComponent.cpp"/>
         <FILE id="RXqOQ6" name="ParameterComponent.h" compile="0" resource="0"
@@ -80,6 +78,8 @@
         <FILE id="U443Zz" name="SymbolButton.cpp" compile="1" resource="0"
               file="Source/SymbolButton.cpp"/>
         <FILE id="g07QCI" name="SymbolButton.h" compile="0" resource="0" file="Source/SymbolButton.h"/>
+        <FILE id="QVW0mU" name="SynthEditor.cpp" compile="1" resource="0" file="Source/SynthEditor.cpp"/>
+        <FILE id="Z4SSBX" name="SynthEditor.h" compile="0" resource="0" file="Source/SynthEditor.h"/>
         <FILE id="JggTqI" name="WaveDisplay.cpp" compile="1" resource="0" file="Source/WaveDisplay.cpp"/>
         <FILE id="v2CrIS" name="WaveDisplay.h" compile="0" resource="0" file="Source/WaveDisplay.h"/>
       </GROUP>

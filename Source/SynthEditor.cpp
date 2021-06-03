@@ -294,10 +294,12 @@ selectedFile(updater->linkedSynth->fileForOsc(index)),
 display(std::make_unique<WaveGraphOpenGL>(updater->linkedSynth->paramGroup.oscGraphVectors[index], pParam)),
 waveFiles(&updater->linkedSynth->waveFiles),
 needsToUpdate(false),
+visible(true),
 textButton(selectedFile.getFileName()),
 selectedIndex(waveFiles->indexOf(selectedFile))
 {
     selectedFile = linkedUpdater->linkedSynth->fileForOsc(index);
+    display->addComponentListener(this);
     addAndMakeVisible(&*display);
     addAndMakeVisible(&textButton);
     addAndMakeVisible(&lastButton);
@@ -335,6 +337,23 @@ void WaveSelector::buttonClicked(juce::Button *b)
             replaceFromIndex(0);
     }
 }
+void WaveSelector::componentVisibilityChanged(juce::Component& comp)
+{
+    if(comp.isVisible() == false)
+        printf("Component hidden\n");
+    if(comp.isVisible() != visible)
+    {
+        visible = comp.isVisible();
+        if(visible)
+        {
+            auto vec = linkedUpdater->linkedSynth->paramGroup.oscGraphVectors[oscIndex];
+            display.reset(new WaveGraphOpenGL(vec, positionParam));
+            display->addComponentListener(this);
+            addAndMakeVisible(&*display);
+            resized();
+        }
+    }
+}
 void WaveSelector::replaceFromIndex(int index)
 {
     selectedIndex = index;
@@ -351,6 +370,7 @@ void WaveSelector::handleAsyncUpdate()
         linkedUpdater->linkedSynth->updateGraphData();
         auto vec = linkedUpdater->linkedSynth->paramGroup.oscGraphVectors[oscIndex];
         display.reset(new WaveGraphOpenGL(vec, positionParam));
+        display->addComponentListener(this);
         addAndMakeVisible(&*display);
         resized();
         needsToUpdate = false;

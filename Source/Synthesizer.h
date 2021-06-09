@@ -34,6 +34,7 @@ class OctaneVoice : public juce::SynthesiserVoice
 {
 public:
     OctaneVoice(juce::Array<juce::File>& waveFolder, SynthParameterGroup* grp, int idx);
+    OctaneVoice(const OctaneVoice& orig);
     ~OctaneVoice();
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {
@@ -71,7 +72,7 @@ public:
     void prepare(double rate, int samplesPerBlock, int numChannels) {filter.prepare(rate, samplesPerBlock, numChannels); }
     std::vector<juce::File> getOscFiles();
     SynthParameterGroup* const params;
-    const int voiceIndex;
+    int voiceIndex;
     int oscIndex;
     int lfoIndex;
     double fundamental;

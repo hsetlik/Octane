@@ -40,3 +40,14 @@ template <typename T> bool existsIn(std::vector<T>& vec, T obj)
 }
 
 }
+
+namespace MathUtil
+{
+    template <typename T> T onUpCurve(T input, T steepness)
+{ //! the curve is upward as in the value will always be less than input
+    auto e = juce::MathConstants<float>::euler;
+    auto exp = std::powf(e, steepness * (input - 1.0f));
+    auto offset = std::powf(e, steepness * -1.0f);
+    return exp - offset;
+}
+};

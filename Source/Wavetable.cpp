@@ -14,7 +14,7 @@ WavetableFrame::WavetableFrame(std::array<float, TABLESIZE>& firstTable) : sampl
 {
     for(int i = 0; i < TABLES_PER_FRAME; ++i)
     {
-        tables.add(new Wavetable(TABLESIZE)); //fill the OwnedArray with empty tables
+        tables.add(new Wavetable()); //fill the OwnedArray with empty tables
     }
     float* fReal = new float[TABLESIZE];
     float* fImag = new float[TABLESIZE];
@@ -25,6 +25,16 @@ WavetableFrame::WavetableFrame(std::array<float, TABLESIZE>& firstTable) : sampl
     }
     FFT::runFloat(TABLESIZE, fReal, fImag);
     createTables(TABLESIZE, fReal, fImag);
+}
+
+WavetableFrame::WavetableFrame(const WavetableFrame& orig) :
+sampleRate(orig.sampleRate)
+{
+    for(int i = 0; i < TABLES_PER_FRAME; ++i)
+    {
+        tables.add(new Wavetable());
+        *tables[i] = *orig.tables[i];
+    }
 }
 
 void WavetableFrame::createTables(int size, float *real, float *imag)
@@ -184,6 +194,31 @@ unisonLevel(0.0f)
     delete manager;
 }
 
+WavetableOscCore::WavetableOscCore(const WavetableOscCore& orig) :
+numFrames(orig.numFrames),
+sampleRate(orig.sampleRate),
+phase(0.0f),
+phaseDelta(0.0f),
+srcFile(orig.srcFile),
+lastHz(0.0f),
+stepUpHz(0.0f),
+stepDownHz(0.0f),
+unisonMode(false),
+unisonVoices(0),
+unisonLevel(0.0f)
+{
+    uPhasesLower.fill(0.0f);
+    uDeltasLower.fill(0.0f);
+    uOutputsLower.fill(0.0f);
+    uPhasesUpper.fill(0.0f);
+    uDeltasUpper.fill(0.0f);
+    uOutputsUpper.fill(0.0f);
+    for(int i = 0; i < orig.numFrames; ++i)
+    {
+        frames.add(new WavetableFrame(*orig.frames[i]));
+    }
+}
+
 void WavetableOscCore::setSampleRate(double newRate)
 {
     sampleRate = newRate;
@@ -239,6 +274,18 @@ unisonLevel(0.0f),
 unisonMode(false)
 {
    
+}
+
+OctaneOsc:: OctaneOsc(const OctaneOsc& orig) :
+position(orig.position),
+level(orig.level),
+pOsc(std::make_unique<WavetableOscCore>(*orig.pOsc)),
+unisonVoices(orig.unisonVoices),
+unisonSpread(orig.unisonSpread),
+unisonLevel(orig.unisonLevel),
+unisonMode(orig.unisonMode)
+{
+    
 }
 
 void OctaneOsc::replace(juce::File src)

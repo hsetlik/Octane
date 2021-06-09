@@ -21,11 +21,7 @@
 #define SEMITONE_RATIO 1.05946309436f
 struct Wavetable
 {
-    Wavetable(int size)
-    {
-        table = new float [size];
-    }
-    float* table;
+    float table[TABLESIZE];
     float minFreq;
     float maxFreq;
 };
@@ -36,6 +32,7 @@ class WavetableFrame
 {
 public:
     WavetableFrame(std::array<float, TABLESIZE>& firstTable);
+    WavetableFrame(const WavetableFrame& orig);
     float getSample(float phase, double hz);
     std::vector<float> getGraphData(int resolution);
     void setSampleRate(double rate)
@@ -60,6 +57,7 @@ class WavetableOscCore
 {
 public:
     WavetableOscCore(juce::File src);
+    WavetableOscCore(const WavetableOscCore& orig);
     float getSample(double hz, float position);
     doubleVec getGraphData(int resolution);
     void setSampleRate(double newRate);
@@ -169,6 +167,7 @@ class OctaneOsc
 {
 public:
     OctaneOsc(juce::File src);
+    OctaneOsc(const OctaneOsc& osc);
     void triggerOn()
     {
         ampEnv.triggerOn();

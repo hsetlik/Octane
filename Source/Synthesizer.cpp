@@ -31,6 +31,30 @@ fundamental(440.0f)
     
 }
 
+OctaneVoice::OctaneVoice(const OctaneVoice& orig) :
+params(orig.params),
+voiceIndex(orig.voiceIndex),
+oscIndex(0),
+lfoIndex(0),
+fundamental(orig.fundamental),
+position(orig.position)
+{
+    for(int i = 0; i < NUM_OSCILLATORS; ++i)
+    {
+        oscillators.add(new OctaneOsc(*orig.oscillators[i]));
+        auto pAmp = params->oscAmpEnvs[i];
+        auto pMod = params->oscModEnvs[i];
+        ampOutputs.push_back(pAmp);
+        modOutputs.push_back(pMod);
+    }
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        lfos.add(new OctaneLFO(*orig.lfos[i]));
+        auto pLfo = params->lfoOutputs[i];
+        lfoOutputs.push_back(pLfo);
+    }
+}
+
 OctaneVoice::~OctaneVoice()
 {
    
@@ -186,7 +210,15 @@ paramGroup(tree)
     auto defaultWave = waveFiles[0];
     for(int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice(new OctaneVoice(waveFiles, &paramGroup, i));
+        if(i == 0)
+            addVoice(new OctaneVoice(waveFiles, &paramGroup, i));
+        else
+        {
+            auto& lastVoice = *dynamic_cast<OctaneVoice*>(voices.getLast());
+            addVoice(new OctaneVoice(lastVoice));
+            auto newVoice = dynamic_cast<OctaneVoice*>(voices.getLast());
+            newVoice->voiceIndex = i;
+        }
         auto vOct = dynamic_cast<OctaneVoice*>(voices.getLast());
         oVoices.push_back(vOct);
     }

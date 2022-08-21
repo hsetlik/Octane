@@ -16,7 +16,7 @@
 //! macros to define what parameters should be created
 #define NUM_OSCILLATORS 4
 #define NUM_LFOS 4
-#define NUM_VOICES 6
+#define NUM_VOICES 8
 //! constants for scaling
 #define PITCHWHEEL_RANGE 16384
 #define MIDI_NOTES 128
